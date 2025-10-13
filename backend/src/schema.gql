@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Admin {
+  id: Int!
+  username: String!
+}
+
 input CreateUserInput {
   email: String!
   password: String!
@@ -12,11 +17,42 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type LoginResponse {
+  access_token: String!
+}
+
+type MeAdminResponse {
+  id: Float!
+  role: String!
+  username: String!
+}
+
 type Mutation {
+  createAdmin(password: String!, username: String!): Admin!
+  createProduct(categoryId: Float, description: String, name: String!, price: Float!): Product!
   createUser(createUserInput: CreateUserInput!): User!
+  deleteAdmin(id: Int!): Boolean!
+  deleteProduct(id: Int!): Boolean!
+  loginAdmin(password: String!, username: String!): LoginResponse!
+  updateAdminPassword(id: Int!, newPassword: String!): Admin!
+  updateProduct(categoryId: Float, description: String, id: Int!, isActive: Boolean, name: String, price: Float): Product!
+}
+
+type Product {
+  categoryId: Int
+  description: String
+  id: Int!
+  isActive: Boolean!
+  name: String!
+  price: Float!
 }
 
 type Query {
+  admin(id: Int!): Admin
+  admins: [Admin!]!
+  getAllProducts: [Product!]!
+  getProductById(id: Int!): Product!
+  meAdmin: MeAdminResponse!
   sayHello: String!
   user(id: Float!): User!
   users: [User!]!

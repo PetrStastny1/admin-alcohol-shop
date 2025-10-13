@@ -23,20 +23,20 @@ function IsValidPort(validationOptions?: ValidationOptions) {
 
 class EnvironmentVariables {
   @IsString()
-  DB_HOST: string;
+  DB_HOST!: string;
 
   @Transform(({ value }) => parseInt(value, 10))
   @IsValidPort({ message: 'DB_PORT must be a valid number between 1 and 65535.' })
-  DB_PORT: number;
+  DB_PORT!: number;
 
   @IsString()
-  DB_USERNAME: string;
+  DB_USERNAME!: string;
 
   @IsString()
-  DB_PASSWORD: string;
+  DB_PASSWORD!: string;
 
   @IsString()
-  DB_NAME: string;
+  DB_NAME!: string;
 }
 
 export function validate(config: Record<string, unknown>) {

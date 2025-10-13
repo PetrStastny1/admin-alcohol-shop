@@ -1,13 +1,18 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 
+@ObjectType()
 @Entity()
 export class Admin {
+  @Field(() => Int)
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
+  @Field()
   @Column({ unique: true })
-  username: string;
+  username!: string;
 
   @Column()
-  password: string;
+  password!: string;
 }
+

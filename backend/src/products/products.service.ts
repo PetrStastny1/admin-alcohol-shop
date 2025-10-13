@@ -10,24 +10,36 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  // Metoda pro získání všech produktů
-  findAll(): Promise<Product[]> {
+  // Získání všech produktů
+  async findAll(): Promise<Product[]> {
     return this.productRepository.find();
   }
 
-  // Metoda pro vytvoření produktu
-  create(product: Product): Promise<Product> {
-    return this.productRepository.save(product);
+  // Vytvoření produktu
+  async create(productData: Partial<Product>): Promise<Product> {
+    const newProduct = this.productRepository.create(productData);
+    return this.productRepository.save(newProduct);
   }
 
-  // Metoda pro získání jednoho produktu podle ID
+  // Získání jednoho produktu podle ID
   async findOne(id: number): Promise<Product> {
     const product = await this.productRepository.findOne({ where: { id } });
-
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
-
     return product;
+  }
+
+  // Aktualizace produktu podle ID
+  async update(id: number, updateData: Partial<Product>): Promise<Product> {
+    const product = await this.findOne(id); // ověří existenci
+    Object.assign(product, updateData);
+    return this.productRepository.save(product);
+  }
+
+  // Smazání produktu podle ID
+  async delete(id: number): Promise<boolean> {
+    const result = await this.productRepository.delete(id);
+    return (result.affected ?? 0) > 0;
   }
 }
