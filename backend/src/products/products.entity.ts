@@ -1,5 +1,7 @@
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Order } from '../orders/order.entity';
+import { Category } from '../categories/category.entity';
 
 @ObjectType()
 @Entity()
@@ -26,5 +28,13 @@ export class Product {
 
   @Field()
   @Column({ default: true })
-  isActive!: boolean;
+  isActive: boolean = true;
+
+  @Field(() => [Order], { nullable: true })
+  @OneToMany(() => Order, (order) => order.product)
+  orders?: Order[];
+
+  @Field(() => Category, { nullable: true })
+  @ManyToOne(() => Category, (category) => category.products, { nullable: true })
+  category?: Category;
 }

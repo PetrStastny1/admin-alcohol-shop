@@ -7,9 +7,24 @@ type Admin {
   username: String!
 }
 
+type Category {
+  description: String
+  id: Int!
+  name: String!
+  products: [Product]
+}
+
 input CreateUserInput {
   email: String!
   password: String!
+}
+
+type Customer {
+  email: String!
+  id: Int!
+  name: String!
+  orders: [Order!]
+  phone: String
 }
 
 """
@@ -29,30 +44,56 @@ type MeAdminResponse {
 
 type Mutation {
   createAdmin(password: String!, username: String!): Admin!
+  createCategory(description: String, name: String!): Category!
+  createCustomer(email: String!, name: String!, phone: String): Customer!
+  createOrder(customerId: Int!, productId: Int!, quantity: Int!): Order!
   createProduct(categoryId: Float, description: String, name: String!, price: Float!): Product!
   createUser(createUserInput: CreateUserInput!): User!
   deleteAdmin(id: Int!): Boolean!
+  deleteCategory(id: Int!): Boolean!
+  deleteCustomer(id: Int!): Boolean!
+  deleteOrder(id: Int!): Boolean!
   deleteProduct(id: Int!): Boolean!
   loginAdmin(password: String!, username: String!): LoginResponse!
   updateAdminPassword(id: Int!, newPassword: String!): Admin!
+  updateCategory(description: String, id: Int!, name: String): Category!
+  updateCustomer(email: String, id: Int!, name: String, phone: String): Customer!
+  updateOrder(customerId: Int, id: Int!, productId: Int, quantity: Int): Order!
   updateProduct(categoryId: Float, description: String, id: Int!, isActive: Boolean, name: String, price: Float): Product!
 }
 
+type Order {
+  createdAt: DateTime!
+  customer: Customer!
+  id: Int!
+  product: Product!
+  quantity: Int!
+  total: Float!
+}
+
 type Product {
+  category: Category
   categoryId: Int
   description: String
   id: Int!
   isActive: Boolean!
   name: String!
+  orders: [Order!]
   price: Float!
 }
 
 type Query {
   admin(id: Int!): Admin
   admins: [Admin!]!
-  getAllProducts: [Product!]!
-  getProductById(id: Int!): Product!
+  categories: [Category!]!
+  category(id: Int!): Category
+  customer(id: Int!): Customer!
+  customers: [Customer!]!
   meAdmin: MeAdminResponse!
+  order(id: Int!): Order!
+  orders: [Order!]!
+  product(id: Int!): Product!
+  products: [Product!]!
   sayHello: String!
   user(id: Float!): User!
   users: [User!]!
