@@ -1,60 +1,84 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, OnModuleInit, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Admin } from './admin.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
-export class AdminService {
+export class AdminService implements OnModuleInit {
   constructor(
     @InjectRepository(Admin)
     private readonly adminRepository: Repository<Admin>,
   ) {}
 
-  // Najde admina podle ID
-  async findOneById(id: number): Promise<Admin | null> {
-    return await this.adminRepository.findOne({ where: { id } });
+  // ✅ Seed při startu – vždy jen jeden admin
+  async onModuleInit() {
+    await this.adminRepository.clear();
+
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    const admin = this.adminRepository.create({
+      username: 'admin',
+      password: hashedPassword,
+    });
+
+    await this.adminRepository.save(admin);
+
+    console.log('✅ Admin reset & seeded (username: admin, password: admin123)');
   }
 
-  // Najde admina podle username
+  // ✅ Najde admina podle ID
+  async findOneById(id: number): Promise<Admin> {
+    const admin = await this.adminRepository.findOne({ where: { id } });
+    if (!admin) throw new NotFoundException(`Admin s ID ${id} nenalezen`);
+    return admin;
+  }
+
+  // ✅ Najde admina podle username
   async findOneByUsername(username: string): Promise<Admin | null> {
-    return await this.adminRepository.findOne({ where: { username } });
+    return this.adminRepository.findOne({ where: { username } });
   }
 
-  // Vrátí všechny adminy
+  // ✅ Vrátí všechny adminy
   async findAll(): Promise<Admin[]> {
-    return await this.adminRepository.find();
+    return this.adminRepository.find();
   }
 
-  // Vytvoří nového admina
+  // ✅ Vytvoří nového admina (pokud už existuje, vyhodí chybu)
   async createAdmin(username: string, password: string): Promise<Admin> {
+    const existing = await this.findOneByUsername(username);
+    if (existing) {
+      throw new BadRequestException(`Admin s username "${username}" už existuje`);
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const admin = this.adminRepository.create({ username, password: hashedPassword });
-    return await this.adminRepository.save(admin);
+    return this.adminRepository.save(admin);
   }
 
-  // Aktualizuje heslo existujícího admina
+  // ✅ Aktualizace hesla
   async updatePassword(id: number, newPassword: string): Promise<Admin> {
-    const admin = await this.adminRepository.findOne({ where: { id } });
-    if (!admin) throw new NotFoundException('Admin nenalezen');
-
+    const admin = await this.findOneById(id);
     admin.password = await bcrypt.hash(newPassword, 10);
-    return await this.adminRepository.save(admin);
+    return this.adminRepository.save(admin);
   }
 
-  // Smaže admina podle ID
+  // ✅ Smazání admina
   async deleteAdmin(id: number): Promise<boolean> {
     const result = await this.adminRepository.delete(id);
-    return (result.affected ?? 0) > 0;
+    if ((result.affected ?? 0) === 0) {
+      throw new NotFoundException(`Admin s ID ${id} nenalezen`);
+    }
+    return true;
   }
 
-  // Ověří přihlášení admina podle username a hesla
-  async validateAdmin(username: string, password: string): Promise<Admin | null> {
+  // ✅ Přihlášení admina
+  async validateAdmin(username: string, password: string): Promise<Admin> {
     const admin = await this.findOneByUsername(username);
-    if (!admin) return null;
+    if (!admin) throw new UnauthorizedException('Neplatné jméno nebo heslo');
 
     const isValid = await bcrypt.compare(password, admin.password);
-    return isValid ? admin : null;
+    if (!isValid) throw new UnauthorizedException('Neplatné jméno nebo heslo');
+
+    return admin;
   }
 }
-

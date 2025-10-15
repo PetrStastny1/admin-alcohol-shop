@@ -22,10 +22,6 @@ export class Product {
   @Column({ nullable: true })
   description?: string;
 
-  @Field(() => Int, { nullable: true })
-  @Column({ nullable: true })
-  categoryId?: number;
-
   @Field()
   @Column({ default: true })
   isActive: boolean = true;
@@ -35,6 +31,9 @@ export class Product {
   orders?: Order[];
 
   @Field(() => Category, { nullable: true })
-  @ManyToOne(() => Category, (category) => category.products, { nullable: true })
+  @ManyToOne(() => Category, (category) => category.products, {
+    nullable: true,
+    onDelete: 'CASCADE', 
+  })
   category?: Category;
 }

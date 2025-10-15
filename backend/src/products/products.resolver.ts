@@ -1,74 +1,66 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, Float } from '@nestjs/graphql';
 import { ProductsService } from './products.service';
 import { Product } from './products.entity';
-import { NotFoundException } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from '../auth/gql-auth.guard';
 
 @Resolver(() => Product)
 export class ProductsResolver {
   constructor(private readonly productsService: ProductsService) {}
 
-  // ✅ Získání všech produktů
+  // ✅ Všechny aktivní produkty
   @Query(() => [Product], { name: 'products' })
   findAll(): Promise<Product[]> {
     return this.productsService.findAll();
   }
 
-  // ✅ Získání jednoho produktu podle ID
+  // ✅ Jeden produkt podle ID
   @Query(() => Product, { name: 'product' })
   findOne(@Args('id', { type: () => Int }) id: number): Promise<Product> {
     return this.productsService.findOne(id);
   }
 
-  // ✅ Vytvoření nového produktu (kontrola duplicit)
+  // ✅ Vytvoření produktu (jen admin)
+  @UseGuards(GqlAuthGuard)
   @Mutation(() => Product, { name: 'createProduct' })
   async createProduct(
     @Args('name') name: string,
-    @Args('price') price: number,
+    @Args('price', { type: () => Float }) price: number,
     @Args('description', { nullable: true }) description?: string,
-    @Args('categoryId', { nullable: true }) categoryId?: number,
+    @Args('categoryId', { type: () => Int, nullable: true }) categoryId?: number,
   ): Promise<Product> {
-    const existing = await this.productsService.findByNameAndCategory(name, categoryId);
-    if (existing) return existing;
-
-    return this.productsService.create({ name, price, description, categoryId });
+    return this.productsService.create({
+      name,
+      price,
+      description,
+      category: categoryId ? { id: categoryId } as any : undefined,
+    });
   }
 
-  // ✅ Aktualizace produktu (bez duplicit)
+  // ✅ Aktualizace produktu (jen admin)
+  @UseGuards(GqlAuthGuard)
   @Mutation(() => Product, { name: 'updateProduct' })
   async updateProduct(
     @Args('id', { type: () => Int }) id: number,
     @Args('name', { nullable: true }) name?: string,
-    @Args('price', { nullable: true }) price?: number,
+    @Args('price', { type: () => Float, nullable: true }) price?: number,
     @Args('description', { nullable: true }) description?: string,
-    @Args('categoryId', { nullable: true }) categoryId?: number,
+    @Args('categoryId', { type: () => Int, nullable: true }) categoryId?: number,
     @Args('isActive', { nullable: true }) isActive?: boolean,
   ): Promise<Product> {
-    const product = await this.productsService.findOne(id);
-    const updateData: Partial<Product> = {};
-
-    // Kontrola duplicitního názvu a kategorie
-    if (name !== undefined || categoryId !== undefined) {
-      const existing = await this.productsService.findByNameAndCategory(
-        name ?? product.name,
-        categoryId ?? product.categoryId,
-      );
-      if (existing && existing.id !== id) {
-        throw new Error('Produkt s tímto názvem a kategorií již existuje');
-      }
-    }
-
-    if (name !== undefined) updateData.name = name;
-    if (price !== undefined) updateData.price = price;
-    if (description !== undefined) updateData.description = description;
-    if (categoryId !== undefined) updateData.categoryId = categoryId;
-    if (isActive !== undefined) updateData.isActive = isActive;
-
-    return this.productsService.update(id, updateData);
+    return this.productsService.update(id, {
+      name,
+      price,
+      description,
+      isActive,
+      category: categoryId ? { id: categoryId } as any : undefined,
+    });
   }
 
-  // ✅ Smazání produktu podle ID
-  @Mutation(() => Boolean, { name: 'deleteProduct' })
-  async deleteProduct(@Args('id', { type: () => Int }) id: number): Promise<boolean> {
+  // ✅ Soft delete – produkt se označí jako neaktivní (jen admin)
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => Product, { name: 'deleteProduct' })
+  async deleteProduct(@Args('id', { type: () => Int }) id: number): Promise<Product> {
     return this.productsService.delete(id);
   }
 }

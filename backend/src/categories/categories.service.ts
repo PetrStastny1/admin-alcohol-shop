@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { Injectable, NotFoundException, OnModuleInit, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from './category.entity';
@@ -17,6 +17,8 @@ export class CategoriesService implements OnModuleInit {
       { name: 'Rum', description: 'Různé druhy rumu' },
       { name: 'Likéry', description: 'Sladké likéry a aperitivy' },
       { name: 'Brandy', description: 'Různé druhy brandy' },
+      { name: 'Víno', description: 'Červená a bílá vína' },
+      { name: 'Pivo', description: 'Různé druhy piv' },
     ];
 
     for (const cat of defaultCategories) {
@@ -25,6 +27,8 @@ export class CategoriesService implements OnModuleInit {
         await this.create(cat.name, cat.description);
       }
     }
+
+    console.log('✅ Categories soft-seeded');
   }
 
   async findAll(): Promise<Category[]> {
@@ -36,15 +40,16 @@ export class CategoriesService implements OnModuleInit {
       where: { id },
       relations: ['products'],
     });
-    if (!category) {
-      throw new NotFoundException(`Category with ID ${id} not found`);
-    }
+    if (!category) throw new NotFoundException(`Kategorie s ID ${id} nenalezena`);
     return category;
   }
 
   async create(name: string, description?: string): Promise<Category> {
+
     const existing = await this.categoryRepository.findOne({ where: { name } });
-    if (existing) return existing;
+    if (existing) {
+      throw new BadRequestException(`Kategorie "${name}" už existuje`);
+    }
 
     const category = this.categoryRepository.create({ name, description });
     return this.categoryRepository.save(category);
@@ -52,15 +57,26 @@ export class CategoriesService implements OnModuleInit {
 
   async update(id: number, name?: string, description?: string): Promise<Category> {
     const category = await this.findOne(id);
-    if (name) category.name = name;
-    if (description) category.description = description;
+
+    if (name && name !== category.name) {
+      const existing = await this.categoryRepository.findOne({ where: { name } });
+      if (existing) {
+        throw new BadRequestException(`Kategorie "${name}" už existuje`);
+      }
+      category.name = name;
+    }
+
+    if (description !== undefined) {
+      category.description = description;
+    }
+
     return this.categoryRepository.save(category);
   }
 
   async delete(id: number): Promise<boolean> {
     const result = await this.categoryRepository.delete(id);
     if ((result.affected ?? 0) === 0) {
-      throw new NotFoundException(`Category with ID ${id} not found`);
+      throw new NotFoundException(`Kategorie s ID ${id} nenalezena`);
     }
     return true;
   }

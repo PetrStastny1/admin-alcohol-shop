@@ -10,7 +10,7 @@ export class Customer {
   id!: number;
 
   @Field()
-  @Column({ unique: true })
+  @Column()
   name!: string;
 
   @Field()
@@ -22,6 +22,9 @@ export class Customer {
   phone?: string;
 
   @Field(() => [Order], { nullable: true })
-  @OneToMany(() => Order, (order) => order.customer)
+  @OneToMany(() => Order, (order) => order.customer, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   orders?: Order[];
 }

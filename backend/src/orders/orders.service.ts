@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  OnModuleInit,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './order.entity';
@@ -18,20 +23,33 @@ export class OrdersService implements OnModuleInit {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  // AUTOMATICKÉ NAPLNĚNÍ PŘI STARTU
   async onModuleInit() {
-    const count = await this.orderRepository.count();
-    if (count === 0) {
-      const customer = await this.customerRepository.findOne({ where: {} });
-      const product = await this.productRepository.findOne({ where: {} });
+    const customers = await this.customerRepository.find();
+    const products = await this.productRepository.find();
 
-      if (customer && product) {
-        await this.create(customer.id, product.id, 1);
-        console.log('✅ Orders initialized');
-      } else {
-        console.log('⚠️ Orders seed skipped: no customer or product found');
+    if (customers.length === 0 || products.length === 0) {
+      console.log('⚠️ Orders seed skipped: no customers or products found');
+      return;
+    }
+
+    const seedOrders = [
+      { customer: customers[0], product: products[0], quantity: 2 },
+      { customer: customers[1] ?? customers[0], product: products[1] ?? products[0], quantity: 1 },
+      { customer: customers[2] ?? customers[0], product: products[2] ?? products[0], quantity: 3 },
+    ];
+
+    for (const o of seedOrders) {
+      const existing = await this.orderRepository.findOne({
+        where: { customer: { id: o.customer.id }, product: { id: o.product.id } },
+        relations: ['customer', 'product'],
+      });
+
+      if (!existing) {
+        await this.create({ customer: { id: o.customer.id }, product: { id: o.product.id }, quantity: o.quantity });
       }
     }
+
+    console.log('✅ Orders soft-seeded');
   }
 
   async findAll(): Promise<Order[]> {
@@ -43,51 +61,58 @@ export class OrdersService implements OnModuleInit {
       where: { id },
       relations: ['customer', 'product'],
     });
-    if (!order) throw new NotFoundException(`Order with ID ${id} not found`);
+    if (!order) {
+      throw new NotFoundException(`Objednávka s ID ${id} nenalezena`);
+    }
     return order;
   }
 
-  // Vytvoření objednávky s kontrolou duplicit
-  async create(customerId: number, productId: number, quantity: number): Promise<Order> {
-    const customer = await this.customerRepository.findOne({ where: { id: customerId } });
-    const product = await this.productRepository.findOne({ where: { id: productId } });
+  async create(data: { customer: { id: number }; product: { id: number }; quantity: number }): Promise<Order> {
+    const customer = await this.customerRepository.findOne({ where: { id: data.customer.id } });
+    if (!customer) {
+      throw new NotFoundException(`Zákazník s ID ${data.customer.id} nenalezen`);
+    }
 
-    if (!customer) throw new NotFoundException(`Customer with ID ${customerId} not found`);
-    if (!product) throw new NotFoundException(`Product with ID ${productId} not found`);
+    const product = await this.productRepository.findOne({ where: { id: data.product.id } });
+    if (!product) {
+      throw new NotFoundException(`Produkt s ID ${data.product.id} nenalezen`);
+    }
 
     const existingOrder = await this.orderRepository.findOne({
-      where: { customer: { id: customerId }, product: { id: productId } },
+      where: { customer: { id: data.customer.id }, product: { id: data.product.id } },
       relations: ['customer', 'product'],
     });
-    if (existingOrder) return existingOrder;
+    if (existingOrder) {
+      throw new BadRequestException(
+        `Objednávka zákazníka ${data.customer.id} na produkt ${data.product.id} už existuje`,
+      );
+    }
 
-    const total = Number(product.price) * quantity;
-    const order = this.orderRepository.create({ customer, product, quantity, total });
+    const total = Number(product.price) * data.quantity;
+    const order = this.orderRepository.create({ customer, product, quantity: data.quantity, total });
     return this.orderRepository.save(order);
   }
 
   async update(
     id: number,
-    customerId?: number,
-    productId?: number,
-    quantity?: number,
+    updateData: { customer?: { id: number }; product?: { id: number }; quantity?: number },
   ): Promise<Order> {
     const order = await this.findOne(id);
 
-    if (customerId) {
-      const customer = await this.customerRepository.findOne({ where: { id: customerId } });
-      if (!customer) throw new NotFoundException(`Customer with ID ${customerId} not found`);
+    if (updateData.customer?.id) {
+      const customer = await this.customerRepository.findOne({ where: { id: updateData.customer.id } });
+      if (!customer) throw new NotFoundException(`Zákazník s ID ${updateData.customer.id} nenalezen`);
       order.customer = customer;
     }
 
-    if (productId) {
-      const product = await this.productRepository.findOne({ where: { id: productId } });
-      if (!product) throw new NotFoundException(`Product with ID ${productId} not found`);
+    if (updateData.product?.id) {
+      const product = await this.productRepository.findOne({ where: { id: updateData.product.id } });
+      if (!product) throw new NotFoundException(`Produkt s ID ${updateData.product.id} nenalezen`);
       order.product = product;
     }
 
-    if (quantity !== undefined) {
-      order.quantity = quantity;
+    if (updateData.quantity !== undefined) {
+      order.quantity = updateData.quantity;
     }
 
     order.total = Number(order.product.price) * order.quantity;
@@ -95,11 +120,10 @@ export class OrdersService implements OnModuleInit {
     return this.orderRepository.save(order);
   }
 
-  // Bezpečné mazání objednávky
   async delete(id: number): Promise<boolean> {
     const result = await this.orderRepository.delete(id);
     if ((result.affected ?? 0) === 0) {
-      throw new NotFoundException(`Order with ID ${id} not found`);
+      throw new NotFoundException(`Objednávka s ID ${id} nenalezena`);
     }
     return true;
   }

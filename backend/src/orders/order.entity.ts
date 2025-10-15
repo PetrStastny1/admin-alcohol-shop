@@ -11,11 +11,17 @@ export class Order {
   id!: number;
 
   @Field(() => Customer)
-  @ManyToOne(() => Customer, (customer) => customer.orders, { eager: true })
+  @ManyToOne(() => Customer, (customer) => customer.orders, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   customer!: Customer;
 
   @Field(() => Product)
-  @ManyToOne(() => Product, (product) => product.orders, { eager: true })
+  @ManyToOne(() => Product, (product) => product.orders, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   product!: Product;
 
   @Field(() => Int)
@@ -27,6 +33,6 @@ export class Order {
   total!: number;
 
   @Field()
-  @Column({ default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
 }

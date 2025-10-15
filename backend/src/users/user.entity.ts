@@ -1,15 +1,10 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-} from 'typeorm';
-import { ObjectType, Field } from '@nestjs/graphql';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 
 @ObjectType()
-@Entity('users')
+@Entity()
 export class User {
-  @Field()
+  @Field(() => Int)
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -17,8 +12,16 @@ export class User {
   @Column({ unique: true })
   email!: string;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  username?: string;
+
   @Column()
   password!: string;
+
+  @Field()
+  @Column({ default: 'user' })
+  role!: string;
 
   @Field()
   @CreateDateColumn()

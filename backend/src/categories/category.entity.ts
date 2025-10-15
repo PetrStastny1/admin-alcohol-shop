@@ -14,13 +14,12 @@ export class Category {
   name!: string;
 
   @Field({ nullable: true })
-  @Column({ type: 'text', nullable: true })
+  @Column({ nullable: true })
   description?: string;
 
-  @Field(() => [Product], { nullable: 'itemsAndList' })
   @OneToMany(() => Product, (product) => product.category, {
-    cascade: ['insert', 'update'],
-    onDelete: 'SET NULL',
+    cascade: true,
+    onDelete: 'CASCADE',
   })
-  products?: Product[];
+  products!: Product[];
 }

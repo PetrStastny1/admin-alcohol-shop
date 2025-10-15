@@ -1,40 +1,141 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  OnModuleInit,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
+import { CreateUserInput } from './dto/create-user.input';
+import { UpdateUserInput } from './dto/update-user.input';
 
 @Injectable()
-export class UsersService {
+export class UsersService implements OnModuleInit {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
 
-  // Vytvoření uživatele s hashováním hesla
-  async create(email: string, password: string): Promise<User> {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = this.userRepository.create({ email, password: hashedPassword });
+  async onModuleInit() {
+    const defaultUsers: CreateUserInput[] = [
+      {
+        email: 'admin@example.com',
+        username: 'admin',
+        password: 'admin123',
+        role: 'admin',
+      },
+      {
+        email: 'user1@example.com',
+        username: 'user1',
+        password: 'password1',
+        role: 'user',
+      },
+      {
+        email: 'user2@example.com',
+        username: 'user2',
+        password: 'password2',
+        role: 'user',
+      },
+    ];
+
+    for (const u of defaultUsers) {
+      const existing = await this.findOneByEmail(u.email);
+      if (!existing) {
+        await this.create(u);
+      }
+    }
+
+    console.log('✅ Users soft-seeded');
+  }
+
+  async create(input: CreateUserInput): Promise<User> {
+    const existingEmail = await this.findOneByEmail(input.email);
+    if (existingEmail) {
+      throw new BadRequestException(
+        `Uživatel s emailem ${input.email} již existuje`,
+      );
+    }
+
+    const existingUsername = await this.userRepository.findOne({
+      where: { username: input.username },
+    });
+    if (existingUsername) {
+      throw new BadRequestException(
+        `Uživatel s uživatelským jménem ${input.username} již existuje`,
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(input.password, 10);
+
+    const user = this.userRepository.create({
+      email: input.email,
+      username: input.username,
+      password: hashedPassword,
+      role: input.role ?? 'user',
+    });
+
     return this.userRepository.save(user);
   }
 
-  // Najdi jednoho uživatele podle emailu
-  async findOneByEmail(email: string): Promise<User | undefined> {
-    const user = await this.userRepository.findOneBy({ email });
-    return user || undefined; // Převod null -> undefined
+  async findOneByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { email } });
   }
 
-  // Najdi jednoho uživatele podle ID
   async findOneById(id: number): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(`Uživatel s ID ${id} nebyl nalezen`);
     }
     return user;
   }
 
-  // Najdi všechny uživatele
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
+  }
+
+  async update(input: UpdateUserInput): Promise<User> {
+    const user = await this.findOneById(input.id);
+
+    if (input.email !== undefined && input.email !== user.email) {
+      const existing = await this.findOneByEmail(input.email);
+      if (existing && existing.id !== input.id) {
+        throw new BadRequestException(
+          `Uživatel s emailem ${input.email} již existuje`,
+        );
+      }
+      user.email = input.email;
+    }
+
+    if (input.username !== undefined && input.username !== user.username) {
+      const existing = await this.userRepository.findOne({
+        where: { username: input.username },
+      });
+      if (existing && existing.id !== input.id) {
+        throw new BadRequestException(
+          `Uživatel s uživatelským jménem ${input.username} již existuje`,
+        );
+      }
+      user.username = input.username;
+    }
+
+    if (input.role !== undefined) {
+      user.role = input.role;
+    }
+
+    if (input.password !== undefined) {
+      user.password = await bcrypt.hash(input.password, 10);
+    }
+
+    return this.userRepository.save(user);
+  }
+
+  async delete(id: number): Promise<boolean> {
+    const result = await this.userRepository.delete(id);
+    if ((result.affected ?? 0) === 0) {
+      throw new NotFoundException(`Uživatel s ID ${id} nebyl nalezen`);
+    }
+    return true;
   }
 }

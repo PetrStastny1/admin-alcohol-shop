@@ -7,4 +7,10 @@ export class CreateUserInput {
 
   @Field()
   password!: string;
+
+  @Field()
+  username!: string;
+
+  @Field({ defaultValue: 'user' })
+  role!: string;
 }

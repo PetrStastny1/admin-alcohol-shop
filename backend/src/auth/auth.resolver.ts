@@ -1,53 +1,47 @@
-import { Resolver, Mutation, Args, Query, ObjectType, Field, Context } from '@nestjs/graphql';
-import { AuthService } from './auth.service';
+import { Resolver, Mutation, Args, Query, Context } from '@nestjs/graphql';
 import { UnauthorizedException, UseGuards } from '@nestjs/common';
+import { AuthService } from './auth.service';
 import { GqlAuthGuard } from './gql-auth.guard';
 
-@ObjectType()
-export class LoginResponse {
-  @Field()
-  access_token!: string;
-}
-
-@ObjectType()
-export class MeAdminResponse {
-  @Field()
-  id!: number;
-
-  @Field()
-  username!: string;
-
-  @Field()
-  role!: string;
-}
+// DTOs
+import { AdminDto } from './dto/admin.dto';
+import { LoginResponseDto } from './dto/login-response.dto';
 
 @Resolver()
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  // --- Mutations ---
-  @Mutation(() => LoginResponse)
+  // --- LOGIN ADMIN ---
+  @Mutation(() => LoginResponseDto)
   async loginAdmin(
     @Args('username') username: string,
     @Args('password') password: string,
-  ): Promise<LoginResponse> {
-    try {
-      return await this.authService.loginAdmin(username, password);
-    } catch {
+  ): Promise<LoginResponseDto> {
+    const result = await this.authService.loginAdmin(username, password);
+    if (!result) {
       throw new UnauthorizedException('Neplatné uživatelské jméno nebo heslo');
     }
+    return {
+      access_token: result.access_token,
+      admin: {
+        id: result.admin.id,
+        username: result.admin.username,
+      },
+    };
   }
 
-  // --- Queries ---
-  @Query(() => MeAdminResponse)
+  // --- WHOAMI ---
+  @Query(() => AdminDto)
   @UseGuards(GqlAuthGuard)
-  meAdmin(@Context() ctx: any): MeAdminResponse {
-    const admin = ctx.req.user;
-    if (!admin) throw new UnauthorizedException('Neautorizovaný přístup');
+  meAdmin(@Context() ctx: any): AdminDto {
+    const payload = ctx.req.user;
+    if (!payload) {
+      throw new UnauthorizedException('Neautorizovaný přístup');
+    }
     return {
-      id: admin.sub,
-      username: admin.username,
-      role: admin.role,
+      id: payload.sub,
+      username: payload.username,
     };
   }
 }
+

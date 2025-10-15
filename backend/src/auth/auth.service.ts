@@ -15,7 +15,7 @@ export class AuthService {
     private readonly adminRepository: Repository<Admin>,
   ) {}
 
-  // Přihlášení běžného uživatele
+  // --- USER AUTH ---
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findOneByEmail(email);
     if (!user) throw new UnauthorizedException('Neplatný email nebo heslo');
@@ -28,13 +28,13 @@ export class AuthService {
   }
 
   async loginUser(user: any): Promise<{ access_token: string }> {
-    const payload = { username: user.email, sub: user.id, role: 'user' };
+    const payload = { username: user.email, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
 
-  // Přihlášení admina
+  // --- ADMIN AUTH ---
   async validateAdmin(username: string, password: string): Promise<Admin> {
     const admin = await this.adminRepository.findOne({ where: { username } });
     if (!admin) throw new UnauthorizedException('Neplatné uživatelské jméno nebo heslo');
@@ -45,11 +45,17 @@ export class AuthService {
     return admin;
   }
 
-  async loginAdmin(username: string, password: string): Promise<{ access_token: string }> {
+  async loginAdmin(
+    username: string,
+    password: string,
+  ): Promise<{ access_token: string; admin: Omit<Admin, 'password'> }> {
     const admin = await this.validateAdmin(username, password);
-    const payload = { username: admin.username, sub: admin.id, role: 'admin' };
+    const payload = { username: admin.username, sub: admin.id };
+
+    const { password: _, ...adminSafe } = admin;
     return {
       access_token: this.jwtService.sign(payload),
+      admin: adminSafe,
     };
   }
 }

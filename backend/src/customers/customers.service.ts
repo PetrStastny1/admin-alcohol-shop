@@ -10,15 +10,21 @@ export class CustomersService implements OnModuleInit {
     private readonly customerRepository: Repository<Customer>,
   ) {}
 
-  // ✅ Automatické naplnění při startu
   async onModuleInit() {
-    const count = await this.customerRepository.count();
-    if (count === 0) {
-      await this.createSafe('Alice Johnson', 'alice@example.com', '123456789');
-      await this.createSafe('Bob Smith', 'bob@example.com');
-      await this.createSafe('Charlie Brown', 'charlie@example.com', '987654321');
-      console.log('✅ Customers initialized');
+    const defaultCustomers = [
+      { name: 'Alice Johnson', email: 'alice@example.com', phone: '123456789' },
+      { name: 'Bob Smith', email: 'bob@example.com' },
+      { name: 'Charlie Brown', email: 'charlie@example.com', phone: '987654321' },
+    ];
+
+    for (const c of defaultCustomers) {
+      const existing = await this.findByEmail(c.email);
+      if (!existing) {
+        await this.create(c.name, c.email, c.phone);
+      }
     }
+
+    console.log('✅ Customers soft-seeded');
   }
 
   async findAll(): Promise<Customer[]> {
@@ -30,41 +36,32 @@ export class CustomersService implements OnModuleInit {
       where: { id },
       relations: ['orders'],
     });
-    if (!customer) throw new NotFoundException(`Customer with ID ${id} not found`);
+    if (!customer) {
+      throw new NotFoundException(`Zákazník s ID ${id} nenalezen`);
+    }
     return customer;
   }
 
-  // ✅ Najít zákazníka podle e-mailu
   async findByEmail(email: string): Promise<Customer | null> {
     return this.customerRepository.findOne({ where: { email } });
   }
 
-  // ✅ Vytvoření zákazníka (bez duplicit)
-  async createSafe(name: string, email: string, phone?: string): Promise<Customer> {
+  async create(name: string, email: string, phone?: string): Promise<Customer> {
     const existing = await this.findByEmail(email);
-    if (existing) return existing;
-
+    if (existing) {
+      throw new BadRequestException(`Zákazník s e-mailem "${email}" již existuje`);
+    }
     const customer = this.customerRepository.create({ name, email, phone });
     return this.customerRepository.save(customer);
   }
 
-  async create(name: string, email: string, phone?: string): Promise<Customer> {
-    return this.createSafe(name, email, phone);
-  }
-
-  // ✅ Aktualizace zákazníka s kontrolou duplicit e-mailu
-  async update(
-    id: number,
-    name?: string,
-    email?: string,
-    phone?: string,
-  ): Promise<Customer> {
+  async update(id: number, name?: string, email?: string, phone?: string): Promise<Customer> {
     const customer = await this.findOne(id);
 
-    if (email) {
+    if (email && email !== customer.email) {
       const existing = await this.findByEmail(email);
-      if (existing && existing.id !== id) {
-        throw new BadRequestException(`Zákazník s e-mailem ${email} již existuje`);
+      if (existing) {
+        throw new BadRequestException(`Zákazník s e-mailem "${email}" již existuje`);
       }
       customer.email = email;
     }
@@ -75,11 +72,10 @@ export class CustomersService implements OnModuleInit {
     return this.customerRepository.save(customer);
   }
 
-  // ✅ Smazání zákazníka
   async delete(id: number): Promise<boolean> {
     const result = await this.customerRepository.delete(id);
     if ((result.affected ?? 0) === 0) {
-      throw new NotFoundException(`Customer with ID ${id} not found`);
+      throw new NotFoundException(`Zákazník s ID ${id} nenalezen`);
     }
     return true;
   }
