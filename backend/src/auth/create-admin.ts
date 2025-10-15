@@ -22,20 +22,24 @@ async function createAdmin() {
 
     const adminRepo = dataSource.getRepository(Admin);
 
-    const existingAdmin = await adminRepo.findOne({ where: { username: 'admin' } });
+    const username = 'admin';
+    const plainPassword = 'admin123';
+
+    const existingAdmin = await adminRepo.findOne({ where: { username } });
+    const hashedPassword = await bcrypt.hash(plainPassword, 10);
+
     if (existingAdmin) {
-      console.log('Admin "admin" již existuje, aktualizuji heslo...');
-      existingAdmin.password = await bcrypt.hash('heslo', 10);
+      console.log(`Admin "${username}" již existuje, aktualizuji heslo...`);
+      existingAdmin.password = hashedPassword;
       await adminRepo.save(existingAdmin);
-      console.log('Heslo admina bylo úspěšně aktualizováno na "heslo"');
+      console.log(`Heslo admina bylo úspěšně aktualizováno na "${plainPassword}"`);
     } else {
-      const hashedPassword = await bcrypt.hash('heslo', 10);
       const admin = adminRepo.create({
-        username: 'admin',
+        username,
         password: hashedPassword,
       });
       await adminRepo.save(admin);
-      console.log('Admin "admin" byl vytvořen s heslem "heslo"');
+      console.log(`Admin "${username}" byl vytvořen s heslem "${plainPassword}"`);
     }
 
     await dataSource.destroy();
