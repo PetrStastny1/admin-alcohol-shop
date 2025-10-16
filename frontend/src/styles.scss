@@ -1,0 +1,36 @@
+/* Sass imports musí být úplně nahoře */
+@use '@angular/material' as mat;
+
+/* Tailwind direktivy */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Angular Material 3 theme */
+html {
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+body {
+  /* výchozí color-scheme */
+  color-scheme: light;
+
+  /* základní barvy a fonty */
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* Reset a layout */
+html, body {
+  height: 100%;
+}
