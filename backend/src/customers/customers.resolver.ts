@@ -3,37 +3,43 @@ import { CustomersService } from './customers.service';
 import { Customer } from './customer.entity';
 import { UseGuards, BadRequestException } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
-import { CustomerInput } from './dto/customer.input';
+import { CreateCustomerInput } from './dto/create-customer.input';
 import { UpdateCustomerInput } from './dto/update-customer.input';
 
 @Resolver(() => Customer)
 export class CustomersResolver {
   constructor(private readonly customersService: CustomersService) {}
 
-  // ✅ Všechny zákazníky
+  // ✅ Načti všechny zákazníky
   @Query(() => [Customer], { name: 'customers' })
-  findAll(): Promise<Customer[]> {
+  async getCustomers(): Promise<Customer[]> {
     return this.customersService.findAll();
   }
 
-  // ✅ Jeden zákazník podle ID
+  // ✅ Načti zákazníka podle ID
   @Query(() => Customer, { name: 'customer' })
-  findOne(@Args('id', { type: () => Int }) id: number): Promise<Customer> {
+  async getCustomer(
+    @Args('id', { type: () => Int }) id: number,
+  ): Promise<Customer> {
     return this.customersService.findOne(id);
   }
 
   // ✅ Vytvoření zákazníka
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Customer, { name: 'createCustomer' })
-  async createCustomer(@Args('input') input: CustomerInput): Promise<Customer> {
+  async createCustomer(
+    @Args('input') input: CreateCustomerInput,
+  ): Promise<Customer> {
     const existing = await this.customersService.findByEmail(input.email);
     if (existing) {
-      throw new BadRequestException(`Zákazník s e-mailem ${input.email} již existuje`);
+      throw new BadRequestException(
+        `Zákazník s e-mailem "${input.email}" již existuje`,
+      );
     }
     return this.customersService.create(input.name, input.email, input.phone);
   }
 
-  // ✅ Aktualizace zákazníka (povinný jen ID, ostatní volitelné)
+  // ✅ Aktualizace zákazníka
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Customer, { name: 'updateCustomer' })
   async updateCustomer(
@@ -43,7 +49,9 @@ export class CustomersResolver {
     if (input.email) {
       const existing = await this.customersService.findByEmail(input.email);
       if (existing && existing.id !== id) {
-        throw new BadRequestException(`Zákazník s e-mailem ${input.email} již existuje`);
+        throw new BadRequestException(
+          `Zákazník s e-mailem "${input.email}" již existuje`,
+        );
       }
     }
     return this.customersService.update(id, input.name, input.email, input.phone);
@@ -52,7 +60,9 @@ export class CustomersResolver {
   // ✅ Smazání zákazníka
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Boolean, { name: 'deleteCustomer' })
-  deleteCustomer(@Args('id', { type: () => Int }) id: number): Promise<boolean> {
+  async deleteCustomer(
+    @Args('id', { type: () => Int }) id: number,
+  ): Promise<boolean> {
     return this.customersService.delete(id);
   }
 }

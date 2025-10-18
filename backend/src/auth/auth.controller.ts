@@ -15,7 +15,6 @@ export class AuthController {
       throw new UnauthorizedException('Username a password jsou povinné');
     }
 
-    // Volá AuthService.loginAdmin a vrací JWT token
     return this.authService.loginAdmin(username, password);
   }
 }

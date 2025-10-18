@@ -36,16 +36,27 @@ export class OrdersService implements OnModuleInit {
       { customer: customers[0], product: products[0], quantity: 2 },
       { customer: customers[1] ?? customers[0], product: products[1] ?? products[0], quantity: 1 },
       { customer: customers[2] ?? customers[0], product: products[2] ?? products[0], quantity: 3 },
+      { customer: customers[0], product: products[3] ?? products[0], quantity: 5 },
+      { customer: customers[1] ?? customers[0], product: products[4] ?? products[0], quantity: 2 },
+      { customer: customers[2] ?? customers[0], product: products[5] ?? products[0], quantity: 4 },
+      { customer: customers[0], product: products[6] ?? products[0], quantity: 1 },
+      { customer: customers[1] ?? customers[0], product: products[7] ?? products[0], quantity: 2 },
+      { customer: customers[2] ?? customers[0], product: products[8] ?? products[0], quantity: 3 },
+      { customer: customers[0], product: products[9] ?? products[0], quantity: 6 },
     ];
 
     for (const o of seedOrders) {
-      const existing = await this.orderRepository.findOne({
+      const exists = await this.orderRepository.findOne({
         where: { customer: { id: o.customer.id }, product: { id: o.product.id } },
         relations: ['customer', 'product'],
       });
 
-      if (!existing) {
-        await this.create({ customer: { id: o.customer.id }, product: { id: o.product.id }, quantity: o.quantity });
+      if (!exists) {
+        await this.create({
+          customer: { id: o.customer.id },
+          product: { id: o.product.id },
+          quantity: o.quantity,
+        });
       }
     }
 
@@ -68,6 +79,10 @@ export class OrdersService implements OnModuleInit {
   }
 
   async create(data: { customer: { id: number }; product: { id: number }; quantity: number }): Promise<Order> {
+    if (data.quantity <= 0) {
+      throw new BadRequestException(`Množství musí být větší než 0`);
+    }
+
     const customer = await this.customerRepository.findOne({ where: { id: data.customer.id } });
     if (!customer) {
       throw new NotFoundException(`Zákazník s ID ${data.customer.id} nenalezen`);
@@ -90,7 +105,7 @@ export class OrdersService implements OnModuleInit {
 
     const total = Number(product.price) * data.quantity;
     const order = this.orderRepository.create({ customer, product, quantity: data.quantity, total });
-    return this.orderRepository.save(order);
+    return await this.orderRepository.save(order);
   }
 
   async update(
@@ -112,12 +127,15 @@ export class OrdersService implements OnModuleInit {
     }
 
     if (updateData.quantity !== undefined) {
+      if (updateData.quantity <= 0) {
+        throw new BadRequestException(`Množství musí být větší než 0`);
+      }
       order.quantity = updateData.quantity;
     }
 
     order.total = Number(order.product.price) * order.quantity;
 
-    return this.orderRepository.save(order);
+    return await this.orderRepository.save(order);
   }
 
   async delete(id: number): Promise<boolean> {

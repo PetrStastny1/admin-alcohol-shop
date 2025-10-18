@@ -11,15 +11,15 @@ export class Product {
   id!: number;
 
   @Field()
-  @Column()
+  @Column({ length: 255 })
   name!: string;
 
   @Field(() => Float)
-  @Column('decimal')
+  @Column('decimal', { precision: 10, scale: 2 })
   price!: number;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   description?: string;
 
   @Field()
@@ -27,13 +27,16 @@ export class Product {
   isActive: boolean = true;
 
   @Field(() => [Order], { nullable: true })
-  @OneToMany(() => Order, (order) => order.product)
+  @OneToMany(() => Order, (order) => order.product, {
+    cascade: true,
+  })
   orders?: Order[];
 
   @Field(() => Category, { nullable: true })
   @ManyToOne(() => Category, (category) => category.products, {
     nullable: true,
-    onDelete: 'CASCADE', 
+    onDelete: 'CASCADE',
+    eager: true,
   })
   category?: Category;
 }

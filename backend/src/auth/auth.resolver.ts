@@ -2,46 +2,39 @@ import { Resolver, Mutation, Args, Query, Context } from '@nestjs/graphql';
 import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { GqlAuthGuard } from './gql-auth.guard';
-
-// DTOs
-import { AdminDto } from './dto/admin.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
+import { LoginAdminInput } from './dto/login-admin.input';
 
 @Resolver()
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  // --- LOGIN ADMIN ---
-  @Mutation(() => LoginResponseDto)
+  @Mutation(() => LoginResponseDto, { name: 'loginAdmin' })
   async loginAdmin(
-    @Args('username') username: string,
-    @Args('password') password: string,
+    @Args('input') input: LoginAdminInput,
   ): Promise<LoginResponseDto> {
-    const result = await this.authService.loginAdmin(username, password);
+    const result = await this.authService.loginAdmin(input.username, input.password);
     if (!result) {
       throw new UnauthorizedException('Neplatné uživatelské jméno nebo heslo');
     }
     return {
       access_token: result.access_token,
-      admin: {
-        id: result.admin.id,
-        username: result.admin.username,
-      },
+      id: result.admin.id,
+      username: result.admin.username,
     };
   }
 
-  // --- WHOAMI ---
-  @Query(() => AdminDto)
+  @Query(() => LoginResponseDto, { name: 'meAdmin' })
   @UseGuards(GqlAuthGuard)
-  meAdmin(@Context() ctx: any): AdminDto {
+  async meAdmin(@Context() ctx: any): Promise<LoginResponseDto> {
     const payload = ctx.req.user;
     if (!payload) {
       throw new UnauthorizedException('Neautorizovaný přístup');
     }
     return {
+      access_token: '',
       id: payload.sub,
       username: payload.username,
     };
   }
 }
-

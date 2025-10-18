@@ -9,17 +9,18 @@ export class Category {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Field()
+  @Field(() => String)
   @Column({ unique: true })
   name!: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   @Column({ nullable: true })
   description?: string;
 
+  @Field(() => [Product], { nullable: true })
   @OneToMany(() => Product, (product) => product.category, {
     cascade: true,
     onDelete: 'CASCADE',
   })
-  products!: Product[];
+  products?: Product[];
 }

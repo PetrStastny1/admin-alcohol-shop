@@ -1,11 +1,13 @@
-import { ObjectType, Field } from '@nestjs/graphql';
-import { AdminDto } from './admin.dto';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 
 @ObjectType()
 export class LoginResponseDto {
   @Field()
   access_token!: string;
 
-  @Field(() => AdminDto)
-  admin!: AdminDto;
+  @Field(() => Int)
+  id!: number;
+
+  @Field()
+  username!: string;
 }

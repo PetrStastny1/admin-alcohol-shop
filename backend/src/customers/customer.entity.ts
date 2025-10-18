@@ -21,6 +21,10 @@ export class Customer {
   @Column({ nullable: true })
   phone?: string;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  address?: string;
+
   @Field(() => [Order], { nullable: true })
   @OneToMany(() => Order, (order) => order.customer, {
     cascade: true,

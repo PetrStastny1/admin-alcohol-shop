@@ -38,6 +38,48 @@ export class UsersService implements OnModuleInit {
         password: 'password2',
         role: 'user',
       },
+      {
+        email: 'user3@example.com',
+        username: 'user3',
+        password: 'password3',
+        role: 'user',
+      },
+      {
+        email: 'user4@example.com',
+        username: 'user4',
+        password: 'password4',
+        role: 'user',
+      },
+      {
+        email: 'user5@example.com',
+        username: 'user5',
+        password: 'password5',
+        role: 'user',
+      },
+      {
+        email: 'user6@example.com',
+        username: 'user6',
+        password: 'password6',
+        role: 'user',
+      },
+      {
+        email: 'user7@example.com',
+        username: 'user7',
+        password: 'password7',
+        role: 'user',
+      },
+      {
+        email: 'user8@example.com',
+        username: 'user8',
+        password: 'password8',
+        role: 'user',
+      },
+      {
+        email: 'user9@example.com',
+        username: 'user9',
+        password: 'password9',
+        role: 'user',
+      },
     ];
 
     for (const u of defaultUsers) {
@@ -47,7 +89,7 @@ export class UsersService implements OnModuleInit {
       }
     }
 
-    console.log('✅ Users soft-seeded');
+    console.log('✅ Users soft-seeded (pokud chyběli)');
   }
 
   async create(input: CreateUserInput): Promise<User> {

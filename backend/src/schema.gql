@@ -2,40 +2,51 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type AdminDto {
-  id: Float!
-  username: String!
-}
-
 type Category {
   description: String
   id: Int!
   name: String!
+  products: [Product!]
 }
 
-input CategoryInput {
+input CreateCategoryInput {
   description: String
   name: String!
+}
+
+input CreateCustomerInput {
+  email: String!
+  name: String!
+  phone: String
+}
+
+input CreateOrderInput {
+  customerId: Int!
+  productId: Int!
+  quantity: Int!
+}
+
+input CreateProductInput {
+  categoryId: Int
+  description: String
+  isActive: Boolean
+  name: String!
+  price: Float!
 }
 
 input CreateUserInput {
   email: String!
   password: String!
-  role: String! = "user"
+  role: String = "user"
   username: String!
 }
 
 type Customer {
+  address: String
   email: String!
   id: Int!
   name: String!
   orders: [Order!]
-  phone: String
-}
-
-input CustomerInput {
-  email: String!
-  name: String!
   phone: String
 }
 
@@ -44,31 +55,39 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input LoginAdminInput {
+  password: String!
+  username: String!
+}
+
 type LoginResponseDto {
   access_token: String!
-  admin: AdminDto!
+  id: Int!
+  username: String!
+}
+
+type MeAdminResponse {
+  id: Int!
+  username: String!
 }
 
 type Mutation {
-  createAdmin(password: String!, username: String!): AdminDto!
-  createCategory(input: CategoryInput!): Category!
-  createCustomer(input: CustomerInput!): Customer!
-  createOrder(input: OrderInput!): Order!
-  createProduct(categoryId: Int, description: String, name: String!, price: Float!): Product!
-  createUser(createUserInput: CreateUserInput!): User!
-  deleteAdmin(id: Int!): Boolean!
+  createCategory(input: CreateCategoryInput!): Category!
+  createCustomer(input: CreateCustomerInput!): Customer!
+  createOrder(input: CreateOrderInput!): Order!
+  createProduct(input: CreateProductInput!): Product!
+  createUser(input: CreateUserInput!): User!
   deleteCategory(id: Int!): Boolean!
   deleteCustomer(id: Int!): Boolean!
   deleteOrder(id: Int!): Boolean!
   deleteProduct(id: Int!): Product!
   deleteUser(id: Int!): Boolean!
-  loginAdmin(password: String!, username: String!): LoginResponseDto!
-  updateAdminPassword(id: Int!, newPassword: String!): AdminDto!
-  updateCategory(id: Int!, input: CategoryInput!): Category!
+  loginAdmin(input: LoginAdminInput!): LoginResponseDto!
+  updateCategory(id: Int!, input: UpdateCategoryInput!): Category!
   updateCustomer(id: Int!, input: UpdateCustomerInput!): Customer!
-  updateOrder(id: Int!, input: OrderInput!): Order!
-  updateProduct(categoryId: Int, description: String, id: Int!, isActive: Boolean, name: String, price: Float): Product!
-  updateUser(updateUserInput: UpdateUserInput!): User!
+  updateOrder(id: Int!, input: UpdateOrderInput!): Order!
+  updateProduct(id: Int!, input: UpdateProductInput!): Product!
+  updateUser(input: UpdateUserInput!): User!
 }
 
 type Order {
@@ -78,12 +97,6 @@ type Order {
   product: Product!
   quantity: Int!
   total: Float!
-}
-
-input OrderInput {
-  customerId: Int!
-  productId: Int!
-  quantity: Int!
 }
 
 type Product {
@@ -97,26 +110,42 @@ type Product {
 }
 
 type Query {
-  admin(id: Int!): AdminDto!
-  admins: [AdminDto!]!
   categories: [Category!]!
   category(id: Int!): Category!
   customer(id: Int!): Customer!
   customers: [Customer!]!
-  meAdmin: AdminDto!
+  meAdmin: MeAdminResponse!
   order(id: Int!): Order!
   orders: [Order!]!
   product(id: Int!): Product!
   products: [Product!]!
-  sayHello: String!
   user(id: Int!): User!
   users: [User!]!
+}
+
+input UpdateCategoryInput {
+  description: String
+  name: String
 }
 
 input UpdateCustomerInput {
   email: String
   name: String
   phone: String
+}
+
+input UpdateOrderInput {
+  customerId: Int
+  productId: Int
+  quantity: Int
+}
+
+input UpdateProductInput {
+  categoryId: Int
+  description: String
+  isActive: Boolean
+  name: String
+  price: Float
 }
 
 input UpdateUserInput {

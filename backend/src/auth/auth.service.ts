@@ -1,25 +1,19 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
-import { Admin } from './admin.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
-    @InjectRepository(Admin)
-    private readonly adminRepository: Repository<Admin>,
   ) {}
 
-  // --- USER AUTH ---
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findOneByEmail(email);
     if (!user) throw new UnauthorizedException('Neplatný email nebo heslo');
 
+    const bcrypt = await import('bcrypt');
     const passwordValid = await bcrypt.compare(password, user.password);
     if (!passwordValid) throw new UnauthorizedException('Neplatný email nebo heslo');
 
@@ -34,28 +28,32 @@ export class AuthService {
     };
   }
 
-  // --- ADMIN AUTH ---
-  async validateAdmin(username: string, password: string): Promise<Admin> {
-    const admin = await this.adminRepository.findOne({ where: { username } });
-    if (!admin) throw new UnauthorizedException('Neplatné uživatelské jméno nebo heslo');
+  private readonly hardcodedAdmin = {
+    id: 1,
+    username: 'admin',
+    password: 'admin123',
+  };
 
-    const passwordValid = await bcrypt.compare(password, admin.password);
-    if (!passwordValid) throw new UnauthorizedException('Neplatné uživatelské jméno nebo heslo');
-
-    return admin;
+  async validateAdmin(username: string, password: string): Promise<{ id: number; username: string }> {
+    if (
+      username === this.hardcodedAdmin.username &&
+      password === this.hardcodedAdmin.password
+    ) {
+      return { id: this.hardcodedAdmin.id, username: this.hardcodedAdmin.username };
+    }
+    throw new UnauthorizedException('Neplatné uživatelské jméno nebo heslo');
   }
 
   async loginAdmin(
     username: string,
     password: string,
-  ): Promise<{ access_token: string; admin: Omit<Admin, 'password'> }> {
+  ): Promise<{ access_token: string; admin: { id: number; username: string } }> {
     const admin = await this.validateAdmin(username, password);
-    const payload = { username: admin.username, sub: admin.id };
+    const payload = { sub: admin.id, username: admin.username };
 
-    const { password: _, ...adminSafe } = admin;
     return {
       access_token: this.jwtService.sign(payload),
-      admin: adminSafe,
+      admin,
     };
   }
 }

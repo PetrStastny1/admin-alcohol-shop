@@ -18,6 +18,12 @@ export class AppService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
+
+    if (process.env.NODE_ENV !== 'development') {
+      console.log('⏭️ DB seed přeskočen (NODE_ENV !== development)');
+      return;
+    }
+
     console.log('🔄 Reset DB (development seed)...');
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -50,12 +56,16 @@ export class AppService implements OnModuleInit {
       await this.customersService.onModuleInit();
       await this.ordersService.onModuleInit();
 
-      await this.usersService.create({
-        email: 'admin@example.com',
-        password: 'admin123',
-        username: 'admin',
-        role: 'admin',
-      });
+      const existingAdmin = await this.usersService.findOneByEmail('admin@example.com');
+      if (!existingAdmin) {
+        await this.usersService.create({
+          email: 'admin@example.com',
+          password: 'admin123',
+          username: 'admin',
+          role: 'admin',
+        });
+        console.log('👤 Admin uživatel vytvořen');
+      }
 
       console.log('✅ DB seeded');
     } finally {

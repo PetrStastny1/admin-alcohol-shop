@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, OnModuleInit, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  OnModuleInit,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Customer } from './customer.entity';
@@ -15,6 +20,13 @@ export class CustomersService implements OnModuleInit {
       { name: 'Alice Johnson', email: 'alice@example.com', phone: '123456789' },
       { name: 'Bob Smith', email: 'bob@example.com' },
       { name: 'Charlie Brown', email: 'charlie@example.com', phone: '987654321' },
+      { name: 'David Miller', email: 'david@example.com', phone: '111222333' },
+      { name: 'Eva Green', email: 'eva@example.com' },
+      { name: 'Frank White', email: 'frank@example.com', phone: '444555666' },
+      { name: 'Grace Lee', email: 'grace@example.com' },
+      { name: 'Henry Ford', email: 'henry@example.com', phone: '777888999' },
+      { name: 'Isabella Clark', email: 'isabella@example.com' },
+      { name: 'Jack Black', email: 'jack@example.com', phone: '000111222' },
     ];
 
     for (const c of defaultCustomers) {
@@ -49,19 +61,28 @@ export class CustomersService implements OnModuleInit {
   async create(name: string, email: string, phone?: string): Promise<Customer> {
     const existing = await this.findByEmail(email);
     if (existing) {
-      throw new BadRequestException(`Zákazník s e-mailem "${email}" již existuje`);
+      throw new BadRequestException(
+        `Zákazník s e-mailem "${email}" již existuje`,
+      );
     }
     const customer = this.customerRepository.create({ name, email, phone });
     return this.customerRepository.save(customer);
   }
 
-  async update(id: number, name?: string, email?: string, phone?: string): Promise<Customer> {
+  async update(
+    id: number,
+    name?: string,
+    email?: string,
+    phone?: string,
+  ): Promise<Customer> {
     const customer = await this.findOne(id);
 
     if (email && email !== customer.email) {
       const existing = await this.findByEmail(email);
-      if (existing) {
-        throw new BadRequestException(`Zákazník s e-mailem "${email}" již existuje`);
+      if (existing && existing.id !== id) {
+        throw new BadRequestException(
+          `Zákazník s e-mailem "${email}" již existuje`,
+        );
       }
       customer.email = email;
     }

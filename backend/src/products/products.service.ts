@@ -33,7 +33,10 @@ export class ProductsService implements OnModuleInit {
     return product;
   }
 
-  async findByNameAndCategory(name: string, categoryId?: number): Promise<Product | null> {
+  async findByNameAndCategory(
+    name: string,
+    categoryId?: number,
+  ): Promise<Product | null> {
     if (categoryId) {
       return this.productRepository.findOne({
         where: { name, category: { id: categoryId } },
@@ -49,7 +52,10 @@ export class ProductsService implements OnModuleInit {
   async create(productData: Partial<Product>): Promise<Product> {
     const categoryId = productData.category?.id;
 
-    const existing = await this.findByNameAndCategory(productData.name!, categoryId);
+    const existing = await this.findByNameAndCategory(
+      productData.name!,
+      categoryId,
+    );
     if (existing) {
       throw new BadRequestException(
         `Produkt "${productData.name}" v této kategorii již existuje`,
@@ -80,13 +86,19 @@ export class ProductsService implements OnModuleInit {
 
     if (updateData.name !== undefined) product.name = updateData.name;
     if (updateData.price !== undefined) product.price = updateData.price;
-    if (updateData.description !== undefined) product.description = updateData.description;
-    if (updateData.isActive !== undefined) product.isActive = updateData.isActive;
+    if (updateData.description !== undefined)
+      product.description = updateData.description;
+    if (updateData.isActive !== undefined)
+      product.isActive = updateData.isActive;
 
     if (updateData.category?.id !== undefined) {
-      const category = await this.categoriesService.findOne(updateData.category.id);
+      const category = await this.categoriesService.findOne(
+        updateData.category.id,
+      );
       if (!category) {
-        throw new NotFoundException(`Kategorie s ID ${updateData.category.id} nenalezena`);
+        throw new NotFoundException(
+          `Kategorie s ID ${updateData.category.id} nenalezena`,
+        );
       }
       product.category = category;
     }
@@ -122,10 +134,15 @@ export class ProductsService implements OnModuleInit {
       { name: 'Corona', price: 35, category: pivo },
       { name: 'Baileys', price: 400, category: likery },
       { name: 'Jägermeister', price: 380, category: likery },
+      { name: 'Captain Morgan Spiced Rum', price: 420, category: likery },
+      { name: 'Heineken', price: 32, category: pivo },
     ];
 
     for (const item of items) {
-      const exists = await this.findByNameAndCategory(item.name, item.category?.id);
+      const exists = await this.findByNameAndCategory(
+        item.name,
+        item.category?.id,
+      );
       if (exists) {
         if (!exists.isActive) {
           exists.isActive = true;
@@ -140,6 +157,6 @@ export class ProductsService implements OnModuleInit {
       }
     }
 
-    console.log('✅ Products soft-seeded');
+    console.log('✅ Products soft-seeded (10 položek)');
   }
 }
