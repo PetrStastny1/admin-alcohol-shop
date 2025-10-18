@@ -7,6 +7,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from './category.entity';
+import { CreateCategoryInput } from './dto/create-category.input';
+import { UpdateCategoryInput } from './dto/update-category.input';
 
 @Injectable()
 export class CategoriesService implements OnModuleInit {
@@ -35,7 +37,7 @@ export class CategoriesService implements OnModuleInit {
         where: { name: cat.name },
       });
       if (!exists) {
-        await this.create(cat.name, cat.description);
+        await this.create({ name: cat.name, description: cat.description });
       }
     }
 
@@ -60,7 +62,9 @@ export class CategoriesService implements OnModuleInit {
   }
 
   // ✅ Vytvoř novou kategorii
-  async create(name: string, description?: string): Promise<Category> {
+  async create(input: CreateCategoryInput): Promise<Category> {
+    const { name, description } = input;
+
     const existing = await this.categoryRepository.findOne({ where: { name } });
     if (existing) {
       throw new BadRequestException(`Kategorie "${name}" už existuje`);
@@ -71,11 +75,8 @@ export class CategoriesService implements OnModuleInit {
   }
 
   // ✅ Aktualizuj kategorii
-  async update(
-    id: number,
-    name?: string,
-    description?: string,
-  ): Promise<Category> {
+  async update(input: UpdateCategoryInput): Promise<Category> {
+    const { id, name, description } = input;
     const category = await this.findOne(id);
 
     if (name && name !== category.name) {

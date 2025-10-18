@@ -29,16 +29,15 @@ export class CategoriesResolver {
   async createCategory(
     @Args('input') input: CreateCategoryInput,
   ): Promise<Category> {
-    return this.categoriesService.create(input.name, input.description);
+    return this.categoriesService.create(input);
   }
 
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Category, { name: 'updateCategory' })
   async updateCategory(
-    @Args('id', { type: () => Int }) id: number,
     @Args('input') input: UpdateCategoryInput,
   ): Promise<Category> {
-    return this.categoriesService.update(id, input.name, input.description);
+    return this.categoriesService.update(input);
   }
 
   @UseGuards(GqlAuthGuard)
