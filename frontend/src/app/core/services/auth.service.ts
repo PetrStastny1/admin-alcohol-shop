@@ -8,6 +8,8 @@ import { TokenService } from './token.service';
 interface LoginAdminResponse {
   loginAdmin: {
     access_token: string;
+    id: number;
+    username: string;
   };
 }
 
@@ -19,13 +21,17 @@ export class AuthService {
     return this.apollo
       .mutate<LoginAdminResponse>({
         mutation: gql`
-          mutation LoginAdmin($username: String!, $password: String!) {
-            loginAdmin(username: $username, password: $password) {
+          mutation LoginAdmin($input: LoginAdminInput!) {
+            loginAdmin(input: $input) {
               access_token
+              id
+              username
             }
           }
         `,
-        variables: { username, password },
+        variables: {
+          input: { username, password },
+        },
       })
       .pipe(
         map((res) => {

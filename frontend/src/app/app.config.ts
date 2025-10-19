@@ -16,23 +16,35 @@ export const appConfig: ApplicationConfig = {
 
       const authLink = new ApolloLink((operation, forward) => {
         const token = localStorage.getItem('token');
-
-        operation.setContext(({ headers = {} }) => ({
-          headers: {
-            ...headers,
-            Authorization: token ? `Bearer ${token}` : '',
-          },
-        }));
-
+        operation.setContext(({ headers = {} }) => {
+          return {
+            headers: {
+              ...headers,
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+          };
+        });
         return forward(operation);
       });
 
       return {
-        link: ApolloLink.from([
-          authLink,
-          httpLink.create({ uri: 'http://localhost:3000/graphql' }),
-        ]),
+        link: authLink.concat(
+          httpLink.create({ uri: 'http://localhost:3000/graphql' })
+        ),
         cache: new InMemoryCache(),
+        defaultOptions: {
+          watchQuery: {
+            fetchPolicy: 'no-cache',
+            errorPolicy: 'all',
+          },
+          query: {
+            fetchPolicy: 'no-cache',
+            errorPolicy: 'all',
+          },
+          mutate: {
+            errorPolicy: 'all',
+          },
+        },
       };
     }),
   ],

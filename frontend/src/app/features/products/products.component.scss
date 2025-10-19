@@ -1,0 +1,179 @@
+.products-page {
+  padding: 2rem;
+  background: linear-gradient(135deg, #343a40, #1c1f24);
+  min-height: 100vh;
+  color: #f1f1f1;
+
+  h2 {
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: rgba(0, 123, 255, 0.8);
+    font-weight: 700;
+  }
+
+  .back-btn {
+    background: transparent;
+    border: 2px solid #007bff;
+    color: #007bff;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+
+    &:hover {
+      background: #007bff;
+      color: #fff;
+    }
+  }
+
+  .new-product {
+    margin-bottom: 1rem;
+
+    button {
+      background: #007bff;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+
+      &:hover {
+        background: #0056b3;
+      }
+    }
+  }
+
+  .new-form {
+    margin: 1rem 0;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1rem;
+
+    .inner-form {
+      display: flex;
+      gap: 0.5rem;
+
+      input {
+        flex: 1;
+        padding: 0.5rem;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+
+      button {
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        font-weight: 500;
+        color: #fff;
+      }
+
+      .save-btn {
+        background: #007bff;
+
+        &:hover {
+          background: #0056b3;
+        }
+      }
+
+      .cancel-btn {
+        background: #dc3545;
+
+        &:hover {
+          background: #bd2130;
+        }
+      }
+    }
+  }
+
+  .products-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    table-layout: fixed;
+
+    th,
+    td {
+      padding: 0.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.1);
+      font-weight: 600;
+      color: #f1f1f1;
+      text-align: left;
+
+      &.actions {
+        text-align: right;
+      }
+    }
+
+    td.actions {
+      text-align: right;
+    }
+
+    .id-col {
+      width: 8%;
+    }
+    .name-col {
+      width: 25%;
+    }
+    .desc-col {
+      width: 35%;
+    }
+    .price-col {
+      width: 15%;
+    }
+    .actions {
+      width: 17%;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    input {
+      width: 100%;
+      padding: 0.4rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: rgba(0, 0, 0, 0.3);
+      color: #fff;
+    }
+
+    button {
+      margin-left: 0.3rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #fff;
+
+      &.edit-btn,
+      &.save-btn {
+        background: #007bff;
+
+        &:hover {
+          background: #0056b3;
+        }
+      }
+
+      &.delete-btn,
+      &.cancel-btn {
+        background: #dc3545;
+
+        &:hover {
+          background: #bd2130;
+        }
+      }
+    }
+  }
+}

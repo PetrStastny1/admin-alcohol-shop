@@ -1,0 +1,57 @@
+<div class="products-page">
+  <h2>🍾 Produkty</h2>
+
+  <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
+
+  <div class="new-product">
+    <button (click)="startNew()">➕ Přidat produkt</button>
+  </div>
+
+  <div *ngIf="newProduct" class="new-form">
+    <div class="inner-form">
+      <input [(ngModel)]="newProduct.name" placeholder="Název" />
+      <input [(ngModel)]="newProduct.description" placeholder="Popis" />
+      <input type="number" [(ngModel)]="newProduct.price" placeholder="Cena" />
+      <button class="save-btn" (click)="saveNew()">💾 Uložit</button>
+      <button class="cancel-btn" (click)="cancelNew()">✖ Zrušit</button>
+    </div>
+  </div>
+
+  <table class="products-table" *ngIf="products.length > 0">
+    <thead>
+      <tr>
+        <th class="id-col">ID</th>
+        <th class="name-col">Název</th>
+        <th class="desc-col">Popis</th>
+        <th class="price-col">Cena</th>
+        <th class="actions">Akce</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let prod of products" [ngClass]="{ editing: editingProduct?.id === prod.id }">
+        <ng-container *ngIf="editingProduct?.id === prod.id; else viewMode">
+          <td>{{ prod.id }}</td>
+          <td><input [(ngModel)]="editingProduct!.name" /></td>
+          <td><input [(ngModel)]="editingProduct!.description" /></td>
+          <td><input type="number" [(ngModel)]="editingProduct!.price" /></td>
+          <td class="actions">
+            <button class="save-btn" (click)="saveEdit()">💾 Uložit</button>
+            <button class="cancel-btn" (click)="cancelEdit()">✖ Zrušit</button>
+          </td>
+        </ng-container>
+        <ng-template #viewMode>
+          <td>{{ prod.id }}</td>
+          <td>{{ prod.name }}</td>
+          <td>{{ prod.description }}</td>
+          <td>{{ prod.price }} Kč</td>
+          <td class="actions">
+            <button class="edit-btn" (click)="startEdit(prod)">✏ Upravit</button>
+            <button class="delete-btn" (click)="deleteProduct(prod.id)">🗑 Smazat</button>
+          </td>
+        </ng-template>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="products.length === 0 && !loading">Žádné produkty nebyly nalezeny.</p>
+</div>

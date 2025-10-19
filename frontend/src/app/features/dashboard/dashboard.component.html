@@ -1,12 +1,11 @@
-<div class="dashboard-container">
+<div class="dashboard">
   <h1>Admin Dashboard</h1>
-  <p>Vyber entitu, kterou chceš spravovat:</p>
 
-  <nav class="dashboard-nav">
-    <a routerLink="/categories">Kategorie</a>
-    <a routerLink="/products">Produkty</a>
-    <a routerLink="/customers">Zákazníci</a>
-    <a routerLink="/orders">Objednávky</a>
-    <a routerLink="/users">Uživatelé</a>
-  </nav>
+  <div class="card-grid">
+    <div class="card" routerLink="/categories">📂 Kategorie</div>
+    <div class="card" routerLink="/products">🍾 Produkty</div>
+    <div class="card" routerLink="/customers">👤 Zákazníci</div>
+    <div class="card" routerLink="/orders">🛒 Objednávky</div>
+    <div class="card" routerLink="/users">🔑 Uživatelé</div>
+  </div>
 </div>

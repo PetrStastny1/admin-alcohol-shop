@@ -1,0 +1,10 @@
+<div class="users">
+  <h2>Správa uživatelů</h2>
+
+  <ul>
+    <li *ngFor="let user of users">
+      {{ user.username }} ({{ user.email }})
+      <button (click)="deleteUser(user.id)">Smazat</button>
+    </li>
+  </ul>
+</div>

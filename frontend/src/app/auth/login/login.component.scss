@@ -1,31 +1,90 @@
-.login-container {
-  max-width: 400px;
-  margin: 60px auto;
-  padding: 2rem;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  text-align: center;
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+
+  background: linear-gradient(135deg, #bdc3c7, #2c3e50);
+
+  font-family: 'Roboto', sans-serif;
 }
 
-label {
-  display: block;
-  margin-top: 1rem;
-  text-align: left;
-}
-
-input {
+.login-box {
+  background: rgba(30, 30, 30, 0.6);
+  padding: 3rem 2.5rem;
+  border-radius: 12px;
   width: 100%;
-  padding: 0.5rem;
-  margin-top: 0.25rem;
-}
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
 
-button {
-  margin-top: 1.5rem;
-  padding: 0.6rem 1.2rem;
-  cursor: pointer;
-}
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-.error {
-  color: red;
-  margin-top: 1rem;
+  h2 {
+    margin-bottom: 2rem;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .login-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    align-items: center;
+  }
+
+  input {
+    width: 100%;
+    max-width: 280px;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    text-align: center;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    &:focus {
+      outline: none;
+      border: 2px solid #3498db;
+      background: rgba(255, 255, 255, 0.25);
+    }
+  }
+
+  button {
+    width: 100%;
+    max-width: 280px;
+    padding: 0.9rem;
+    border-radius: 8px;
+    border: none;
+    background: #1a2a6c;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+
+    &:hover {
+      background: #0f1c4d;
+    }
+
+    &:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+  }
+
+  .error-msg {
+    margin-top: 1rem;
+    color: #ff6b6b;
+    font-size: 0.9rem;
+  }
 }

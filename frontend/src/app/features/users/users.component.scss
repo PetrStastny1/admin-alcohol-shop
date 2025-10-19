@@ -1,0 +1,30 @@
+.users {
+  max-width: 600px;
+  margin: 2rem auto;
+
+  h2 {
+    margin-bottom: 1rem;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      border-bottom: 1px solid #ccc;
+
+      button {
+        background: #e53935;
+        border: none;
+        padding: 0.3rem 0.8rem;
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+    }
+  }
+}

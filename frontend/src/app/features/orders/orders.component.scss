@@ -1,0 +1,41 @@
+.orders-container {
+  padding: 1rem;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+
+  th, td {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+
+  th {
+    background: #f3f3f3;
+  }
+
+  button {
+    margin-right: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    border: none;
+    background-color: #1976d2;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #1565c0;
+    }
+
+    &:last-child {
+      background-color: #d32f2f;
+
+      &:hover {
+        background-color: #b71c1c;
+      }
+    }
+  }
+}

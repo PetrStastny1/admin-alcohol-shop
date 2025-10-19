@@ -1,0 +1,44 @@
+<div class="categories-page">
+  <h2>📂 Kategorie</h2>
+
+  <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
+
+  <div class="new-cat">
+    <button (click)="startNew()">➕ Přidat kategorii</button>
+  </div>
+
+  <div *ngIf="newCategory" class="new-form">
+    <div class="inner-form">
+      <input [(ngModel)]="newCategory!.name" placeholder="Název" />
+      <input [(ngModel)]="newCategory!.description" placeholder="Popis" />
+      <button class="save-btn" (click)="saveNew()">💾 Uložit</button>
+      <button class="cancel-btn" (click)="cancelNew()">✖ Zrušit</button>
+    </div>
+  </div>
+
+  <ul class="category-list">
+    <li *ngFor="let cat of categories$ | async; trackBy: trackById">
+      <div *ngIf="editingCategory?.id === cat.id; else viewMode">
+        <div class="edit-form">
+          <input [(ngModel)]="editingCategory!.name" placeholder="Název" />
+          <input [(ngModel)]="editingCategory!.description" placeholder="Popis" />
+          <button class="save-btn" (click)="saveEdit()">💾 Uložit</button>
+          <button class="cancel-btn" (click)="cancelEdit()">✖ Zrušit</button>
+        </div>
+      </div>
+
+      <ng-template #viewMode>
+        <div class="cat-row" (click)="goToProducts(cat.id)">
+          <div class="cat-info">
+            <strong>{{ cat.name }}</strong>
+            <span *ngIf="cat.description"> — {{ cat.description }}</span>
+          </div>
+          <div class="cat-actions" (click)="$event.stopPropagation()">
+            <button class="edit-btn" (click)="startEdit(cat)">✏ Upravit</button>
+            <button class="delete-btn" (click)="deleteCategory(cat.id)">🗑 Smazat</button>
+          </div>
+        </div>
+      </ng-template>
+    </li>
+  </ul>
+</div>
