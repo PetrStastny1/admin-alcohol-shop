@@ -10,19 +10,23 @@ import { UpdateProductInput } from './dto/update-product.input';
 export class ProductsResolver {
   constructor(private readonly productsService: ProductsService) {}
 
-  // ✅ Všechny aktivní produkty
   @Query(() => [Product], { name: 'products' })
   async getProducts(): Promise<Product[]> {
     return this.productsService.findAll();
   }
 
-  // ✅ Jeden produkt podle ID
   @Query(() => Product, { name: 'product' })
   async getProduct(@Args('id', { type: () => Int }) id: number): Promise<Product> {
     return this.productsService.findOne(id);
   }
 
-  // ✅ Vytvoření produktu (jen admin)
+  @Query(() => [Product], { name: 'productsByCategory' })
+  async getProductsByCategory(
+    @Args('categoryId', { type: () => Int }) categoryId: number,
+  ): Promise<Product[]> {
+    return this.productsService.findByCategory(categoryId);
+  }
+
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Product, { name: 'createProduct' })
   async createProduct(@Args('input') input: CreateProductInput): Promise<Product> {
@@ -35,7 +39,6 @@ export class ProductsResolver {
     });
   }
 
-  // ✅ Aktualizace produktu (jen admin)
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Product, { name: 'updateProduct' })
   async updateProduct(
@@ -51,7 +54,6 @@ export class ProductsResolver {
     });
   }
 
-  // ✅ Soft delete – označí produkt jako neaktivní
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Product, { name: 'deleteProduct' })
   async deleteProduct(@Args('id', { type: () => Int }) id: number): Promise<Product> {

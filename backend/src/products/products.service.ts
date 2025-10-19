@@ -33,6 +33,13 @@ export class ProductsService implements OnModuleInit {
     return product;
   }
 
+  async findByCategory(categoryId: number): Promise<Product[]> {
+    return this.productRepository.find({
+      where: { isActive: true, category: { id: categoryId } },
+      relations: ['category', 'orders'],
+    });
+  }
+
   async findByNameAndCategory(
     name: string,
     categoryId?: number,

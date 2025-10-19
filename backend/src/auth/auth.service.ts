@@ -24,7 +24,7 @@ export class AuthService {
   async loginUser(user: any): Promise<{ access_token: string }> {
     const payload = { username: user.email, sub: user.id };
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { expiresIn: '365d' }),
     };
   }
 
@@ -34,7 +34,10 @@ export class AuthService {
     password: 'admin123',
   };
 
-  async validateAdmin(username: string, password: string): Promise<{ id: number; username: string }> {
+  async validateAdmin(
+    username: string,
+    password: string,
+  ): Promise<{ id: number; username: string }> {
     if (
       username === this.hardcodedAdmin.username &&
       password === this.hardcodedAdmin.password
@@ -52,8 +55,8 @@ export class AuthService {
     const payload = { sub: admin.id, username: admin.username };
 
     return {
-      access_token: this.jwtService.sign(payload),
-      admin,
+      access_token: this.jwtService.sign(payload, { expiresIn: '365d' }),
+      admin: admin,
     };
   }
 }
