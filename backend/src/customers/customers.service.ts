@@ -17,22 +17,14 @@ export class CustomersService implements OnModuleInit {
 
   async onModuleInit() {
     const defaultCustomers = [
-      { name: 'Alice Johnson', email: 'alice@example.com', phone: '123456789' },
-      { name: 'Bob Smith', email: 'bob@example.com' },
-      { name: 'Charlie Brown', email: 'charlie@example.com', phone: '987654321' },
-      { name: 'David Miller', email: 'david@example.com', phone: '111222333' },
-      { name: 'Eva Green', email: 'eva@example.com' },
-      { name: 'Frank White', email: 'frank@example.com', phone: '444555666' },
-      { name: 'Grace Lee', email: 'grace@example.com' },
-      { name: 'Henry Ford', email: 'henry@example.com', phone: '777888999' },
-      { name: 'Isabella Clark', email: 'isabella@example.com' },
-      { name: 'Jack Black', email: 'jack@example.com', phone: '000111222' },
+      { name: 'Alice Johnson', email: 'alice@example.com', phone: '123456789', address: 'Praha' },
+      { name: 'Bob Smith', email: 'bob@example.com', address: 'Brno' },
     ];
 
     for (const c of defaultCustomers) {
       const existing = await this.findByEmail(c.email);
       if (!existing) {
-        await this.create(c.name, c.email, c.phone);
+        await this.create(c.name, c.email, c.phone, c.address);
       }
     }
 
@@ -58,14 +50,14 @@ export class CustomersService implements OnModuleInit {
     return this.customerRepository.findOne({ where: { email } });
   }
 
-  async create(name: string, email: string, phone?: string): Promise<Customer> {
+  async create(name: string, email: string, phone?: string, address?: string): Promise<Customer> {
     const existing = await this.findByEmail(email);
     if (existing) {
       throw new BadRequestException(
         `Zákazník s e-mailem "${email}" již existuje`,
       );
     }
-    const customer = this.customerRepository.create({ name, email, phone });
+    const customer = this.customerRepository.create({ name, email, phone, address });
     return this.customerRepository.save(customer);
   }
 
@@ -74,6 +66,7 @@ export class CustomersService implements OnModuleInit {
     name?: string,
     email?: string,
     phone?: string,
+    address?: string,
   ): Promise<Customer> {
     const customer = await this.findOne(id);
 
@@ -89,6 +82,7 @@ export class CustomersService implements OnModuleInit {
 
     if (name) customer.name = name;
     if (phone) customer.phone = phone;
+    if (address) customer.address = address;
 
     return this.customerRepository.save(customer);
   }

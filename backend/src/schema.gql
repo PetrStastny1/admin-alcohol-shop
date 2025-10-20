@@ -15,6 +15,7 @@ input CreateCategoryInput {
 }
 
 input CreateCustomerInput {
+  address: String
   email: String!
   name: String!
   phone: String
@@ -131,7 +132,9 @@ input UpdateCategoryInput {
 }
 
 input UpdateCustomerInput {
+  address: String
   email: String
+  id: Int!
   name: String
   phone: String
 }

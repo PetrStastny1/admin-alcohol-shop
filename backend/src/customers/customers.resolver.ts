@@ -10,36 +10,28 @@ import { UpdateCustomerInput } from './dto/update-customer.input';
 export class CustomersResolver {
   constructor(private readonly customersService: CustomersService) {}
 
-  // ✅ Načti všechny zákazníky
   @Query(() => [Customer], { name: 'customers' })
   async getCustomers(): Promise<Customer[]> {
     return this.customersService.findAll();
   }
 
-  // ✅ Načti zákazníka podle ID
   @Query(() => Customer, { name: 'customer' })
-  async getCustomer(
-    @Args('id', { type: () => Int }) id: number,
-  ): Promise<Customer> {
+  async getCustomer(@Args('id', { type: () => Int }) id: number): Promise<Customer> {
     return this.customersService.findOne(id);
   }
 
-  // ✅ Vytvoření zákazníka
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Customer, { name: 'createCustomer' })
-  async createCustomer(
-    @Args('input') input: CreateCustomerInput,
-  ): Promise<Customer> {
+  async createCustomer(@Args('input') input: CreateCustomerInput): Promise<Customer> {
     const existing = await this.customersService.findByEmail(input.email);
     if (existing) {
       throw new BadRequestException(
         `Zákazník s e-mailem "${input.email}" již existuje`,
       );
     }
-    return this.customersService.create(input.name, input.email, input.phone);
+    return this.customersService.create(input.name, input.email, input.phone, input.address);
   }
 
-  // ✅ Aktualizace zákazníka
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Customer, { name: 'updateCustomer' })
   async updateCustomer(
@@ -54,15 +46,12 @@ export class CustomersResolver {
         );
       }
     }
-    return this.customersService.update(id, input.name, input.email, input.phone);
+    return this.customersService.update(id, input.name, input.email, input.phone, input.address);
   }
 
-  // ✅ Smazání zákazníka
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Boolean, { name: 'deleteCustomer' })
-  async deleteCustomer(
-    @Args('id', { type: () => Int }) id: number,
-  ): Promise<boolean> {
+  async deleteCustomer(@Args('id', { type: () => Int }) id: number): Promise<boolean> {
     return this.customersService.delete(id);
   }
 }

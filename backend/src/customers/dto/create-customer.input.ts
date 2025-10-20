@@ -17,4 +17,10 @@ export class CreateCustomerInput {
   @IsString()
   @Length(6, 20, { message: 'Telefon musí mít 6–20 znaků' })
   phone?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  @Length(5, 200, { message: 'Adresa musí mít alespoň 5 znaků a max. 200 znaků' })
+  address?: string;
 }
