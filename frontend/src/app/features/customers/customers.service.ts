@@ -1,96 +1,105 @@
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
-import { gql } from 'apollo-angular';
-import { map, Observable } from 'rxjs';
+import gql from 'graphql-tag';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface Customer {
   id: number;
   name: string;
   email: string;
+  phone?: string;
+  address?: string;
+  orders?: { id: number }[];
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+export interface CreateCustomerInput {
+  name: string;
+  email: string;
+  phone?: string;
+  address?: string;
+}
+
+export interface UpdateCustomerInput {
+  name: string;
+  email: string;
+  phone?: string;
+  address?: string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class CustomersService {
   constructor(private apollo: Apollo) {}
 
-  // ✅ Načti všechny zákazníky
   getAll(): Observable<Customer[]> {
     return this.apollo
-      .watchQuery<{ customers: Customer[] }>({
+      .watchQuery<{ customers: (Customer | undefined)[] }>({
         query: gql`
           query GetCustomers {
             customers {
               id
               name
               email
+              phone
+              address
+              orders {
+                id
+              }
             }
           }
         `,
       })
       .valueChanges.pipe(
-        map((res) => (res.data?.customers ?? []) as Customer[])
+        map((res) =>
+          (res.data?.customers ?? []).filter((c): c is Customer => !!c)
+        )
       );
   }
 
-  // ✅ Načti zákazníka podle ID
-  getById(id: number): Observable<Customer | null> {
-    return this.apollo
-      .watchQuery<{ customer: Customer }>({
-        query: gql`
-          query GetCustomer($id: Int!) {
-            customer(id: $id) {
-              id
-              name
-              email
-            }
-          }
-        `,
-        variables: { id },
-      })
-      .valueChanges.pipe(
-        map((res) => (res.data?.customer as Customer) ?? null)
-      );
-  }
-
-  // ✅ Vytvoř zákazníka
-  create(name: string, email: string): Observable<Customer | null> {
+  create(input: CreateCustomerInput): Observable<Customer | null> {
     return this.apollo
       .mutate<{ createCustomer: Customer }>({
         mutation: gql`
-          mutation CreateCustomer($name: String!, $email: String!) {
-            createCustomer(name: $name, email: $email) {
+          mutation CreateCustomer($input: CreateCustomerInput!) {
+            createCustomer(input: $input) {
               id
               name
               email
+              phone
+              address
+              orders {
+                id
+              }
             }
           }
         `,
-        variables: { name, email },
+        variables: { input },
       })
-      .pipe(map((res) => (res.data?.createCustomer as Customer) ?? null));
+      .pipe(map((res) => res.data?.createCustomer ?? null));
   }
 
-  // ✅ Aktualizuj zákazníka
-  update(id: number, name: string, email: string): Observable<Customer | null> {
+  update(id: number, input: UpdateCustomerInput): Observable<Customer | null> {
     return this.apollo
       .mutate<{ updateCustomer: Customer }>({
         mutation: gql`
-          mutation UpdateCustomer($id: Int!, $name: String!, $email: String!) {
-            updateCustomer(id: $id, name: $name, email: $email) {
+          mutation UpdateCustomer($id: Int!, $input: UpdateCustomerInput!) {
+            updateCustomer(id: $id, input: $input) {
               id
               name
               email
+              phone
+              address
+              orders {
+                id
+              }
             }
           }
         `,
-        variables: { id, name, email },
+        variables: { id, input },
       })
-      .pipe(map((res) => (res.data?.updateCustomer as Customer) ?? null));
+      .pipe(map((res) => res.data?.updateCustomer ?? null));
   }
 
-  // ✅ Smaž zákazníka
   delete(id: number): Observable<boolean> {
     return this.apollo
       .mutate<{ deleteCustomer: boolean }>({

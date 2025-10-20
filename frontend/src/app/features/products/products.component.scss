@@ -12,10 +12,11 @@
   }
 
   .back-btn {
+    min-width: 110px;
+    height: 40px;
     background: transparent;
     border: 2px solid #007bff;
     color: #007bff;
-    padding: 0.5rem 1rem;
     border-radius: 8px;
     margin-bottom: 1rem;
     font-weight: 500;
@@ -29,10 +30,11 @@
   .new-product {
     margin-bottom: 1rem;
 
-    button {
+    .add-btn {
+      min-width: 140px;
+      height: 40px;
       background: #007bff;
       color: #fff;
-      padding: 0.5rem 1rem;
       border: none;
       border-radius: 8px;
       font-weight: 500;
@@ -43,29 +45,36 @@
     }
   }
 
-  .new-form {
-    margin: 1rem 0;
+  .form-box {
     background: rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 1rem;
+    margin-bottom: 1rem;
 
     .inner-form {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.5rem;
 
+      select,
       input {
-        flex: 1;
+        flex: 1 1 200px;
         padding: 0.5rem;
         border-radius: 6px;
         border: 1px solid #ccc;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(0, 0, 0, 0.2);
         color: #fff;
+
+        option {
+          color: #000;
+        }
       }
 
-      button {
+      .save-btn,
+      .cancel-btn {
+        min-width: 110px;
+        height: 40px;
         border-radius: 6px;
-        padding: 0.5rem 1rem;
-        cursor: pointer;
         font-weight: 500;
         color: #fff;
       }
@@ -108,72 +117,70 @@
       font-weight: 600;
       color: #f1f1f1;
       text-align: left;
-
-      &.actions {
-        text-align: right;
-      }
-    }
-
-    td.actions {
-      text-align: right;
     }
 
     .id-col {
       width: 8%;
+      text-align: left;
     }
-    .name-col {
-      width: 25%;
-    }
-    .desc-col {
-      width: 35%;
-    }
-    .price-col {
-      width: 15%;
-    }
-    .actions {
-      width: 17%;
+
+    .actions-col {
+      width: 22%;
+      text-align: right;
+
+      button {
+        min-width: 110px;
+        height: 40px;
+        margin-left: 0.3rem;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #fff;
+
+        &.edit-btn,
+        &.save-btn {
+          background: #007bff;
+
+          &:hover {
+            background: #0056b3;
+          }
+        }
+
+        &.delete-btn,
+        &.cancel-btn {
+          background: #dc3545;
+
+          &:hover {
+            background: #bd2130;
+          }
+        }
+      }
     }
 
     tr:hover {
       background: rgba(255, 255, 255, 0.08);
     }
+  }
 
-    input {
-      width: 100%;
-      padding: 0.4rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      background: rgba(0, 0, 0, 0.3);
-      color: #fff;
+  @media (max-width: 768px) {
+    .products-table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
     }
 
-    button {
-      margin-left: 0.3rem;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: #fff;
+    .products-table td.actions-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      text-align: left;
+    }
 
-      &.edit-btn,
-      &.save-btn {
-        background: #007bff;
-
-        &:hover {
-          background: #0056b3;
-        }
-      }
-
-      &.delete-btn,
-      &.cancel-btn {
-        background: #dc3545;
-
-        &:hover {
-          background: #bd2130;
-        }
-      }
+    .products-table td.actions-col button {
+      width: 100%;
+      margin: 0;
     }
   }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductsService, Product } from './products.service';
+import { CategoriesService, Category } from '../categories/categories.service';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -13,6 +14,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class ProductsComponent implements OnInit {
   products: Product[] = [];
+  categories: Category[] = [];
   editingProduct: Product | null = null;
   newProduct: Partial<Product> | null = null;
   loading = false;
@@ -22,6 +24,7 @@ export class ProductsComponent implements OnInit {
 
   constructor(
     private productsService: ProductsService,
+    private categoriesService: CategoriesService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -30,6 +33,7 @@ export class ProductsComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       this.categoryId = params['categoryId'] ? +params['categoryId'] : null;
       this.fetchProducts();
+      this.fetchCategories();
     });
   }
 
@@ -56,9 +60,16 @@ export class ProductsComponent implements OnInit {
     });
   }
 
+  fetchCategories(): void {
+    this.categoriesService.getAll().subscribe({
+      next: (data) => (this.categories = data),
+      error: (err) => console.error('Nepodařilo se načíst kategorie', err),
+    });
+  }
+
   startNew() {
     this.resetErrors();
-    this.newProduct = { name: '', description: '', price: 0 };
+    this.newProduct = { name: '', description: '', price: 0, category: undefined };
   }
 
   saveNew() {
@@ -67,17 +78,17 @@ export class ProductsComponent implements OnInit {
       return;
     }
     this.saving = true;
-    const payload = {
+    const input = {
       name: this.newProduct.name.trim(),
       description: this.newProduct.description?.trim() ?? '',
       price: this.newProduct.price,
-      categoryId: this.categoryId ?? undefined,
+      categoryId: this.newProduct.category
+        ? this.newProduct.category.id
+        : this.categoryId ?? undefined,
     };
-    this.productsService.createProduct(payload).subscribe({
+    this.productsService.create(input).subscribe({
       next: (created) => {
-        if (created) {
-          this.products.push(created);
-        }
+        if (created) this.products.push(created);
         this.newProduct = null;
         this.saving = false;
       },
@@ -106,32 +117,28 @@ export class ProductsComponent implements OnInit {
       return;
     }
     this.saving = true;
-
     const input = {
       name: this.editingProduct.name.trim(),
       description: this.editingProduct.description?.trim() ?? '',
       price: this.editingProduct.price,
       categoryId: this.editingProduct.category?.id ?? this.categoryId ?? undefined,
     };
-
-    this.productsService
-      .updateProduct(this.editingProduct.id, input)
-      .subscribe({
-        next: (updated) => {
-          if (updated) {
-            this.products = this.products.map((p) =>
-              p.id === updated.id ? updated : p
-            );
-          }
-          this.editingProduct = null;
-          this.saving = false;
-        },
-        error: (err) => {
-          this.errorMsg = 'Chyba při ukládání změn';
-          console.error(err);
-          this.saving = false;
-        },
-      });
+    this.productsService.update(this.editingProduct.id, input).subscribe({
+      next: (updated) => {
+        if (updated) {
+          this.products = this.products.map((p) =>
+            p.id === updated.id ? updated : p
+          );
+        }
+        this.editingProduct = null;
+        this.saving = false;
+      },
+      error: (err) => {
+        this.errorMsg = 'Chyba při ukládání změn';
+        console.error(err);
+        this.saving = false;
+      },
+    });
   }
 
   cancelEdit() {
@@ -143,7 +150,7 @@ export class ProductsComponent implements OnInit {
     if (this.saving) return;
     if (!confirm('Opravdu chceš smazat tento produkt?')) return;
     this.saving = true;
-    this.productsService.deleteProduct(id).subscribe({
+    this.productsService.delete(id).subscribe({
       next: (deleted) => {
         if (deleted) {
           this.products = this.products.filter((p) => p.id !== id);

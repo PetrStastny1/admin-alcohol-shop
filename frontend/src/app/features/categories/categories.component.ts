@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { CategoriesService, Category } from './categories.service';
 import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-categories',
@@ -41,13 +41,13 @@ export class CategoriesComponent implements OnInit {
   }
 
   startNew() {
-    this.resetErrors();
+    this.errorMsg = null;
     this.newCategory = { name: '', description: '' };
   }
 
   saveNew() {
     if (!this.newCategory?.name?.trim()) {
-      this.errorMsg = 'Name is required';
+      this.errorMsg = 'Vyplňte název kategorie';
       return;
     }
     this.saving = true;
@@ -55,45 +55,57 @@ export class CategoriesComponent implements OnInit {
       .create(this.newCategory.name.trim(), this.newCategory.description?.trim())
       .subscribe({
         next: () => {
-          this.newCategory = null;
           this.loadCategories();
+          this.newCategory = null;
+          this.saving = false;
         },
-        error: (err) => (this.errorMsg = this.prettyGqlError(err)),
-        complete: () => (this.saving = false),
+        error: (err) => {
+          console.error(err);
+          this.errorMsg = 'Chyba při vytváření kategorie';
+          this.saving = false;
+        },
       });
   }
 
   cancelNew() {
     this.newCategory = null;
-    this.resetErrors();
+    this.errorMsg = null;
   }
 
-  startEdit(cat: Category) {
-    this.resetErrors();
-    this.editingCategory = { ...cat };
+  startEdit(category: Category) {
+    this.errorMsg = null;
+    this.editingCategory = { ...category };
   }
 
   saveEdit() {
-    if (!this.editingCategory) return;
-    const { id, name, description } = this.editingCategory;
-    if (!name?.trim()) {
-      this.errorMsg = 'Name is required';
+    if (!this.editingCategory?.name?.trim()) {
+      this.errorMsg = 'Vyplňte název kategorie';
       return;
     }
     this.saving = true;
-    this.categoriesService.update(id, name.trim(), description?.trim()).subscribe({
-      next: () => {
-        this.editingCategory = null;
-        this.loadCategories();
-      },
-      error: (err) => (this.errorMsg = this.prettyGqlError(err)),
-      complete: () => (this.saving = false),
-    });
+    this.categoriesService
+      .update(
+        this.editingCategory.id,
+        this.editingCategory.name.trim(),
+        this.editingCategory.description?.trim()
+      )
+      .subscribe({
+        next: () => {
+          this.loadCategories();
+          this.editingCategory = null;
+          this.saving = false;
+        },
+        error: (err) => {
+          console.error(err);
+          this.errorMsg = 'Chyba při editaci kategorie';
+          this.saving = false;
+        },
+      });
   }
 
   cancelEdit() {
     this.editingCategory = null;
-    this.resetErrors();
+    this.errorMsg = null;
   }
 
   deleteCategory(id: number) {
@@ -101,23 +113,16 @@ export class CategoriesComponent implements OnInit {
     if (!confirm('Opravdu chceš smazat tuto kategorii?')) return;
     this.saving = true;
     this.categoriesService.delete(id).subscribe({
-      next: () => this.loadCategories(),
-      error: (err) => (this.errorMsg = this.prettyGqlError(err)),
-      complete: () => (this.saving = false),
+      next: (deleted) => {
+        if (deleted) this.loadCategories();
+        this.saving = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.errorMsg = 'Chyba při mazání kategorie';
+        this.saving = false;
+      },
     });
-  }
-
-  private prettyGqlError(err: any): string {
-    return (
-      err?.graphQLErrors?.[0]?.message ??
-      err?.networkError?.message ??
-      err?.message ??
-      'Unknown error'
-    );
-  }
-
-  private resetErrors() {
-    this.errorMsg = null;
   }
 
   trackById(_i: number, c: Category) {

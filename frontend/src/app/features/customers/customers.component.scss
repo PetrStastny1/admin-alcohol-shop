@@ -1,18 +1,193 @@
-.customers {
+.customers-page {
   padding: 2rem;
+  background: linear-gradient(135deg, #2c2f33, #1c1f24);
+  min-height: 100vh;
+  color: #f1f1f1;
 
   h2 {
-    margin-bottom: 1rem;
-    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: rgba(0, 123, 255, 0.85);
+    font-weight: 700;
   }
 
-  .placeholder {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    border: 1px dashed #999;
+  .back-btn {
+    background: transparent;
+    border: 2px solid #007bff;
+    color: #007bff;
+    padding: 0.5rem 1rem;
     border-radius: 8px;
-    text-align: center;
-    color: #666;
-    font-style: italic;
+    margin-bottom: 1rem;
+    font-weight: 500;
+
+    &:hover {
+      background: #007bff;
+      color: #fff;
+    }
+  }
+
+  .new-customer {
+    margin-bottom: 1rem;
+
+    button {
+      background: #007bff;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+
+      &:hover {
+        background: #0056b3;
+      }
+    }
+  }
+
+  .new-form {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    .inner-form {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 0.8rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+
+      input {
+        flex: 1 1 200px;
+        padding: 0.5rem;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        background: rgba(0, 0, 0, 0.2);
+        color: #fff;
+      }
+
+      .save-btn {
+        background: #007bff;
+        color: #fff;
+        min-width: 110px;
+        height: 40px;
+
+        &:hover {
+          background: #0056b3;
+        }
+      }
+
+      .cancel-btn {
+        background: #dc3545;
+        color: #fff;
+        min-width: 110px;
+        height: 40px;
+
+        &:hover {
+          background: #bd2130;
+        }
+      }
+    }
+  }
+
+  .customer-list {
+    list-style: none;
+    padding: 0;
+
+    li {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      transition: transform 0.2s, background 0.3s;
+
+      &:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .cust-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .cust-info {
+        font-size: 1.1rem;
+        color: #f8f9fa;
+      }
+
+      .cust-actions {
+        button {
+          margin-left: 0.5rem;
+          border: none;
+          padding: 0.4rem 0.8rem;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 0.9rem;
+          font-weight: 500;
+          color: #fff;
+          min-width: 110px;
+          height: 40px;
+
+          &.edit-btn {
+            background: #007bff;
+
+            &:hover {
+              background: #0056b3;
+            }
+          }
+
+          &.delete-btn {
+            background: #dc3545;
+
+            &:hover {
+              background: #bd2130;
+            }
+          }
+        }
+      }
+
+      .edit-form {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        padding: 0.8rem;
+        margin-top: 0.5rem;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+
+        input {
+          flex: 1 1 200px;
+          padding: 0.5rem;
+          border-radius: 6px;
+          border: 1px solid #ccc;
+          background: rgba(0, 0, 0, 0.2);
+          color: #fff;
+        }
+
+        .save-btn {
+          background: #007bff;
+          color: #fff;
+          min-width: 110px;
+          height: 40px;
+
+          &:hover {
+            background: #0056b3;
+          }
+        }
+
+        .cancel-btn {
+          background: #dc3545;
+          color: #fff;
+          min-width: 110px;
+          height: 40px;
+
+          &:hover {
+            background: #bd2130;
+          }
+        }
+      }
+    }
   }
 }

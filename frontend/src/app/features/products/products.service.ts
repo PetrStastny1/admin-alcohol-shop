@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { gql } from 'apollo-angular';
+import { Observable, map } from 'rxjs';
 
 export interface Product {
   id: number;
@@ -20,7 +19,6 @@ export interface CreateProductInput {
 }
 
 export interface UpdateProductInput {
-  id: number;
   name: string;
   price: number;
   description?: string;
@@ -33,7 +31,7 @@ export class ProductsService {
 
   getProducts(): Observable<Product[]> {
     return this.apollo
-      .watchQuery<{ products: (Product | undefined)[] }>({
+      .watchQuery<{ products: (Product | null | undefined)[] }>({
         query: gql`
           query GetProducts {
             products {
@@ -48,17 +46,18 @@ export class ProductsService {
             }
           }
         `,
+        fetchPolicy: 'network-only',
       })
       .valueChanges.pipe(
-        map((result) =>
-          (result.data?.products ?? []).filter((p): p is Product => !!p)
+        map((res) =>
+          (res.data?.products ?? []).filter((p): p is Product => !!p)
         )
       );
   }
 
   getProductsByCategory(categoryId: number): Observable<Product[]> {
     return this.apollo
-      .watchQuery<{ productsByCategory: (Product | undefined)[] }>({
+      .watchQuery<{ productsByCategory: (Product | null | undefined)[] }>({
         query: gql`
           query GetProductsByCategory($categoryId: Int!) {
             productsByCategory(categoryId: $categoryId) {
@@ -74,17 +73,16 @@ export class ProductsService {
           }
         `,
         variables: { categoryId },
+        fetchPolicy: 'network-only',
       })
       .valueChanges.pipe(
-        map((result) =>
-          (result.data?.productsByCategory ?? []).filter(
-            (p): p is Product => !!p
-          )
+        map((res) =>
+          (res.data?.productsByCategory ?? []).filter((p): p is Product => !!p)
         )
       );
   }
 
-  createProduct(input: CreateProductInput): Observable<Product | null> {
+  create(input: CreateProductInput): Observable<Product | null> {
     return this.apollo
       .mutate<{ createProduct: Product }>({
         mutation: gql`
@@ -102,11 +100,12 @@ export class ProductsService {
           }
         `,
         variables: { input },
+        refetchQueries: ['GetProducts'],
       })
       .pipe(map((res) => res.data?.createProduct ?? null));
   }
 
-  updateProduct(id: number, input: Omit<UpdateProductInput, 'id'>): Observable<Product | null> {
+  update(id: number, input: UpdateProductInput): Observable<Product | null> {
     return this.apollo
       .mutate<{ updateProduct: Product }>({
         mutation: gql`
@@ -124,25 +123,22 @@ export class ProductsService {
           }
         `,
         variables: { id, input },
+        refetchQueries: ['GetProducts'],
       })
       .pipe(map((res) => res.data?.updateProduct ?? null));
   }
 
-  deleteProduct(id: number): Observable<Product | null> {
+  delete(id: number): Observable<boolean> {
     return this.apollo
-      .mutate<{ deleteProduct: Product }>({
+      .mutate<{ deleteProduct: boolean }>({
         mutation: gql`
           mutation DeleteProduct($id: Int!) {
-            deleteProduct(id: $id) {
-              id
-              name
-              price
-              description
-            }
+            deleteProduct(id: $id)
           }
         `,
         variables: { id },
+        refetchQueries: ['GetProducts'],
       })
-      .pipe(map((res) => res.data?.deleteProduct ?? null));
+      .pipe(map((res) => res.data?.deleteProduct ?? false));
   }
 }

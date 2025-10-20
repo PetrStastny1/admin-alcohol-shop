@@ -1,9 +1,49 @@
-<div class="customers">
-  <h2>Zákazníci</h2>
-  <p>Zde bude správa zákazníků (CRUD).</p>
+<div class="customers-page">
+  <h2>👥 Zákazníci</h2>
+  <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
 
-  <!-- Placeholder pro budoucí tabulku -->
-  <div class="placeholder">
-    <p>[Seznam zákazníků se načte zde]</p>
+  <div class="new-customer">
+    <button (click)="startNew()">➕ Přidat zákazníka</button>
   </div>
+
+  <div *ngIf="newCustomer" class="new-form">
+    <div class="inner-form">
+      <input [(ngModel)]="newCustomer!.name" placeholder="Jméno" />
+      <input [(ngModel)]="newCustomer!.email" placeholder="Email" />
+      <input [(ngModel)]="newCustomer!.phone" placeholder="Telefon" />
+      <input [(ngModel)]="newCustomer!.address" placeholder="Adresa" />
+      <button class="save-btn" (click)="saveNew()">💾 Uložit</button>
+      <button class="cancel-btn" (click)="cancelNew()">✖ Zrušit</button>
+    </div>
+  </div>
+
+  <ul class="customer-list">
+    <li *ngFor="let cust of customers$ | async; trackBy: trackById">
+      <div *ngIf="editingCustomer?.id === cust.id; else viewMode">
+        <div class="edit-form">
+          <input [(ngModel)]="editingCustomer!.name" placeholder="Jméno" />
+          <input [(ngModel)]="editingCustomer!.email" placeholder="Email" />
+          <input [(ngModel)]="editingCustomer!.phone" placeholder="Telefon" />
+          <input [(ngModel)]="editingCustomer!.address" placeholder="Adresa" />
+          <button class="save-btn" (click)="saveEdit()">💾 Uložit</button>
+          <button class="cancel-btn" (click)="cancelEdit()">✖ Zrušit</button>
+        </div>
+      </div>
+      <ng-template #viewMode>
+        <div class="cust-row">
+          <div class="cust-info clickable" (click)="goToOrders(cust.id)">
+            <strong>{{ cust.name }}</strong>
+            <span> — {{ cust.email }}</span>
+            <span *ngIf="cust.phone"> | {{ cust.phone }}</span>
+            <span *ngIf="cust.address"> | {{ cust.address }}</span>
+            <span> | Objednávky: {{ cust.orders?.length || 0 }}</span>
+          </div>
+          <div class="cust-actions">
+            <button class="edit-btn" (click)="startEdit(cust)">✏ Upravit</button>
+            <button class="delete-btn" (click)="deleteCustomer(cust.id)">🗑 Smazat</button>
+          </div>
+        </div>
+      </ng-template>
+    </li>
+  </ul>
 </div>
