@@ -22,7 +22,9 @@ input CreateCustomerInput {
 }
 
 input CreateOrderInput {
-  customerId: Int!
+  categoryId: Int
+  customer: String!
+  date: String!
   productId: Int!
   quantity: Int!
 }
@@ -92,12 +94,13 @@ type Mutation {
 }
 
 type Order {
-  createdAt: DateTime!
-  customer: Customer!
+  category: Category
+  customer: String!
+  date: String!
   id: Int!
   product: Product!
   quantity: Int!
-  total: Float!
+  totalPrice: Float!
 }
 
 type Product {
@@ -140,7 +143,9 @@ input UpdateCustomerInput {
 }
 
 input UpdateOrderInput {
-  customerId: Int
+  categoryId: Int
+  customer: String
+  date: String
   productId: Int
   quantity: Int
 }

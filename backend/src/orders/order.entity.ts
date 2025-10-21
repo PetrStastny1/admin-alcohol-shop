@@ -1,6 +1,6 @@
 import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Customer } from '../customers/customer.entity';
+import { Category } from '../categories/category.entity';
 import { Product } from '../products/products.entity';
 
 @ObjectType()
@@ -10,12 +10,13 @@ export class Order {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Field(() => Customer)
-  @ManyToOne(() => Customer, (customer) => customer.orders, {
-    eager: true,
-    onDelete: 'CASCADE',
-  })
-  customer!: Customer;
+  @Field()
+  @Column()
+  customer!: string;
+
+  @Field(() => Category, { nullable: true })
+  @ManyToOne(() => Category, { eager: true, nullable: true, onDelete: 'SET NULL' })
+  category?: Category;
 
   @Field(() => Product)
   @ManyToOne(() => Product, (product) => product.orders, {
@@ -30,9 +31,9 @@ export class Order {
 
   @Field(() => Float)
   @Column('decimal', { precision: 10, scale: 2 })
-  total!: number;
+  totalPrice!: number;
 
   @Field()
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt!: Date;
+  @Column()
+  date!: string;
 }
