@@ -25,11 +25,9 @@ export class CustomersResolver {
   async createCustomer(@Args('input') input: CreateCustomerInput): Promise<Customer> {
     const existing = await this.customersService.findByEmail(input.email);
     if (existing) {
-      throw new BadRequestException(
-        `Zákazník s e-mailem "${input.email}" již existuje`,
-      );
+      throw new BadRequestException(`Zákazník s e-mailem "${input.email}" již existuje`);
     }
-    return this.customersService.create(input.name, input.email, input.phone, input.address);
+    return this.customersService.create(input);
   }
 
   @UseGuards(GqlAuthGuard)
@@ -38,15 +36,7 @@ export class CustomersResolver {
     @Args('id', { type: () => Int }) id: number,
     @Args('input') input: UpdateCustomerInput,
   ): Promise<Customer> {
-    if (input.email) {
-      const existing = await this.customersService.findByEmail(input.email);
-      if (existing && existing.id !== id) {
-        throw new BadRequestException(
-          `Zákazník s e-mailem "${input.email}" již existuje`,
-        );
-      }
-    }
-    return this.customersService.update(id, input.name, input.email, input.phone, input.address);
+    return this.customersService.update(id, input);
   }
 
   @UseGuards(GqlAuthGuard)

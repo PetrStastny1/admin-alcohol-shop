@@ -18,7 +18,6 @@ export class AppService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-
     if (process.env.NODE_ENV !== 'development') {
       console.log('⏭️ DB seed přeskočen (NODE_ENV !== development)');
       return;
@@ -32,20 +31,20 @@ export class AppService implements OnModuleInit {
     try {
       await queryRunner.query(`SET FOREIGN_KEY_CHECKS = 0;`);
 
-      await queryRunner.query(`DELETE FROM \`order\`;`);
-      await queryRunner.query(`ALTER TABLE \`order\` AUTO_INCREMENT = 1;`);
+      await queryRunner.query(`DELETE FROM \`orders\`;`);
+      await queryRunner.query(`ALTER TABLE \`orders\` AUTO_INCREMENT = 1;`);
 
-      await queryRunner.query(`DELETE FROM \`product\`;`);
-      await queryRunner.query(`ALTER TABLE \`product\` AUTO_INCREMENT = 1;`);
+      await queryRunner.query(`DELETE FROM \`products\`;`);
+      await queryRunner.query(`ALTER TABLE \`products\` AUTO_INCREMENT = 1;`);
 
-      await queryRunner.query(`DELETE FROM \`category\`;`);
-      await queryRunner.query(`ALTER TABLE \`category\` AUTO_INCREMENT = 1;`);
+      await queryRunner.query(`DELETE FROM \`categories\`;`);
+      await queryRunner.query(`ALTER TABLE \`categories\` AUTO_INCREMENT = 1;`);
 
-      await queryRunner.query(`DELETE FROM \`customer\`;`);
-      await queryRunner.query(`ALTER TABLE \`customer\` AUTO_INCREMENT = 1;`);
+      await queryRunner.query(`DELETE FROM \`customers\`;`);
+      await queryRunner.query(`ALTER TABLE \`customers\` AUTO_INCREMENT = 1;`);
 
-      await queryRunner.query(`DELETE FROM \`user\`;`);
-      await queryRunner.query(`ALTER TABLE \`user\` AUTO_INCREMENT = 1;`);
+      await queryRunner.query(`DELETE FROM \`users\`;`);
+      await queryRunner.query(`ALTER TABLE \`users\` AUTO_INCREMENT = 1;`);
 
       await queryRunner.query(`SET FOREIGN_KEY_CHECKS = 1;`);
 

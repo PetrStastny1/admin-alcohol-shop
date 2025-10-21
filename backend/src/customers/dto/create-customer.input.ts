@@ -5,22 +5,22 @@ import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
 export class CreateCustomerInput {
   @Field(() => String)
   @IsString()
-  @Length(2, 100, { message: 'Jméno musí mít alespoň 2 znaky a max. 100 znaků' })
+  @Length(2, 100)
   name!: string;
 
   @Field(() => String)
-  @IsEmail({}, { message: 'Neplatný formát e-mailu' })
+  @IsEmail()
   email!: string;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
-  @Length(6, 20, { message: 'Telefon musí mít 6–20 znaků' })
+  @Length(6, 20)
   phone?: string;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
-  @Length(5, 200, { message: 'Adresa musí mít alespoň 5 znaků a max. 200 znaků' })
+  @Length(5, 200)
   address?: string;
 }

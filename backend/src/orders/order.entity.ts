@@ -2,21 +2,21 @@ import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Category } from '../categories/category.entity';
 import { Product } from '../products/products.entity';
+import { Customer } from '../customers/customer.entity';
 
 @ObjectType()
-@Entity()
+@Entity('orders')
 export class Order {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Field()
-  @Column()
-  customer!: string;
-
-  @Field(() => Category, { nullable: true })
-  @ManyToOne(() => Category, { eager: true, nullable: true, onDelete: 'SET NULL' })
-  category?: Category;
+  @Field(() => Customer)
+  @ManyToOne(() => Customer, (customer) => customer.orders, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
+  customer!: Customer;
 
   @Field(() => Product)
   @ManyToOne(() => Product, (product) => product.orders, {
@@ -24,6 +24,14 @@ export class Order {
     onDelete: 'CASCADE',
   })
   product!: Product;
+
+  @Field(() => Category, { nullable: true })
+  @ManyToOne(() => Category, (category) => category.products, {
+    eager: true,
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  category?: Category;
 
   @Field(() => Int)
   @Column()

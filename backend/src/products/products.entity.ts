@@ -1,10 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
 import { Order } from '../orders/order.entity';
 import { Category } from '../categories/category.entity';
 
 @ObjectType()
-@Entity()
+@Entity('products')
 export class Product {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
@@ -24,12 +24,10 @@ export class Product {
 
   @Field()
   @Column({ default: true })
-  isActive: boolean = true;
+  isActive!: boolean;
 
   @Field(() => [Order], { nullable: true })
-  @OneToMany(() => Order, (order) => order.product, {
-    cascade: true,
-  })
+  @OneToMany(() => Order, (order) => order.product)
   orders?: Order[];
 
   @Field(() => Category, { nullable: true })
@@ -38,5 +36,10 @@ export class Product {
     onDelete: 'CASCADE',
     eager: true,
   })
+  @JoinColumn({ name: 'categoryId' })
   category?: Category;
+
+  @Field(() => Int, { nullable: true })
+  @Column({ nullable: true })
+  categoryId?: number;
 }

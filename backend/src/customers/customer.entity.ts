@@ -1,9 +1,9 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Order } from '../orders/order.entity';
 
 @ObjectType()
-@Entity()
+@Entity('customers')
 export class Customer {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
@@ -26,9 +26,6 @@ export class Customer {
   address?: string;
 
   @Field(() => [Order], { nullable: true })
-  @OneToMany(() => Order, (order) => order.customer, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => Order, (order) => order.customer)
   orders?: Order[];
 }

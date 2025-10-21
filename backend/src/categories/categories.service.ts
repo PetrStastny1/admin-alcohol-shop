@@ -17,7 +17,6 @@ export class CategoriesService implements OnModuleInit {
     private readonly categoryRepository: Repository<Category>,
   ) {}
 
-  // ✅ Seed dat při startu
   async onModuleInit() {
     const defaultCategories = [
       { name: 'Whisky', description: 'Různé druhy whisky' },
@@ -37,19 +36,18 @@ export class CategoriesService implements OnModuleInit {
         where: { name: cat.name },
       });
       if (!exists) {
-        await this.create({ name: cat.name, description: cat.description });
+        const category = this.categoryRepository.create(cat);
+        await this.categoryRepository.save(category);
       }
     }
 
     console.log('✅ Categories seeded (pokud chyběly)');
   }
 
-  // ✅ Načti všechny kategorie
   async findAll(): Promise<Category[]> {
     return this.categoryRepository.find({ relations: ['products'] });
   }
 
-  // ✅ Najdi kategorii podle ID
   async findOne(id: number): Promise<Category> {
     const category = await this.categoryRepository.findOne({
       where: { id },
@@ -61,43 +59,41 @@ export class CategoriesService implements OnModuleInit {
     return category;
   }
 
-  // ✅ Vytvoř novou kategorii
   async create(input: CreateCategoryInput): Promise<Category> {
-    const { name, description } = input;
-
-    const existing = await this.categoryRepository.findOne({ where: { name } });
+    const existing = await this.categoryRepository.findOne({
+      where: { name: input.name },
+    });
     if (existing) {
-      throw new BadRequestException(`Kategorie "${name}" už existuje`);
+      throw new BadRequestException(`Kategorie "${input.name}" už existuje`);
     }
 
-    const category = this.categoryRepository.create({ name, description });
+    const category = this.categoryRepository.create(input);
     return this.categoryRepository.save(category);
   }
 
-  // ✅ Aktualizuj kategorii
   async update(input: UpdateCategoryInput): Promise<Category> {
-    const { id, name, description } = input;
-    const category = await this.findOne(id);
+    const category = await this.findOne(input.id);
 
-    if (name && name !== category.name) {
-      const existing = await this.categoryRepository.findOne({ where: { name } });
+    if (input.name && input.name !== category.name) {
+      const existing = await this.categoryRepository.findOne({
+        where: { name: input.name },
+      });
       if (existing) {
-        throw new BadRequestException(`Kategorie "${name}" už existuje`);
+        throw new BadRequestException(`Kategorie "${input.name}" už existuje`);
       }
-      category.name = name;
+      category.name = input.name;
     }
 
-    if (description !== undefined) {
-      category.description = description;
+    if (input.description !== undefined) {
+      category.description = input.description;
     }
 
     return this.categoryRepository.save(category);
   }
 
-  // ✅ Smaž kategorii
   async delete(id: number): Promise<boolean> {
     const result = await this.categoryRepository.delete(id);
-    if (!result.affected) {
+    if ((result.affected ?? 0) === 0) {
       throw new NotFoundException(`Kategorie s ID ${id} nenalezena`);
     }
     return true;

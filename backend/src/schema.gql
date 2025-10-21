@@ -23,8 +23,8 @@ input CreateCustomerInput {
 
 input CreateOrderInput {
   categoryId: Int
-  customer: String!
-  date: String!
+  customerId: Int!
+  date: String
   productId: Int!
   quantity: Int!
 }
@@ -90,7 +90,7 @@ type Mutation {
 
 type Order {
   category: Category
-  customer: String!
+  customer: Customer!
   date: String!
   id: Int!
   product: Product!
@@ -100,6 +100,7 @@ type Order {
 
 type Product {
   category: Category
+  categoryId: Int
   description: String
   id: Int!
   isActive: Boolean!
@@ -133,14 +134,13 @@ input UpdateCategoryInput {
 input UpdateCustomerInput {
   address: String
   email: String
-  id: Int!
   name: String
   phone: String
 }
 
 input UpdateOrderInput {
   categoryId: Int
-  customer: String
+  customerId: Int
   date: String
   productId: Int
   quantity: Int

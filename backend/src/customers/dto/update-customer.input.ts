@@ -1,32 +1,28 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
-import { IsEmail, IsOptional, IsString, Length, IsInt } from 'class-validator';
+import { InputType, Field } from '@nestjs/graphql';
+import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
 
 @InputType()
 export class UpdateCustomerInput {
-  @Field(() => Int)
-  @IsInt()
-  id!: number;
-
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
-  @Length(2, 100, { message: 'Jméno musí mít alespoň 2 znaky a max. 100 znaků' })
+  @Length(2, 100)
   name?: string;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @IsEmail({}, { message: 'Neplatný formát e-mailu' })
+  @IsEmail()
   email?: string;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
-  @Length(6, 20, { message: 'Telefon musí mít 6–20 znaků' })
+  @Length(6, 20)
   phone?: string;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
-  @Length(5, 200, { message: 'Adresa musí mít alespoň 5 znaků a max. 200 znaků' })
+  @Length(5, 200)
   address?: string;
 }

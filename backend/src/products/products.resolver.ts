@@ -35,7 +35,7 @@ export class ProductsResolver {
       price: input.price,
       description: input.description,
       isActive: input.isActive ?? true,
-      category: input.categoryId ? ({ id: input.categoryId } as any) : undefined,
+      categoryId: input.categoryId,
     });
   }
 
@@ -50,7 +50,7 @@ export class ProductsResolver {
       price: input.price,
       description: input.description,
       isActive: input.isActive,
-      category: input.categoryId ? ({ id: input.categoryId } as any) : undefined,
+      categoryId: input.categoryId,
     });
   }
 

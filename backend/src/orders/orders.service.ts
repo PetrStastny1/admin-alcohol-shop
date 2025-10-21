@@ -1,9 +1,15 @@
-import { Injectable, NotFoundException, BadRequestException, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './order.entity';
 import { Category } from '../categories/category.entity';
 import { Product } from '../products/products.entity';
+import { Customer } from '../customers/customer.entity';
 import { CreateOrderInput } from './dto/create-order.input';
 import { UpdateOrderInput } from './dto/update-order.input';
 
@@ -16,12 +22,16 @@ export class OrdersService implements OnModuleInit {
     private readonly categoryRepository: Repository<Category>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(Customer)
+    private readonly customerRepository: Repository<Customer>,
   ) {}
 
   async onModuleInit() {
-    const products = await this.productRepository.find();
-    if (products.length === 0) {
-      console.log('⚠️ Žádné produkty – seed objednávek přeskočen');
+    const products = await this.productRepository.find({ relations: ['category'] });
+    const customers = await this.customerRepository.find();
+
+    if (!products.length || !customers.length) {
+      console.log('⚠️ Žádné produkty nebo zákazníci – seed objednávek přeskočen');
       return;
     }
 
@@ -32,9 +42,16 @@ export class OrdersService implements OnModuleInit {
     }
 
     const sampleOrders = [
-      { customer: 'Jan Novák', product: products[0], quantity: 2 },
-      { customer: 'Petr Svoboda', product: products[1] ?? products[0], quantity: 1 },
-      { customer: 'Lucie Malá', product: products[2] ?? products[0], quantity: 3 },
+      { customer: customers[0], product: products[0], quantity: 2 },
+      { customer: customers[1], product: products[1], quantity: 1 },
+      { customer: customers[2], product: products[2], quantity: 3 },
+      { customer: customers[3], product: products[3], quantity: 5 },
+      { customer: customers[4], product: products[4], quantity: 2 },
+      { customer: customers[5], product: products[5], quantity: 4 },
+      { customer: customers[6], product: products[6], quantity: 1 },
+      { customer: customers[7], product: products[7], quantity: 2 },
+      { customer: customers[8], product: products[8], quantity: 6 },
+      { customer: customers[9], product: products[9], quantity: 3 },
     ];
 
     for (const o of sampleOrders) {
@@ -50,17 +67,19 @@ export class OrdersService implements OnModuleInit {
       await this.orderRepository.save(order);
     }
 
-    console.log('✅ Orders seeded');
+    console.log('✅ Orders seeded (10 položek)');
   }
 
   async findAll(): Promise<Order[]> {
-    return this.orderRepository.find({ relations: ['category', 'product'] });
+    return this.orderRepository.find({
+      relations: ['category', 'product', 'customer'],
+    });
   }
 
   async findOne(id: number): Promise<Order> {
     const order = await this.orderRepository.findOne({
       where: { id },
-      relations: ['category', 'product'],
+      relations: ['category', 'product', 'customer'],
     });
     if (!order) {
       throw new NotFoundException(`Objednávka s ID ${id} nenalezena`);
@@ -73,24 +92,39 @@ export class OrdersService implements OnModuleInit {
       throw new BadRequestException(`Množství musí být větší než 0`);
     }
 
-    const product = await this.productRepository.findOne({ where: { id: input.productId }, relations: ['category'] });
+    const product = await this.productRepository.findOne({
+      where: { id: input.productId },
+      relations: ['category'],
+    });
     if (!product) {
       throw new NotFoundException(`Produkt s ID ${input.productId} nenalezen`);
     }
 
+    const customer = await this.customerRepository.findOne({
+      where: { id: input.customerId },
+    });
+    if (!customer) {
+      throw new NotFoundException(`Zákazník s ID ${input.customerId} nenalezen`);
+    }
+
     let category: Category | null = null;
     if (input.categoryId) {
-      category = await this.categoryRepository.findOne({ where: { id: input.categoryId } });
+      category = await this.categoryRepository.findOne({
+        where: { id: input.categoryId },
+      });
+      if (!category) {
+        throw new NotFoundException(`Kategorie s ID ${input.categoryId} nenalezena`);
+      }
     }
 
     const totalPrice = Number(product.price) * input.quantity;
 
     const order = this.orderRepository.create({
-      customer: input.customer,
+      customer,
       product,
-      category: category ?? product.category ?? undefined,
+      category: category ?? product.category,
       quantity: input.quantity,
-      date: input.date,
+      date: input.date ?? new Date().toISOString(),
       totalPrice,
     });
 
@@ -100,13 +134,24 @@ export class OrdersService implements OnModuleInit {
   async update(id: number, input: UpdateOrderInput): Promise<Order> {
     const order = await this.findOne(id);
 
-    if (input.customer) {
-      order.customer = input.customer;
+    if (input.customerId) {
+      const customer = await this.customerRepository.findOne({
+        where: { id: input.customerId },
+      });
+      if (!customer) {
+        throw new NotFoundException(`Zákazník s ID ${input.customerId} nenalezen`);
+      }
+      order.customer = customer;
     }
 
     if (input.productId) {
-      const product = await this.productRepository.findOne({ where: { id: input.productId }, relations: ['category'] });
-      if (!product) throw new NotFoundException(`Produkt s ID ${input.productId} nenalezen`);
+      const product = await this.productRepository.findOne({
+        where: { id: input.productId },
+        relations: ['category'],
+      });
+      if (!product) {
+        throw new NotFoundException(`Produkt s ID ${input.productId} nenalezen`);
+      }
       order.product = product;
       if (!input.categoryId) {
         order.category = product.category;
@@ -114,13 +159,19 @@ export class OrdersService implements OnModuleInit {
     }
 
     if (input.categoryId) {
-      const category = await this.categoryRepository.findOne({ where: { id: input.categoryId } });
-      if (!category) throw new NotFoundException(`Kategorie s ID ${input.categoryId} nenalezena`);
+      const category = await this.categoryRepository.findOne({
+        where: { id: input.categoryId },
+      });
+      if (!category) {
+        throw new NotFoundException(`Kategorie s ID ${input.categoryId} nenalezena`);
+      }
       order.category = category;
     }
 
     if (input.quantity !== undefined) {
-      if (input.quantity <= 0) throw new BadRequestException(`Množství musí být větší než 0`);
+      if (input.quantity <= 0) {
+        throw new BadRequestException(`Množství musí být větší než 0`);
+      }
       order.quantity = input.quantity;
     }
 
