@@ -1,14 +1,28 @@
 import { Injectable } from '@angular/core';
-import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Apollo, gql } from 'apollo-angular';
+import { Observable, map } from 'rxjs';
 
 export interface User {
   id: number;
-  username: string;
   email: string;
-  createdAt: string;
+  username: string;
+  role: string;
+  created_at: string;
+}
+
+export interface CreateUserInput {
+  email: string;
+  username: string;
+  password: string;
+  role?: string;
+}
+
+export interface UpdateUserInput {
+  id: number;
+  email?: string;
+  username?: string;
+  password?: string;
+  role?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -17,26 +31,66 @@ export class UsersService {
 
   getUsers(): Observable<User[]> {
     return this.apollo
-      .watchQuery<{ users: (User | undefined)[] }>({
+      .watchQuery<{ users: (User | null)[] }>({
         query: gql`
           query GetUsers {
             users {
               id
-              username
               email
-              createdAt
+              username
+              role
+              created_at
             }
           }
         `,
+        fetchPolicy: 'network-only',
       })
       .valueChanges.pipe(
-        map((result) =>
-          (result.data?.users ?? []).filter((u): u is User => u !== undefined)
-        )
+        map(res => (res.data?.users ?? []).filter((u): u is User => !!u))
       );
   }
 
-  deleteUser(id: number): Observable<boolean> {
+  create(input: CreateUserInput): Observable<User | null> {
+    return this.apollo
+      .mutate<{ createUser: User }>({
+        mutation: gql`
+          mutation CreateUser($input: CreateUserInput!) {
+            createUser(input: $input) {
+              id
+              email
+              username
+              role
+              created_at
+            }
+          }
+        `,
+        variables: { input },
+        refetchQueries: ['GetUsers'],
+      })
+      .pipe(map(res => res.data?.createUser ?? null));
+  }
+
+  update(input: UpdateUserInput): Observable<User | null> {
+    return this.apollo
+      .mutate<{ updateUser: User }>({
+        mutation: gql`
+          mutation UpdateUser($input: UpdateUserInput!) {
+            updateUser(input: $input) {
+              id
+              email
+              username
+              role
+              created_at
+            }
+          }
+        `,
+        variables: { input },
+        refetchQueries: ['GetUsers'],
+      })
+      .pipe(map(res => res.data?.updateUser ?? null));
+  }
+
+  delete(id: number): Observable<boolean> {
     return this.apollo
       .mutate<{ deleteUser: boolean }>({
         mutation: gql`
@@ -45,7 +99,8 @@ export class UsersService {
           }
         `,
         variables: { id },
+        refetchQueries: ['GetUsers'],
       })
-      .pipe(map((res) => res.data?.deleteUser ?? false));
+      .pipe(map(res => res.data?.deleteUser ?? false));
   }
 }

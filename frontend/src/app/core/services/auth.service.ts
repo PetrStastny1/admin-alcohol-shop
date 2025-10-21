@@ -5,41 +5,37 @@ import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { TokenService } from './token.service';
 
-interface LoginAdminResponse {
-  loginAdmin: {
-    access_token: string;
-    id: number;
-    username: string;
-  };
+export interface LoginResponse {
+  access_token: string;
+  id: number;
+  username: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   constructor(private apollo: Apollo, private tokenService: TokenService) {}
 
-  login(username: string, password: string): Observable<string | null> {
+  login(username: string, password: string): Observable<LoginResponse | null> {
     return this.apollo
-      .mutate<LoginAdminResponse>({
+      .mutate<{ login: LoginResponse }>({
         mutation: gql`
-          mutation LoginAdmin($input: LoginAdminInput!) {
-            loginAdmin(input: $input) {
+          mutation Login($username: String!, $password: String!) {
+            login(username: $username, password: $password) {
               access_token
               id
               username
             }
           }
         `,
-        variables: {
-          input: { username, password },
-        },
+        variables: { username, password },
       })
       .pipe(
         map((res) => {
-          const token = res.data?.loginAdmin?.access_token ?? null;
-          if (token) {
-            this.tokenService.setToken(token);
+          const data = res.data?.login ?? null;
+          if (data?.access_token) {
+            this.tokenService.setToken(data.access_token);
           }
-          return token;
+          return data;
         })
       );
   }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class TokenService {
-  private readonly KEY = 'token';
+  private readonly KEY = 'auth_token';
 
   getToken(): string | null {
     return localStorage.getItem(this.KEY);
@@ -17,7 +17,6 @@ export class TokenService {
   }
 
   isLoggedIn(): boolean {
-    const t = this.getToken();
-    return !!t;
+    return !!this.getToken();
   }
 }

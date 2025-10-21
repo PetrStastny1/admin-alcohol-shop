@@ -1,10 +1,70 @@
-<div class="users">
-  <h2>Správa uživatelů</h2>
+<div class="users-page">
+  <h2>👤 Uživatelé</h2>
 
-  <ul>
-    <li *ngFor="let user of users">
-      {{ user.username }} ({{ user.email }})
-      <button (click)="deleteUser(user.id)">Smazat</button>
-    </li>
-  </ul>
+  <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
+
+  <div class="new-user">
+    <button class="add-btn" (click)="startNew()">➕ Přidat uživatele</button>
+  </div>
+
+  <div *ngIf="newUser" class="form-box">
+    <div class="inner-form">
+      <input [(ngModel)]="newUser.email" placeholder="Email" />
+      <input [(ngModel)]="newUser.username" placeholder="Uživatelské jméno" />
+      <input type="password" [(ngModel)]="newUser.password" placeholder="Heslo" />
+      <select [(ngModel)]="newUser.role">
+        <option value="user">user</option>
+        <option value="admin">admin</option>
+      </select>
+      <button class="save-btn" (click)="saveNew()">💾 Uložit</button>
+      <button class="cancel-btn" (click)="cancelNew()">✖ Zrušit</button>
+    </div>
+  </div>
+
+  <table class="users-table" *ngIf="users.length > 0">
+    <thead>
+      <tr>
+        <th class="id-col">ID</th>
+        <th>Email</th>
+        <th>Uživatelské jméno</th>
+        <th>Role</th>
+        <th>Vytvořen</th>
+        <th class="actions-col">Akce</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let u of users" [ngClass]="{ editing: editingUser?.id === u.id }">
+        <ng-container *ngIf="editingUser?.id === u.id; else viewMode">
+          <td colspan="6">
+            <div class="form-box">
+              <div class="inner-form">
+                <input [(ngModel)]="editingUser!.email" placeholder="Email" />
+                <input [(ngModel)]="editingUser!.username" placeholder="Uživatelské jméno" />
+                <input type="password" [(ngModel)]="editingUserPassword" placeholder="Nové heslo" />
+                <select [(ngModel)]="editingUser!.role">
+                  <option value="user">user</option>
+                  <option value="admin">admin</option>
+                </select>
+                <button class="save-btn" (click)="saveEdit()">💾 Uložit</button>
+                <button class="cancel-btn" (click)="cancelEdit()">✖ Zrušit</button>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+        <ng-template #viewMode>
+          <td class="id-col">{{ u.id }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.username }}</td>
+          <td>{{ u.role }}</td>
+          <td>{{ u.created_at | date: 'short' }}</td>
+          <td class="actions-col">
+            <button class="edit-btn" (click)="startEdit(u)">✏ Upravit</button>
+            <button class="delete-btn" (click)="deleteUser(u.id)">🗑 Smazat</button>
+          </td>
+        </ng-template>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="users.length === 0 && !loading">Žádní uživatelé nebyli nalezeni.</p>
 </div>

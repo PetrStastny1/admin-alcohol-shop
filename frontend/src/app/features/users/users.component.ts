@@ -1,52 +1,149 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UsersService, User } from './users.service';
+import { FormsModule } from '@angular/forms';
+import { UsersService, User, CreateUserInput, UpdateUserInput } from './users.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss'],
 })
 export class UsersComponent implements OnInit {
   users: User[] = [];
+  editingUser: User | null = null;
+  editingUserPassword: string = '';
+  newUser: { email: string; username?: string; password: string; role: string } | null = null;
   loading = false;
-  error: string | null = null;
+  saving = false;
+  errorMsg: string | null = null;
 
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.fetchUsers();
   }
 
-  private fetchUsers(): void {
-    this.loading = true;
-    this.error = null;
+  goBack() {
+    this.router.navigate(['/dashboard']);
+  }
 
+  fetchUsers() {
+    this.loading = true;
     this.usersService.getUsers().subscribe({
       next: (data) => {
         this.users = data ?? [];
         this.loading = false;
       },
-      error: (err) => {
-        console.error('Chyba při načítání uživatelů', err);
-        this.error = 'Nepodařilo se načíst uživatele';
+      error: () => {
+        this.errorMsg = 'Nepodařilo se načíst uživatele';
         this.loading = false;
       },
     });
   }
 
-  deleteUser(id: number): void {
-    this.usersService.deleteUser(id).subscribe({
-      next: (success) => {
-        if (success) {
-          this.users = this.users.filter((u) => u.id !== id);
-        }
+  startNew() {
+    this.newUser = { username: '', email: '', password: '', role: 'user' };
+  }
+
+  saveNew() {
+    if (!this.newUser?.username?.trim() || !this.newUser?.email?.trim() || !this.newUser?.password?.trim()) {
+      this.errorMsg = 'Vyplňte všechny povinné údaje';
+      return;
+    }
+    this.saving = true;
+    const input: CreateUserInput = {
+      username: this.newUser.username.trim(),
+      email: this.newUser.email.trim(),
+      password: this.newUser.password.trim(),
+      role: this.newUser.role,
+    };
+    this.usersService.create(input).subscribe({
+      next: (created) => {
+        if (created) this.users.push(created);
+        this.newUser = null;
+        this.saving = false;
       },
-      error: (err) => {
-        console.error('Chyba při mazání uživatele', err);
-      }
+      error: () => {
+        this.errorMsg = 'Chyba při vytváření uživatele';
+        this.saving = false;
+      },
     });
+  }
+
+  cancelNew() {
+    this.newUser = null;
+    this.resetErrors();
+  }
+
+  startEdit(user: User) {
+    this.resetErrors();
+    this.editingUser = { ...user };
+    this.editingUserPassword = '';
+  }
+
+  saveEdit() {
+    if (!this.editingUser) return;
+    const input: UpdateUserInput = { id: this.editingUser.id };
+
+    if (this.editingUser.username?.trim()) {
+      input.username = this.editingUser.username.trim();
+    }
+    if (this.editingUser.email?.trim()) {
+      input.email = this.editingUser.email.trim();
+    }
+    if (this.editingUserPassword.trim()) {
+      input.password = this.editingUserPassword.trim();
+    }
+    if (this.editingUser.role?.trim()) {
+      input.role = this.editingUser.role.trim();
+    }
+
+    this.saving = true;
+    this.usersService.update(input).subscribe({
+      next: (updated) => {
+        if (updated) {
+          this.users = this.users.map((u) => (u.id === updated.id ? updated : u));
+        }
+        this.editingUser = null;
+        this.editingUserPassword = '';
+        this.saving = false;
+      },
+      error: () => {
+        this.errorMsg = 'Chyba při ukládání změn';
+        this.saving = false;
+      },
+    });
+  }
+
+  cancelEdit() {
+    this.editingUser = null;
+    this.editingUserPassword = '';
+    this.resetErrors();
+  }
+
+  deleteUser(id: number) {
+    if (this.saving) return;
+    if (!confirm('Opravdu chceš smazat tohoto uživatele?')) return;
+    this.saving = true;
+    this.usersService.delete(id).subscribe({
+      next: (ok) => {
+        if (ok) this.users = this.users.filter((u) => u.id !== id);
+        this.saving = false;
+      },
+      error: () => {
+        this.errorMsg = 'Chyba při mazání uživatele';
+        this.saving = false;
+      },
+    });
+  }
+
+  private resetErrors() {
+    this.errorMsg = null;
   }
 }

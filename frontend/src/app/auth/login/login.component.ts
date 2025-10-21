@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
+import { AuthService, LoginResponse } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -30,24 +30,29 @@ export class LoginComponent {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  onLogin() {
+  onLogin(): void {
+    if (!this.username.trim() || !this.password.trim()) {
+      this.errorMsg = 'Zadejte uživatelské jméno a heslo';
+      return;
+    }
+
     this.loading = true;
     this.errorMsg = null;
 
     this.authService.login(this.username, this.password).subscribe({
-      next: (token) => {
-        if (token) {
-          console.log('✅ Přihlášení OK, token uložen:', token);
+      next: (res: LoginResponse | null) => {
+        this.loading = false;
+        if (res?.access_token) {
+          console.log('✅ Přihlášení OK:', res);
           this.router.navigate(['/dashboard']);
         } else {
           this.errorMsg = '❌ Neplatné přihlašovací údaje';
         }
-        this.loading = false;
       },
       error: (err) => {
+        this.loading = false;
         console.error('❌ Chyba při loginu:', err);
         this.errorMsg = 'Chyba serveru nebo neplatné údaje';
-        this.loading = false;
       },
     });
   }
