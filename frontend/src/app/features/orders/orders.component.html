@@ -1,32 +1,102 @@
-<div class="orders-container">
-  <h2>Seznam objednávek</h2>
+<div class="orders-page">
+  <h2>📦 Objednávky</h2>
 
-  <!-- Placeholder tabulka -->
-  <table class="orders-table">
+  <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
+
+  <div class="new-order">
+    <button class="add-btn" (click)="startNew()">➕ Přidat objednávku</button>
+  </div>
+
+  <div *ngIf="newOrder" class="form-box">
+    <div class="inner-form">
+      <input [(ngModel)]="newOrder.customer" placeholder="Zákazník" />
+
+      <select [(ngModel)]="newOrder.category" [ngModelOptions]="{standalone: true}" [compareWith]="compareCategory">
+        <option [ngValue]="undefined">-- Vyber kategorii --</option>
+        <option *ngFor="let cat of categories" [ngValue]="cat">{{ cat.name }}</option>
+      </select>
+
+      <select [(ngModel)]="newOrder.product" [ngModelOptions]="{standalone: true}" [compareWith]="compareProduct">
+        <option [ngValue]="undefined">-- Vyber produkt --</option>
+        <option *ngFor="let prod of products" [ngValue]="prod">{{ prod.name }}</option>
+      </select>
+
+      <input type="number" [(ngModel)]="newOrder.quantity" placeholder="Množství" />
+      <input type="date" [(ngModel)]="newOrder.date" placeholder="Datum" />
+
+      <input
+        [value]="(newOrder.product?.price ?? 0) * (newOrder.quantity || 0)"
+        placeholder="Cena celkem"
+        readonly
+      />
+
+      <button class="save-btn" (click)="saveNew()">💾 Uložit</button>
+      <button class="cancel-btn" (click)="cancelNew()">✖ Zrušit</button>
+    </div>
+  </div>
+
+  <table class="orders-table" *ngIf="orders.length > 0">
     <thead>
       <tr>
-        <th>ID</th>
+        <th class="id-col">ID</th>
         <th>Zákazník</th>
+        <th>Kategorie</th>
         <th>Produkt</th>
         <th>Množství</th>
-        <th>Celkem</th>
         <th>Datum</th>
-        <th>Akce</th>
+        <th>Cena celkem</th>
+        <th class="actions-col">Akce</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>1</td>
-        <td>Jan Novák</td>
-        <td>Rum Havana</td>
-        <td>2</td>
-        <td>800 Kč</td>
-        <td>2025-10-16</td>
-        <td>
-          <button>Upravit</button>
-          <button>Smazat</button>
-        </td>
+      <tr *ngFor="let order of orders" [ngClass]="{ editing: editingOrder?.id === order.id }">
+        <ng-container *ngIf="editingOrder?.id === order.id; else viewMode">
+          <td colspan="8">
+            <div class="form-box">
+              <div class="inner-form">
+                <input [(ngModel)]="editingOrder!.customer" placeholder="Zákazník" />
+
+                <select [(ngModel)]="editingOrder!.category" [ngModelOptions]="{standalone: true}" [compareWith]="compareCategory">
+                  <option [ngValue]="undefined">-- Vyber kategorii --</option>
+                  <option *ngFor="let cat of categories" [ngValue]="cat">{{ cat.name }}</option>
+                </select>
+
+                <select [(ngModel)]="editingOrder!.product" [ngModelOptions]="{standalone: true}" [compareWith]="compareProduct">
+                  <option [ngValue]="undefined">-- Vyber produkt --</option>
+                  <option *ngFor="let prod of products" [ngValue]="prod">{{ prod.name }}</option>
+                </select>
+
+                <input type="number" [(ngModel)]="editingOrder!.quantity" placeholder="Množství" />
+                <input type="date" [(ngModel)]="editingOrder!.date" placeholder="Datum" />
+
+                <input
+                  [value]="(editingOrder!.product?.price ?? 0) * editingOrder!.quantity"
+                  placeholder="Cena celkem"
+                  readonly
+                />
+
+                <button class="save-btn" (click)="saveEdit()">💾 Uložit</button>
+                <button class="cancel-btn" (click)="cancelEdit()">✖ Zrušit</button>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+        <ng-template #viewMode>
+          <td class="id-col">{{ order.id }}</td>
+          <td>{{ order.customer }}</td>
+          <td>{{ order.category?.name || '-' }}</td>
+          <td>{{ order.product?.name || '-' }}</td>
+          <td>{{ order.quantity }}</td>
+          <td>{{ order.date | date: 'yyyy-MM-dd' }}</td>
+          <td>{{ order.totalPrice }} Kč</td>
+          <td class="actions-col">
+            <button class="edit-btn" (click)="startEdit(order)">✏ Upravit</button>
+            <button class="delete-btn" (click)="deleteOrder(order.id)">🗑 Smazat</button>
+          </td>
+        </ng-template>
       </tr>
     </tbody>
   </table>
+
+  <p *ngIf="orders.length === 0 && !loading">Žádné objednávky nebyly nalezeny.</p>
 </div>

@@ -1,41 +1,187 @@
-.orders-container {
-  padding: 1rem;
-}
+.orders-page {
+  padding: 2rem;
+  background: linear-gradient(135deg, #343a40, #1c1f24);
+  min-height: 100vh;
+  color: #f1f1f1;
 
-.orders-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-
-  th, td {
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    text-align: left;
+  h2 {
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: rgba(0, 123, 255, 0.8);
+    font-weight: 700;
   }
 
-  th {
-    background: #f3f3f3;
-  }
-
-  button {
-    margin-right: 0.5rem;
-    padding: 0.4rem 0.8rem;
-    border: none;
-    background-color: #1976d2;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
+  .back-btn {
+    min-width: 110px;
+    height: 40px;
+    background: transparent;
+    border: 2px solid #007bff;
+    color: #007bff;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-weight: 500;
 
     &:hover {
-      background-color: #1565c0;
+      background: #007bff;
+      color: #fff;
     }
+  }
 
-    &:last-child {
-      background-color: #d32f2f;
+  .new-order {
+    margin-bottom: 1rem;
+
+    .add-btn {
+      min-width: 140px;
+      height: 40px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
 
       &:hover {
-        background-color: #b71c1c;
+        background: #0056b3;
       }
+    }
+  }
+
+  .form-box {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    .inner-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+
+      select,
+      input {
+        flex: 1 1 200px;
+        padding: 0.5rem;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        background: rgba(0, 0, 0, 0.2);
+        color: #fff;
+
+        option {
+          color: #000;
+        }
+      }
+
+      .save-btn,
+      .cancel-btn {
+        min-width: 110px;
+        height: 40px;
+        border-radius: 6px;
+        font-weight: 500;
+        color: #fff;
+      }
+
+      .save-btn {
+        background: #007bff;
+
+        &:hover {
+          background: #0056b3;
+        }
+      }
+
+      .cancel-btn {
+        background: #dc3545;
+
+        &:hover {
+          background: #bd2130;
+        }
+      }
+    }
+  }
+
+  .orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    table-layout: fixed;
+
+    th,
+    td {
+      padding: 0.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.1);
+      font-weight: 600;
+      color: #f1f1f1;
+      text-align: left;
+    }
+
+    .id-col {
+      width: 6%;
+      text-align: left;
+    }
+
+    .actions-col {
+      width: 22%;
+      text-align: right;
+
+      button {
+        min-width: 110px;
+        height: 40px;
+        margin-left: 0.3rem;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #fff;
+
+        &.edit-btn,
+        &.save-btn {
+          background: #007bff;
+
+          &:hover {
+            background: #0056b3;
+          }
+        }
+
+        &.delete-btn,
+        &.cancel-btn {
+          background: #dc3545;
+
+          &:hover {
+            background: #bd2130;
+          }
+        }
+      }
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .orders-table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .orders-table td.actions-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      text-align: left;
+    }
+
+    .orders-table td.actions-col button {
+      width: 100%;
+      margin: 0;
     }
   }
 }

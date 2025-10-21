@@ -1,64 +1,105 @@
 import { Injectable } from '@angular/core';
-import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
+import { Apollo, gql } from 'apollo-angular';
 import { Observable, map } from 'rxjs';
 
 export interface Order {
   id: number;
-  customerId: number;
-  productId: number;
+  customer: string;
   quantity: number;
-  total: number;
-  createdAt: string;
+  date: string;
+  totalPrice: number;
+  product?: { id: number; name: string; price: number };
+  category?: { id: number; name: string };
+}
+
+export interface CreateOrderInput {
+  customer: string;
+  productId: number;
+  categoryId?: number;
+  quantity: number;
+  date: string;
+}
+
+export interface UpdateOrderInput {
+  customer: string;
+  productId?: number;
+  categoryId?: number;
+  quantity: number;
+  date: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
   constructor(private apollo: Apollo) {}
 
-  // ✅ Získání všech objednávek
   getOrders(): Observable<Order[]> {
     return this.apollo
-      .watchQuery<{ orders: Order[] }>({
+      .watchQuery<{ orders: (Order | null)[] }>({
         query: gql`
           query GetOrders {
             orders {
               id
-              customerId
-              productId
+              customer
               quantity
-              total
-              createdAt
+              date
+              totalPrice
+              product { id name price }
+              category { id name }
             }
           }
         `,
+        fetchPolicy: 'network-only',
       })
-      .valueChanges.pipe(map((result) => result.data?.orders as Order[] ?? []));
+      .valueChanges.pipe(
+        map((res) => (res.data?.orders ?? []).filter((o): o is Order => !!o))
+      );
   }
 
-  // ✅ Vytvoření objednávky
-  createOrder(order: Partial<Order>): Observable<Order | null> {
+  create(input: CreateOrderInput): Observable<Order | null> {
     return this.apollo
       .mutate<{ createOrder: Order }>({
         mutation: gql`
           mutation CreateOrder($input: CreateOrderInput!) {
             createOrder(input: $input) {
               id
-              customerId
-              productId
+              customer
               quantity
-              total
-              createdAt
+              date
+              totalPrice
+              product { id name price }
+              category { id name }
             }
           }
         `,
-        variables: { input: order },
+        variables: { input },
+        refetchQueries: ['GetOrders'],
       })
-      .pipe(map((res) => (res.data?.createOrder as Order) ?? null));
+      .pipe(map((res) => res.data?.createOrder ?? null));
   }
 
-  // ✅ Smazání objednávky
-  deleteOrder(id: number): Observable<boolean> {
+  update(id: number, input: UpdateOrderInput): Observable<Order | null> {
+    return this.apollo
+      .mutate<{ updateOrder: Order }>({
+        mutation: gql`
+          mutation UpdateOrder($id: Int!, $input: UpdateOrderInput!) {
+            updateOrder(id: $id, input: $input) {
+              id
+              customer
+              quantity
+              date
+              totalPrice
+              product { id name price }
+              category { id name }
+            }
+          }
+        `,
+        variables: { id, input },
+        refetchQueries: ['GetOrders'],
+      })
+      .pipe(map((res) => res.data?.updateOrder ?? null));
+  }
+
+  delete(id: number): Observable<boolean> {
     return this.apollo
       .mutate<{ deleteOrder: boolean }>({
         mutation: gql`
@@ -67,6 +108,7 @@ export class OrdersService {
           }
         `,
         variables: { id },
+        refetchQueries: ['GetOrders'],
       })
       .pipe(map((res) => res.data?.deleteOrder ?? false));
   }
