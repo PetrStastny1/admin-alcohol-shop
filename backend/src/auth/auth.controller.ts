@@ -5,9 +5,8 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // Přihlášení admina
   @Post('login')
-  async loginAdmin(
+  async login(
     @Body('username') username: string,
     @Body('password') password: string,
   ) {
@@ -15,6 +14,6 @@ export class AuthController {
       throw new UnauthorizedException('Username a password jsou povinné');
     }
 
-    return this.authService.loginAdmin(username, password);
+    return this.authService.loginUser(username, password);
   }
 }

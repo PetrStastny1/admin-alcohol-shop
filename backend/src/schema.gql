@@ -58,11 +58,6 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-input LoginAdminInput {
-  password: String!
-  username: String!
-}
-
 type LoginResponseDto {
   access_token: String!
   id: Int!
@@ -85,7 +80,7 @@ type Mutation {
   deleteOrder(id: Int!): Boolean!
   deleteProduct(id: Int!): Product!
   deleteUser(id: Int!): Boolean!
-  loginAdmin(input: LoginAdminInput!): LoginResponseDto!
+  login(password: String!, username: String!): LoginResponseDto!
   updateCategory(input: UpdateCategoryInput!): Category!
   updateCustomer(id: Int!, input: UpdateCustomerInput!): Customer!
   updateOrder(id: Int!, input: UpdateOrderInput!): Order!
@@ -118,6 +113,7 @@ type Query {
   category(id: Int!): Category!
   customer(id: Int!): Customer!
   customers: [Customer!]!
+  me: LoginResponseDto!
   meAdmin: MeAdminResponse!
   order(id: Int!): Order!
   orders: [Order!]!
@@ -171,5 +167,5 @@ type User {
   email: String!
   id: Int!
   role: String!
-  username: String
+  username: String!
 }

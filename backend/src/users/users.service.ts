@@ -83,7 +83,7 @@ export class UsersService implements OnModuleInit {
     ];
 
     for (const u of defaultUsers) {
-      const existing = await this.findOneByEmail(u.email);
+      const existing = await this.findOneByUsername(u.username);
       if (!existing) {
         await this.create(u);
       }
@@ -100,9 +100,7 @@ export class UsersService implements OnModuleInit {
       );
     }
 
-    const existingUsername = await this.userRepository.findOne({
-      where: { username: input.username },
-    });
+    const existingUsername = await this.findOneByUsername(input.username);
     if (existingUsername) {
       throw new BadRequestException(
         `Uživatel s uživatelským jménem ${input.username} již existuje`,
@@ -123,6 +121,10 @@ export class UsersService implements OnModuleInit {
 
   async findOneByEmail(email: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { email } });
+  }
+
+  async findOneByUsername(username: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { username } });
   }
 
   async findOneById(id: number): Promise<User> {
@@ -151,9 +153,7 @@ export class UsersService implements OnModuleInit {
     }
 
     if (input.username !== undefined && input.username !== user.username) {
-      const existing = await this.userRepository.findOne({
-        where: { username: input.username },
-      });
+      const existing = await this.findOneByUsername(input.username);
       if (existing && existing.id !== input.id) {
         throw new BadRequestException(
           `Uživatel s uživatelským jménem ${input.username} již existuje`,
