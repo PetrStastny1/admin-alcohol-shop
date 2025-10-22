@@ -53,10 +53,10 @@
         </ng-container>
         <ng-template #viewMode>
           <td class="id-col">{{ prod.id }}</td>
-          <td>{{ prod.category?.name || '-' }}</td>
-          <td>{{ prod.name }}</td>
-          <td>{{ prod.description }}</td>
-          <td>{{ prod.price }} Kč</td>
+          <td class="category-col">{{ prod.category?.name || '-' }}</td>
+          <td class="name-col">{{ prod.name }}</td>
+          <td class="desc-col">{{ prod.description }}</td>
+          <td class="price-col">{{ prod.price }} Kč</td>
           <td class="actions-col">
             <button class="edit-btn" (click)="startEdit(prod)">✏ Upravit</button>
             <button class="delete-btn" (click)="deleteProduct(prod.id)">🗑 Smazat</button>

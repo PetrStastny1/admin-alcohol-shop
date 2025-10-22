@@ -42,12 +42,12 @@
     <thead>
       <tr>
         <th class="id-col">ID</th>
-        <th>Zákazník</th>
-        <th>Kategorie</th>
-        <th>Produkt</th>
-        <th>Množství</th>
-        <th>Datum</th>
-        <th>Cena celkem</th>
+        <th class="customer-col">Zákazník</th>
+        <th class="category-col">Kategorie</th>
+        <th class="product-col">Produkt</th>
+        <th class="qty-col">Množství</th>
+        <th class="date-col">Datum</th>
+        <th class="price-col">Cena celkem</th>
         <th class="actions-col">Akce</th>
       </tr>
     </thead>
@@ -89,12 +89,12 @@
         </ng-container>
         <ng-template #viewMode>
           <td class="id-col">{{ order.id }}</td>
-          <td>{{ order.customer.name }}</td>
-          <td>{{ order.category?.name || '-' }}</td>
-          <td>{{ order.product?.name || '-' }}</td>
-          <td>{{ order.quantity }}</td>
-          <td>{{ order.date | date: 'yyyy-MM-dd' }}</td>
-          <td>{{ order.totalPrice }} Kč</td>
+          <td class="customer-col">{{ order.customer.name }}</td>
+          <td class="category-col">{{ order.category?.name || '-' }}</td>
+          <td class="product-col">{{ order.product?.name || '-' }}</td>
+          <td class="qty-col">{{ order.quantity }}</td>
+          <td class="date-col">{{ order.date | date: 'yyyy-MM-dd' }}</td>
+          <td class="price-col">{{ order.totalPrice }} Kč</td>
           <td class="actions-col">
             <button class="edit-btn" (click)="startEdit(order)">✏ Upravit</button>
             <button class="delete-btn" (click)="deleteOrder(order.id)">🗑 Smazat</button>

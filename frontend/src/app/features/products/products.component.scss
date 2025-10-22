@@ -9,6 +9,7 @@
     font-size: 2rem;
     color: rgba(0, 123, 255, 0.8);
     font-weight: 700;
+    text-align: center;
   }
 
   .back-btn {
@@ -110,49 +111,46 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      text-align: center; // vše vycentrováno
     }
 
     th {
       background: rgba(255, 255, 255, 0.1);
       font-weight: 600;
       color: #f1f1f1;
-      text-align: left;
     }
 
+    /* Šířky sloupců */
     .id-col {
-      width: 2%;
-      text-align: left;
-    }
-    .name-col {
-      width: 30%;
+      width: 5%;
     }
     .category-col {
-      width: 10%;
+      width: 15%;
+    }
+    .name-col {
+      width: 20%;
+    }
+    .desc-col {
+      width: 30%;
     }
     .price-col {
       width: 10%;
     }
-    .desc-col {
-      width: 40%;
-    }
-
     .actions-col {
-      width: 22%;
-      text-align: right;
+      width: 20%;
 
       button {
-        min-width: 110px;
-        height: 40px;
-        margin-left: 0.3rem;
+        min-width: 100px;
+        height: 36px;
+        margin: 0 0.2rem;
         border-radius: 6px;
         border: none;
         cursor: pointer;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         font-weight: 500;
         color: #fff;
 
-        &.edit-btn,
-        &.save-btn {
+        &.edit-btn {
           background: #007bff;
 
           &:hover {
@@ -160,8 +158,7 @@
           }
         }
 
-        &.delete-btn,
-        &.cancel-btn {
+        &.delete-btn {
           background: #dc3545;
 
           &:hover {
@@ -187,7 +184,6 @@
       display: flex;
       flex-direction: column;
       gap: 0.3rem;
-      text-align: left;
     }
 
     .products-table td.actions-col button {

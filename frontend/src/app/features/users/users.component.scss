@@ -9,6 +9,7 @@
     font-size: 2rem;
     color: rgba(0, 123, 255, 0.85);
     font-weight: 700;
+    text-align: center;
   }
 
   .back-btn {
@@ -119,28 +120,43 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      text-align: center; // ✅ vše vycentrováno
     }
 
     th {
       background: rgba(255, 255, 255, 0.1);
       font-weight: 600;
       color: #f1f1f1;
-      text-align: left;
     }
 
+    /* Šířky sloupců */
     .id-col {
-      width: 8%;
-      text-align: left;
+      width: 5%;
+    }
+
+    .email-col {
+      width: 25%;
+    }
+
+    .username-col {
+      width: 20%;
+    }
+
+    .role-col {
+      width: 10%;
+    }
+
+    .created-col {
+      width: 18%;
     }
 
     .actions-col {
       width: 22%;
-      text-align: right;
 
       button {
         min-width: 110px;
         height: 40px;
-        margin-left: 0.4rem;
+        margin: 0 0.3rem;
         border-radius: 6px;
         border: none;
         cursor: pointer;
@@ -183,7 +199,6 @@
       display: flex;
       flex-direction: column;
       gap: 0.4rem;
-      text-align: left;
     }
 
     .users-table td.actions-col button {
