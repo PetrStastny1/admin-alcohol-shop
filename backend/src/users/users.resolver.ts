@@ -3,21 +3,19 @@ import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
-import { UseGuards, BadRequestException } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 
 @Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
-  // ✅ seznam všech uživatelů (jen admin)
   @UseGuards(GqlAuthGuard)
   @Query(() => [User], { name: 'users' })
   async getUsers(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
-  // ✅ detail jednoho uživatele (jen admin)
   @UseGuards(GqlAuthGuard)
   @Query(() => User, { name: 'user' })
   async getUser(
@@ -26,7 +24,6 @@ export class UsersResolver {
     return this.usersService.findOneById(id);
   }
 
-  // ✅ vytvoření uživatele (jen admin)
   @UseGuards(GqlAuthGuard)
   @Mutation(() => User, { name: 'createUser' })
   async createUser(
@@ -35,16 +32,15 @@ export class UsersResolver {
     return this.usersService.create(input);
   }
 
-  // ✅ aktualizace uživatele (jen admin)
   @UseGuards(GqlAuthGuard)
   @Mutation(() => User, { name: 'updateUser' })
   async updateUser(
+    @Args('id', { type: () => Int }) id: number,
     @Args('input') input: UpdateUserInput,
   ): Promise<User> {
-    return this.usersService.update(input);
+    return this.usersService.update(id, input);
   }
 
-  // ✅ smazání uživatele (jen admin)
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Boolean, { name: 'deleteUser' })
   async deleteUser(

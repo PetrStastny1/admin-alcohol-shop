@@ -56,30 +56,6 @@ export class UsersService implements OnModuleInit {
         password: 'password5',
         role: 'user',
       },
-      {
-        email: 'user6@example.com',
-        username: 'user6',
-        password: 'password6',
-        role: 'user',
-      },
-      {
-        email: 'user7@example.com',
-        username: 'user7',
-        password: 'password7',
-        role: 'user',
-      },
-      {
-        email: 'user8@example.com',
-        username: 'user8',
-        password: 'password8',
-        role: 'user',
-      },
-      {
-        email: 'user9@example.com',
-        username: 'user9',
-        password: 'password9',
-        role: 'user',
-      },
     ];
 
     for (const u of defaultUsers) {
@@ -139,12 +115,12 @@ export class UsersService implements OnModuleInit {
     return this.userRepository.find();
   }
 
-  async update(input: UpdateUserInput): Promise<User> {
-    const user = await this.findOneById(input.id);
+  async update(id: number, input: UpdateUserInput): Promise<User> {
+    const user = await this.findOneById(id);
 
     if (input.email !== undefined && input.email !== user.email) {
       const existing = await this.findOneByEmail(input.email);
-      if (existing && existing.id !== input.id) {
+      if (existing && existing.id !== id) {
         throw new BadRequestException(
           `Uživatel s emailem ${input.email} již existuje`,
         );
@@ -154,7 +130,7 @@ export class UsersService implements OnModuleInit {
 
     if (input.username !== undefined && input.username !== user.username) {
       const existing = await this.findOneByUsername(input.username);
-      if (existing && existing.id !== input.id) {
+      if (existing && existing.id !== id) {
         throw new BadRequestException(
           `Uživatel s uživatelským jménem ${input.username} již existuje`,
         );

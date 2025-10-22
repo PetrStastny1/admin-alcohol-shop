@@ -55,17 +55,78 @@ export class AppService implements OnModuleInit {
       await this.customersService.onModuleInit();
       await this.ordersService.onModuleInit();
 
-      const existingAdmin = await this.usersService.findOneByEmail('admin@example.com');
-      if (!existingAdmin) {
-        await this.usersService.create({
+      // ---- ✅ Seed users ----
+      const defaultUsers = [
+        {
           email: 'admin@example.com',
-          password: 'admin123',
           username: 'admin',
+          password: 'admin123',
           role: 'admin',
-        });
-        console.log('👤 Admin uživatel vytvořen');
+        },
+        {
+          email: 'user1@example.com',
+          username: 'user1',
+          password: 'password1',
+          role: 'user',
+        },
+        {
+          email: 'user2@example.com',
+          username: 'user2',
+          password: 'password2',
+          role: 'user',
+        },
+        {
+          email: 'user3@example.com',
+          username: 'user3',
+          password: 'password3',
+          role: 'user',
+        },
+        {
+          email: 'user4@example.com',
+          username: 'user4',
+          password: 'password4',
+          role: 'user',
+        },
+        {
+          email: 'user5@example.com',
+          username: 'user5',
+          password: 'password5',
+          role: 'user',
+        },
+        {
+          email: 'user6@example.com',
+          username: 'user6',
+          password: 'password6',
+          role: 'user',
+        },
+        {
+          email: 'user7@example.com',
+          username: 'user7',
+          password: 'password7',
+          role: 'user',
+        },
+        {
+          email: 'user8@example.com',
+          username: 'user8',
+          password: 'password8',
+          role: 'user',
+        },
+        {
+          email: 'user9@example.com',
+          username: 'user9',
+          password: 'password9',
+          role: 'user',
+        },
+      ];
+
+      for (const u of defaultUsers) {
+        const existing = await this.usersService.findOneByEmail(u.email);
+        if (!existing) {
+          await this.usersService.create(u);
+        }
       }
 
+      console.log('✅ Users seeded (admin + 9 users)');
       console.log('✅ DB seeded');
     } finally {
       await queryRunner.release();

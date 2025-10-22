@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Get, Param, ParseIntPipe, Put, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  ParseIntPipe,
+  Put,
+  Delete,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { CreateUserInput } from './dto/create-user.input';
@@ -32,7 +41,7 @@ export class UsersController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserInput: UpdateUserInput,
   ): Promise<User> {
-    return this.usersService.update({ ...updateUserInput, id });
+    return this.usersService.update(id, updateUserInput);
   }
 
   // ✅ Smazání uživatele

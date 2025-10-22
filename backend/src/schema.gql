@@ -85,7 +85,7 @@ type Mutation {
   updateCustomer(id: Int!, input: UpdateCustomerInput!): Customer!
   updateOrder(id: Int!, input: UpdateOrderInput!): Order!
   updateProduct(id: Int!, input: UpdateProductInput!): Product!
-  updateUser(input: UpdateUserInput!): User!
+  updateUser(id: Int!, input: UpdateUserInput!): User!
 }
 
 type Order {
@@ -156,7 +156,6 @@ input UpdateProductInput {
 
 input UpdateUserInput {
   email: String
-  id: Int!
   password: String
   role: String
   username: String

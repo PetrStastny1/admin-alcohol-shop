@@ -1,11 +1,8 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
 import { IsEmail, IsOptional, MinLength, Length } from 'class-validator';
 
 @InputType()
 export class UpdateUserInput {
-  @Field(() => Int)
-  id!: number;
-
   @Field({ nullable: true })
   @IsOptional()
   @Length(3, 50, { message: 'Uživatelské jméno musí mít 3–50 znaků' })
