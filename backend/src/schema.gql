@@ -118,6 +118,7 @@ type Query {
   meAdmin: MeAdminResponse!
   order(id: Int!): Order!
   orders: [Order!]!
+  ordersByCustomer(customerId: Int!): [Order!]!
   product(id: Int!): Product!
   products: [Product!]!
   productsByCategory(categoryId: Int!): [Product!]!

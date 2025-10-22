@@ -87,6 +87,18 @@ export class OrdersService implements OnModuleInit {
     return order;
   }
 
+  async findByCustomer(customerId: number): Promise<Order[]> {
+    const customer = await this.customerRepository.findOne({ where: { id: customerId } });
+    if (!customer) {
+      throw new NotFoundException(`Zákazník s ID ${customerId} nenalezen`);
+    }
+
+    return this.orderRepository.find({
+      where: { customer: { id: customerId } },
+      relations: ['category', 'product', 'customer'],
+    });
+  }
+
   async create(input: CreateOrderInput): Promise<Order> {
     if (input.quantity <= 0) {
       throw new BadRequestException(`Množství musí být větší než 0`);

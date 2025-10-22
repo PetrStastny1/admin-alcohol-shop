@@ -10,7 +10,6 @@ import { GqlAuthGuard } from '../auth/gql-auth.guard';
 export class CategoriesResolver {
   constructor(private readonly categoriesService: CategoriesService) {}
 
-  // --- Queries ---
   @Query(() => [Category], { name: 'categories' })
   async getCategories(): Promise<Category[]> {
     return this.categoriesService.findAll();
@@ -23,7 +22,6 @@ export class CategoriesResolver {
     return this.categoriesService.findOne(id);
   }
 
-  // --- Mutations (jen pro přihlášeného admina) ---
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Category, { name: 'createCategory' })
   async createCategory(
