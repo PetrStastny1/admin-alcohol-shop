@@ -4,12 +4,18 @@ import { Repository } from 'typeorm';
 import { Customer } from './customer.entity';
 import { CreateCustomerInput } from './dto/create-customer.input';
 import { UpdateCustomerInput } from './dto/update-customer.input';
+import { Order } from '../orders/order.entity';
+import { Product } from '../products/products.entity';
 
 @Injectable()
 export class CustomersService implements OnModuleInit {
   constructor(
     @InjectRepository(Customer)
     private readonly customerRepository: Repository<Customer>,
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
   ) {}
 
   async onModuleInit() {
@@ -17,23 +23,32 @@ export class CustomersService implements OnModuleInit {
       { name: 'Alice Johnson', email: 'alice@example.com', phone: '123456789', address: 'Praha' },
       { name: 'Bob Smith', email: 'bob@example.com', phone: '987654321', address: 'Brno' },
       { name: 'Charlie Brown', email: 'charlie@example.com', phone: '777888999', address: 'Ostrava' },
-      { name: 'Diana Prince', email: 'diana@example.com', phone: '111222333', address: 'Plzeň' },
-      { name: 'Ethan Hunt', email: 'ethan@example.com', phone: '222333444', address: 'Liberec' },
-      { name: 'Fiona White', email: 'fiona@example.com', phone: '444555666', address: 'Olomouc' },
-      { name: 'George Black', email: 'george@example.com', phone: '999000111', address: 'České Budějovice' },
-      { name: 'Hannah Green', email: 'hannah@example.com', phone: '666777888', address: 'Hradec Králové' },
-      { name: 'Ivan Red', email: 'ivan@example.com', phone: '321654987', address: 'Zlín' },
-      { name: 'Julia Blue', email: 'julia@example.com', phone: '741852963', address: 'Pardubice' },
     ];
 
     for (const c of defaultCustomers) {
-      const existing = await this.findByEmail(c.email);
-      if (!existing) {
-        await this.create(c);
+      let customer = await this.findByEmail(c.email);
+      if (!customer) {
+        customer = await this.create(c);
+      }
+
+      const products = await this.productRepository.find({ take: 3 });
+      if (products.length) {
+        for (let i = 0; i < 2; i++) {
+          const product = products[Math.floor(Math.random() * products.length)];
+          const order = this.orderRepository.create({
+            customer,
+            product,
+            category: product.category,
+            quantity: 1 + Math.floor(Math.random() * 3),
+            totalPrice: product.price,
+            date: new Date().toISOString(),
+          });
+          await this.orderRepository.save(order);
+        }
       }
     }
 
-    console.log('✅ Customers soft-seeded (10 položek)');
+    console.log('✅ Customers + orders soft-seeded');
   }
 
   async findAll(): Promise<Customer[]> {

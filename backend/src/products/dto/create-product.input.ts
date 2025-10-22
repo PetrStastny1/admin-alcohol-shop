@@ -26,9 +26,8 @@ export class CreateProductInput {
   @IsOptional()
   isActive?: boolean;
 
-  @Field(() => Int, { nullable: true })
-  @IsOptional()
+  @Field(() => Int)
   @IsNumber()
   @Min(0)
-  stock?: number;
+  stock!: number;
 }
