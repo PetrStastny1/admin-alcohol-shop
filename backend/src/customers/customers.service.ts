@@ -31,16 +31,17 @@ export class CustomersService implements OnModuleInit {
         customer = await this.create(c);
       }
 
-      const products = await this.productRepository.find({ take: 3 });
+      const products = await this.productRepository.find({ relations: ['category'], take: 3 });
       if (products.length) {
         for (let i = 0; i < 2; i++) {
           const product = products[Math.floor(Math.random() * products.length)];
+          const quantity = 1 + Math.floor(Math.random() * 3);
           const order = this.orderRepository.create({
             customer,
             product,
             category: product.category,
-            quantity: 1 + Math.floor(Math.random() * 3),
-            totalPrice: product.price,
+            quantity,
+            totalPrice: product.price * quantity,
             date: new Date().toISOString(),
           });
           await this.orderRepository.save(order);
