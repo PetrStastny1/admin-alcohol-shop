@@ -23,6 +23,13 @@ export class CustomersService implements OnModuleInit {
       { name: 'Alice Johnson', email: 'alice@example.com', phone: '123456789', address: 'Praha' },
       { name: 'Bob Smith', email: 'bob@example.com', phone: '987654321', address: 'Brno' },
       { name: 'Charlie Brown', email: 'charlie@example.com', phone: '777888999', address: 'Ostrava' },
+      { name: 'Diana Prince', email: 'diana@example.com', phone: '111222333', address: 'Plzeň' },
+      { name: 'Ethan Hunt', email: 'ethan@example.com', phone: '222333444', address: 'Liberec' },
+      { name: 'Fiona White', email: 'fiona@example.com', phone: '444555666', address: 'Olomouc' },
+      { name: 'George Black', email: 'george@example.com', phone: '999000111', address: 'České Budějovice' },
+      { name: 'Hannah Green', email: 'hannah@example.com', phone: '666777888', address: 'Hradec Králové' },
+      { name: 'Ivan Red', email: 'ivan@example.com', phone: '321654987', address: 'Zlín' },
+      { name: 'Julia Blue', email: 'julia@example.com', phone: '741852963', address: 'Pardubice' },
     ];
 
     for (const c of defaultCustomers) {
@@ -31,9 +38,10 @@ export class CustomersService implements OnModuleInit {
         customer = await this.create(c);
       }
 
-      const products = await this.productRepository.find({ relations: ['category'], take: 3 });
+      const products = await this.productRepository.find({ relations: ['category'], take: 5 });
       if (products.length) {
-        for (let i = 0; i < 2; i++) {
+        const numberOfOrders = 1 + Math.floor(Math.random() * 5);
+        for (let i = 0; i < numberOfOrders; i++) {
           const product = products[Math.floor(Math.random() * products.length)];
           const quantity = 1 + Math.floor(Math.random() * 3);
           const order = this.orderRepository.create({
@@ -42,14 +50,16 @@ export class CustomersService implements OnModuleInit {
             category: product.category,
             quantity,
             totalPrice: product.price * quantity,
-            date: new Date().toISOString(),
+            date: new Date(
+              Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000
+            ).toISOString(),
           });
           await this.orderRepository.save(order);
         }
       }
     }
 
-    console.log('✅ Customers + orders soft-seeded');
+    console.log('✅ Customers + random orders soft-seeded');
   }
 
   async findAll(): Promise<Customer[]> {
