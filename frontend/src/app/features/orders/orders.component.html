@@ -9,7 +9,10 @@
 
   <div *ngIf="newOrder" class="form-box">
     <div class="inner-form">
-      <input [(ngModel)]="newOrder.customer" placeholder="Zákazník" />
+      <select [(ngModel)]="newOrder.customer" [ngModelOptions]="{standalone: true}" [compareWith]="compareCustomer">
+        <option [ngValue]="undefined">-- Vyber zákazníka --</option>
+        <option *ngFor="let cust of customers" [ngValue]="cust">{{ cust.name }}</option>
+      </select>
 
       <select [(ngModel)]="newOrder.category" [ngModelOptions]="{standalone: true}" [compareWith]="compareCategory">
         <option [ngValue]="undefined">-- Vyber kategorii --</option>
@@ -54,7 +57,10 @@
           <td colspan="8">
             <div class="form-box">
               <div class="inner-form">
-                <input [(ngModel)]="editingOrder!.customer" placeholder="Zákazník" />
+                <select [(ngModel)]="editingOrder!.customer" [ngModelOptions]="{standalone: true}" [compareWith]="compareCustomer">
+                  <option [ngValue]="undefined">-- Vyber zákazníka --</option>
+                  <option *ngFor="let cust of customers" [ngValue]="cust">{{ cust.name }}</option>
+                </select>
 
                 <select [(ngModel)]="editingOrder!.category" [ngModelOptions]="{standalone: true}" [compareWith]="compareCategory">
                   <option [ngValue]="undefined">-- Vyber kategorii --</option>
@@ -83,7 +89,7 @@
         </ng-container>
         <ng-template #viewMode>
           <td class="id-col">{{ order.id }}</td>
-          <td>{{ order.customer }}</td>
+          <td>{{ order.customer.name }}</td>
           <td>{{ order.category?.name || '-' }}</td>
           <td>{{ order.product?.name || '-' }}</td>
           <td>{{ order.quantity }}</td>

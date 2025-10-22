@@ -89,7 +89,7 @@ export class UsersComponent implements OnInit {
 
   saveEdit() {
     if (!this.editingUser) return;
-    const input: UpdateUserInput = { id: this.editingUser.id };
+    const input: UpdateUserInput = {};
 
     if (this.editingUser.username?.trim()) {
       input.username = this.editingUser.username.trim();
@@ -105,7 +105,7 @@ export class UsersComponent implements OnInit {
     }
 
     this.saving = true;
-    this.usersService.update(input).subscribe({
+    this.usersService.update(this.editingUser.id, input).subscribe({
       next: (updated) => {
         if (updated) {
           this.users = this.users.map((u) => (u.id === updated.id ? updated : u));

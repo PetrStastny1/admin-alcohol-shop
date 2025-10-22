@@ -13,8 +13,8 @@
       <input [(ngModel)]="newUser.username" placeholder="Uživatelské jméno" />
       <input type="password" [(ngModel)]="newUser.password" placeholder="Heslo" />
       <select [(ngModel)]="newUser.role">
-        <option value="user">user</option>
-        <option value="admin">admin</option>
+        <option [ngValue]="'user'">user</option>
+        <option [ngValue]="'admin'">admin</option>
       </select>
       <button class="save-btn" (click)="saveNew()">💾 Uložit</button>
       <button class="cancel-btn" (click)="cancelNew()">✖ Zrušit</button>
@@ -42,8 +42,8 @@
                 <input [(ngModel)]="editingUser!.username" placeholder="Uživatelské jméno" />
                 <input type="password" [(ngModel)]="editingUserPassword" placeholder="Nové heslo" />
                 <select [(ngModel)]="editingUser!.role">
-                  <option value="user">user</option>
-                  <option value="admin">admin</option>
+                  <option [ngValue]="'user'">user</option>
+                  <option [ngValue]="'admin'">admin</option>
                 </select>
                 <button class="save-btn" (click)="saveEdit()">💾 Uložit</button>
                 <button class="cancel-btn" (click)="cancelEdit()">✖ Zrušit</button>
@@ -56,7 +56,7 @@
           <td>{{ u.email }}</td>
           <td>{{ u.username }}</td>
           <td>{{ u.role }}</td>
-          <td>{{ u.created_at | date: 'short' }}</td>
+          <td>{{ u.created_at | date: 'yyyy-MM-dd HH:mm' }}</td>
           <td class="actions-col">
             <button class="edit-btn" (click)="startEdit(u)">✏ Upravit</button>
             <button class="delete-btn" (click)="deleteUser(u.id)">🗑 Smazat</button>

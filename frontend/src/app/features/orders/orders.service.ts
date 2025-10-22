@@ -4,7 +4,7 @@ import { Observable, map } from 'rxjs';
 
 export interface Order {
   id: number;
-  customer: string;
+  customer: { id: number; name: string; email: string };
   quantity: number;
   date: string;
   totalPrice: number;
@@ -13,7 +13,7 @@ export interface Order {
 }
 
 export interface CreateOrderInput {
-  customer: string;
+  customerId: number;
   productId: number;
   categoryId?: number;
   quantity: number;
@@ -21,7 +21,7 @@ export interface CreateOrderInput {
 }
 
 export interface UpdateOrderInput {
-  customer: string;
+  customerId: number;
   productId?: number;
   categoryId?: number;
   quantity: number;
@@ -39,7 +39,7 @@ export class OrdersService {
           query GetOrders {
             orders {
               id
-              customer
+              customer { id name email }
               quantity
               date
               totalPrice
@@ -62,7 +62,7 @@ export class OrdersService {
           mutation CreateOrder($input: CreateOrderInput!) {
             createOrder(input: $input) {
               id
-              customer
+              customer { id name email }
               quantity
               date
               totalPrice
@@ -84,7 +84,7 @@ export class OrdersService {
           mutation UpdateOrder($id: Int!, $input: UpdateOrderInput!) {
             updateOrder(id: $id, input: $input) {
               id
-              customer
+              customer { id name email }
               quantity
               date
               totalPrice

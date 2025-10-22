@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { OrdersService, Order } from './orders.service';
 import { CategoriesService, Category } from '../categories/categories.service';
 import { ProductsService, Product } from '../products/products.service';
+import { CustomersService, Customer } from '../customers/customers.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -17,8 +18,9 @@ export class OrdersComponent implements OnInit {
   orders: Order[] = [];
   categories: Category[] = [];
   products: Product[] = [];
+  customers: Customer[] = [];
   editingOrder: Order | null = null;
-  newOrder: Partial<Order> | null = null;
+  newOrder: any | null = null;
   loading = false;
   saving = false;
   errorMsg: string | null = null;
@@ -27,6 +29,7 @@ export class OrdersComponent implements OnInit {
     private ordersService: OrdersService,
     private categoriesService: CategoriesService,
     private productsService: ProductsService,
+    private customersService: CustomersService,
     private router: Router
   ) {}
 
@@ -34,6 +37,7 @@ export class OrdersComponent implements OnInit {
     this.fetchOrders();
     this.fetchCategories();
     this.fetchProducts();
+    this.fetchCustomers();
   }
 
   goBack() {
@@ -67,8 +71,14 @@ export class OrdersComponent implements OnInit {
     });
   }
 
+  fetchCustomers() {
+    this.customersService.getAll().subscribe({
+      next: (data) => (this.customers = data),
+    });
+  }
+
   startNew() {
-    this.newOrder = { customer: '', quantity: 1, date: new Date().toISOString().split('T')[0] };
+    this.newOrder = { customer: null, product: null, category: null, quantity: 1, date: new Date().toISOString().split('T')[0] };
   }
 
   saveNew() {
@@ -77,8 +87,8 @@ export class OrdersComponent implements OnInit {
       return;
     }
     const input = {
-      customer: this.newOrder.customer,
-      productId: this.newOrder.product!.id,
+      customerId: this.newOrder.customer.id,
+      productId: this.newOrder.product.id,
       categoryId: this.newOrder.category?.id,
       quantity: this.newOrder.quantity ?? 1,
       date: this.newOrder.date ?? new Date().toISOString(),
@@ -103,7 +113,7 @@ export class OrdersComponent implements OnInit {
   saveEdit() {
     if (!this.editingOrder) return;
     const input = {
-      customer: this.editingOrder.customer,
+      customerId: this.editingOrder.customer.id,
       productId: this.editingOrder.product?.id,
       categoryId: this.editingOrder.category?.id,
       quantity: this.editingOrder.quantity,
@@ -140,5 +150,9 @@ export class OrdersComponent implements OnInit {
 
   compareProduct(p1: any, p2: any): boolean {
     return p1 && p2 ? p1.id === p2.id : p1 === p2;
+  }
+
+  compareCustomer(c1: any, c2: any): boolean {
+    return c1 && c2 ? c1.id === c2.id : c1 === c2;
   }
 }

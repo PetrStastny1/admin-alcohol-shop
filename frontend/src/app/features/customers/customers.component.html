@@ -30,8 +30,8 @@
         </div>
       </div>
       <ng-template #viewMode>
-        <div class="cust-row">
-          <div class="cust-info clickable" (click)="goToOrders(cust.id)">
+        <div class="cust-row clickable" (click)="goToOrders(cust.id)">
+          <div class="cust-info">
             <strong>{{ cust.name }}</strong>
             <span> — {{ cust.email }}</span>
             <span *ngIf="cust.phone"> | {{ cust.phone }}</span>
@@ -39,11 +39,12 @@
             <span> | Objednávky: {{ cust.orders?.length || 0 }}</span>
           </div>
           <div class="cust-actions">
-            <button class="edit-btn" (click)="startEdit(cust)">✏ Upravit</button>
-            <button class="delete-btn" (click)="deleteCustomer(cust.id)">🗑 Smazat</button>
+            <button class="edit-btn" (click)="startEdit(cust); $event.stopPropagation()">✏ Upravit</button>
+            <button class="delete-btn" (click)="deleteCustomer(cust.id); $event.stopPropagation()">🗑 Smazat</button>
           </div>
         </div>
       </ng-template>
     </li>
   </ul>
 </div>
+

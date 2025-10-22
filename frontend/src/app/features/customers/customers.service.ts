@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Apollo, gql } from 'apollo-angular';
+import { Observable, map } from 'rxjs';
 
 export interface Customer {
   id: number;
@@ -21,8 +19,8 @@ export interface CreateCustomerInput {
 }
 
 export interface UpdateCustomerInput {
-  name: string;
-  email: string;
+  name?: string;
+  email?: string;
   phone?: string;
   address?: string;
 }
@@ -33,7 +31,7 @@ export class CustomersService {
 
   getAll(): Observable<Customer[]> {
     return this.apollo
-      .watchQuery<{ customers: (Customer | undefined)[] }>({
+      .watchQuery<{ customers: (Customer | null)[] }>({
         query: gql`
           query GetCustomers {
             customers {
@@ -48,6 +46,7 @@ export class CustomersService {
             }
           }
         `,
+        fetchPolicy: 'network-only',
       })
       .valueChanges.pipe(
         map((res) =>
@@ -74,6 +73,7 @@ export class CustomersService {
           }
         `,
         variables: { input },
+        refetchQueries: ['GetCustomers'],
       })
       .pipe(map((res) => res.data?.createCustomer ?? null));
   }
@@ -96,6 +96,7 @@ export class CustomersService {
           }
         `,
         variables: { id, input },
+        refetchQueries: ['GetCustomers'],
       })
       .pipe(map((res) => res.data?.updateCustomer ?? null));
   }
@@ -109,6 +110,7 @@ export class CustomersService {
           }
         `,
         variables: { id },
+        refetchQueries: ['GetCustomers'],
       })
       .pipe(map((res) => res.data?.deleteCustomer ?? false));
   }

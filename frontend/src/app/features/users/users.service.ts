@@ -18,7 +18,6 @@ export interface CreateUserInput {
 }
 
 export interface UpdateUserInput {
-  id: number;
   email?: string;
   username?: string;
   password?: string;
@@ -70,12 +69,12 @@ export class UsersService {
       .pipe(map(res => res.data?.createUser ?? null));
   }
 
-  update(input: UpdateUserInput): Observable<User | null> {
+  update(id: number, input: UpdateUserInput): Observable<User | null> {
     return this.apollo
       .mutate<{ updateUser: User }>({
         mutation: gql`
-          mutation UpdateUser($input: UpdateUserInput!) {
-            updateUser(input: $input) {
+          mutation UpdateUser($id: Int!, $input: UpdateUserInput!) {
+            updateUser(id: $id, input: $input) {
               id
               email
               username
@@ -84,7 +83,7 @@ export class UsersService {
             }
           }
         `,
-        variables: { input },
+        variables: { id, input },
         refetchQueries: ['GetUsers'],
       })
       .pipe(map(res => res.data?.updateUser ?? null));

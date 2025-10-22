@@ -7,12 +7,12 @@
   h2 {
     margin-bottom: 1.5rem;
     font-size: 2rem;
-    color: rgba(0, 123, 255, 0.8);
+    color: rgba(0, 123, 255, 0.85);
     font-weight: 700;
   }
 
   .back-btn {
-    min-width: 110px;
+    min-width: 120px;
     height: 40px;
     background: transparent;
     border: 2px solid #007bff;
@@ -20,6 +20,7 @@
     border-radius: 8px;
     margin-bottom: 1rem;
     font-weight: 500;
+    transition: all 0.2s ease;
 
     &:hover {
       background: #007bff;
@@ -31,13 +32,14 @@
     margin-bottom: 1rem;
 
     .add-btn {
-      min-width: 160px;
+      min-width: 170px;
       height: 40px;
       background: #007bff;
       color: #fff;
       border: none;
       border-radius: 8px;
       font-weight: 500;
+      transition: all 0.2s ease;
 
       &:hover {
         background: #0056b3;
@@ -54,16 +56,22 @@
     .inner-form {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.8rem;
 
       select,
       input {
         flex: 1 1 200px;
-        padding: 0.5rem;
+        padding: 0.6rem;
         border-radius: 6px;
-        border: 1px solid #ccc;
-        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(0, 0, 0, 0.3);
         color: #fff;
+        transition: border 0.2s ease;
+
+        &:focus {
+          border: 1px solid #007bff;
+          outline: none;
+        }
 
         option {
           color: #000;
@@ -72,11 +80,12 @@
 
       .save-btn,
       .cancel-btn {
-        min-width: 110px;
+        min-width: 120px;
         height: 40px;
         border-radius: 6px;
         font-weight: 500;
         color: #fff;
+        transition: all 0.2s ease;
       }
 
       .save-btn {
@@ -105,7 +114,7 @@
 
     th,
     td {
-      padding: 0.8rem;
+      padding: 0.9rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       overflow: hidden;
       text-overflow: ellipsis;
@@ -131,16 +140,16 @@
       button {
         min-width: 110px;
         height: 40px;
-        margin-left: 0.3rem;
+        margin-left: 0.4rem;
         border-radius: 6px;
         border: none;
         cursor: pointer;
         font-size: 0.9rem;
         font-weight: 500;
         color: #fff;
+        transition: all 0.2s ease;
 
-        &.edit-btn,
-        &.save-btn {
+        &.edit-btn {
           background: #007bff;
 
           &:hover {
@@ -148,8 +157,7 @@
           }
         }
 
-        &.delete-btn,
-        &.cancel-btn {
+        &.delete-btn {
           background: #dc3545;
 
           &:hover {
@@ -174,7 +182,7 @@
     .users-table td.actions-col {
       display: flex;
       flex-direction: column;
-      gap: 0.3rem;
+      gap: 0.4rem;
       text-align: left;
     }
 
