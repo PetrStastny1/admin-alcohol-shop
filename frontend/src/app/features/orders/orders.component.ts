@@ -5,7 +5,7 @@ import { OrdersService, Order } from './orders.service';
 import { CategoriesService, Category } from '../categories/categories.service';
 import { ProductsService, Product } from '../products/products.service';
 import { CustomersService, Customer } from '../customers/customers.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-orders',
@@ -24,17 +24,24 @@ export class OrdersComponent implements OnInit {
   loading = false;
   saving = false;
   errorMsg: string | null = null;
+  customerIdFilter: number | null = null;
 
   constructor(
     private ordersService: OrdersService,
     private categoriesService: CategoriesService,
     private productsService: ProductsService,
     private customersService: CustomersService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.fetchOrders();
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('customerId');
+      this.customerIdFilter = id ? +id : null;
+      this.fetchOrders();
+    });
+
     this.fetchCategories();
     this.fetchProducts();
     this.fetchCustomers();
@@ -46,17 +53,29 @@ export class OrdersComponent implements OnInit {
 
   fetchOrders() {
     this.loading = true;
-    this.ordersService.getOrders().subscribe({
-      next: (data) => {
-        this.orders = data ?? [];
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.errorMsg = 'Nepodařilo se načíst objednávky';
-        this.loading = false;
-      },
-    });
+    if (this.customerIdFilter) {
+      this.ordersService.getOrdersByCustomer(this.customerIdFilter).subscribe({
+        next: (data) => {
+          this.orders = data ?? [];
+          this.loading = false;
+        },
+        error: () => {
+          this.errorMsg = 'Nepodařilo se načíst objednávky zákazníka';
+          this.loading = false;
+        },
+      });
+    } else {
+      this.ordersService.getOrders().subscribe({
+        next: (data) => {
+          this.orders = data ?? [];
+          this.loading = false;
+        },
+        error: () => {
+          this.errorMsg = 'Nepodařilo se načíst objednávky';
+          this.loading = false;
+        },
+      });
+    }
   }
 
   fetchCategories() {
@@ -78,7 +97,15 @@ export class OrdersComponent implements OnInit {
   }
 
   startNew() {
-    this.newOrder = { customer: null, product: null, category: null, quantity: 1, date: new Date().toISOString().split('T')[0] };
+    this.newOrder = {
+      customer: this.customerIdFilter
+        ? this.customers.find(c => c.id === this.customerIdFilter) ?? null
+        : null,
+      product: null,
+      category: null,
+      quantity: 1,
+      date: new Date().toISOString().split('T')[0],
+    };
   }
 
   saveNew() {
@@ -122,7 +149,9 @@ export class OrdersComponent implements OnInit {
     this.ordersService.update(this.editingOrder.id, input).subscribe({
       next: (updated) => {
         if (updated) {
-          this.orders = this.orders.map((o) => (o.id === updated.id ? updated : o));
+          this.orders = this.orders.map((o) =>
+            o.id === updated.id ? updated : o
+          );
         }
         this.editingOrder = null;
       },

@@ -42,7 +42,7 @@ export class CustomersComponent implements OnInit {
   }
 
   goToOrders(customerId: number) {
-    this.router.navigate(['/orders'], { queryParams: { customerId } });
+    this.router.navigate(['/orders', customerId]);
   }
 
   startNew() {

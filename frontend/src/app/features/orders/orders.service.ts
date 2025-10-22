@@ -55,6 +55,30 @@ export class OrdersService {
       );
   }
 
+  getOrdersByCustomer(customerId: number): Observable<Order[]> {
+    return this.apollo
+      .watchQuery<{ ordersByCustomer: (Order | null)[] }>({
+        query: gql`
+          query GetOrdersByCustomer($customerId: Int!) {
+            ordersByCustomer(customerId: $customerId) {
+              id
+              customer { id name email }
+              quantity
+              date
+              totalPrice
+              product { id name price }
+              category { id name }
+            }
+          }
+        `,
+        variables: { customerId },
+        fetchPolicy: 'network-only',
+      })
+      .valueChanges.pipe(
+        map((res) => (res.data?.ordersByCustomer ?? []).filter((o): o is Order => !!o))
+      );
+  }
+
   create(input: CreateOrderInput): Observable<Order | null> {
     return this.apollo
       .mutate<{ createOrder: Order }>({
@@ -72,7 +96,19 @@ export class OrdersService {
           }
         `,
         variables: { input },
-        refetchQueries: ['GetOrders'],
+        refetchQueries: [
+          'GetOrders',
+          {
+            query: gql`
+              query GetOrdersByCustomer($customerId: Int!) {
+                ordersByCustomer(customerId: $customerId) {
+                  id
+                }
+              }
+            `,
+            variables: { customerId: input.customerId },
+          },
+        ],
       })
       .pipe(map((res) => res.data?.createOrder ?? null));
   }
@@ -94,12 +130,24 @@ export class OrdersService {
           }
         `,
         variables: { id, input },
-        refetchQueries: ['GetOrders'],
+        refetchQueries: [
+          'GetOrders',
+          {
+            query: gql`
+              query GetOrdersByCustomer($customerId: Int!) {
+                ordersByCustomer(customerId: $customerId) {
+                  id
+                }
+              }
+            `,
+            variables: { customerId: input.customerId },
+          },
+        ],
       })
       .pipe(map((res) => res.data?.updateOrder ?? null));
   }
 
-  delete(id: number): Observable<boolean> {
+  delete(id: number, customerId?: number): Observable<boolean> {
     return this.apollo
       .mutate<{ deleteOrder: boolean }>({
         mutation: gql`
@@ -108,7 +156,23 @@ export class OrdersService {
           }
         `,
         variables: { id },
-        refetchQueries: ['GetOrders'],
+        refetchQueries: [
+          'GetOrders',
+          ...(customerId
+            ? [
+                {
+                  query: gql`
+                    query GetOrdersByCustomer($customerId: Int!) {
+                      ordersByCustomer(customerId: $customerId) {
+                        id
+                      }
+                    }
+                  `,
+                  variables: { customerId },
+                },
+              ]
+            : []),
+        ],
       })
       .pipe(map((res) => res.data?.deleteOrder ?? false));
   }
