@@ -26,6 +26,10 @@ export class Product {
   @Column({ default: true })
   isActive!: boolean;
 
+  @Field(() => Int)
+  @Column({ type: 'int', default: 0 })
+  stock!: number;
+
   @Field(() => [Order], { nullable: true })
   @OneToMany(() => Order, (order) => order.product)
   orders?: Order[];

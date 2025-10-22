@@ -26,4 +26,10 @@ export class UpdateProductInput {
   @Field(() => Boolean, { nullable: true })
   @IsOptional()
   isActive?: boolean;
+
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  stock?: number;
 }

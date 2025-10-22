@@ -35,6 +35,7 @@ input CreateProductInput {
   isActive: Boolean
   name: String!
   price: Float!
+  stock: Int
 }
 
 input CreateUserInput {
@@ -107,6 +108,7 @@ type Product {
   name: String!
   orders: [Order!]
   price: Float!
+  stock: Int!
 }
 
 type Query {
@@ -153,6 +155,7 @@ input UpdateProductInput {
   isActive: Boolean
   name: String
   price: Float
+  stock: Int
 }
 
 input UpdateUserInput {
