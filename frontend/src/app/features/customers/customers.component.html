@@ -1,12 +1,13 @@
 <div class="customers-page">
   <h2>👥 Zákazníci</h2>
+
   <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
 
   <div class="new-customer">
-    <button (click)="startNew()">➕ Přidat zákazníka</button>
+    <button class="add-btn" (click)="startNew()">➕ Přidat zákazníka</button>
   </div>
 
-  <div *ngIf="newCustomer" class="new-form">
+  <div *ngIf="newCustomer" class="form-box">
     <div class="inner-form">
       <input [(ngModel)]="newCustomer!.name" placeholder="Jméno" />
       <input [(ngModel)]="newCustomer!.email" placeholder="Email" />
@@ -17,34 +18,54 @@
     </div>
   </div>
 
-  <ul class="customer-list">
-    <li *ngFor="let cust of customers$ | async; trackBy: trackById">
-      <div *ngIf="editingCustomer?.id === cust.id; else viewMode">
-        <div class="edit-form">
-          <input [(ngModel)]="editingCustomer!.name" placeholder="Jméno" />
-          <input [(ngModel)]="editingCustomer!.email" placeholder="Email" />
-          <input [(ngModel)]="editingCustomer!.phone" placeholder="Telefon" />
-          <input [(ngModel)]="editingCustomer!.address" placeholder="Adresa" />
-          <button class="save-btn" (click)="saveEdit()">💾 Uložit</button>
-          <button class="cancel-btn" (click)="cancelEdit()">✖ Zrušit</button>
-        </div>
-      </div>
-      <ng-template #viewMode>
-        <div class="cust-row clickable" (click)="goToOrders(cust.id)">
-          <div class="cust-info">
-            <strong>{{ cust.name }}</strong>
-            <span> — {{ cust.email }}</span>
-            <span *ngIf="cust.phone"> | {{ cust.phone }}</span>
-            <span *ngIf="cust.address"> | {{ cust.address }}</span>
-            <span> | Objednávky: {{ cust.orders?.length || 0 }}</span>
-          </div>
-          <div class="cust-actions">
+  <table class="customers-table" *ngIf="customers$ | async as customers">
+    <thead>
+      <tr>
+        <th class="id-col">ID</th>
+        <th class="name-col">Jméno</th>
+        <th class="email-col">Email</th>
+        <th class="phone-col">Telefon</th>
+        <th class="address-col">Adresa</th>
+        <th class="orders-col">Objednávky</th>
+        <th class="actions-col">Akce</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let cust of customers; trackBy: trackById"
+        [ngClass]="{ editing: editingCustomer?.id === cust.id }"
+        class="clickable-row"
+        (click)="editingCustomer?.id === cust.id ? null : goToOrders(cust.id)"
+      >
+        <ng-container *ngIf="editingCustomer?.id === cust.id; else viewMode">
+          <td colspan="7">
+            <div class="form-box">
+              <div class="inner-form">
+                <input [(ngModel)]="editingCustomer!.name" placeholder="Jméno" />
+                <input [(ngModel)]="editingCustomer!.email" placeholder="Email" />
+                <input [(ngModel)]="editingCustomer!.phone" placeholder="Telefon" />
+                <input [(ngModel)]="editingCustomer!.address" placeholder="Adresa" />
+                <button class="save-btn" (click)="saveEdit(); $event.stopPropagation()">💾 Uložit</button>
+                <button class="cancel-btn" (click)="cancelEdit(); $event.stopPropagation()">✖ Zrušit</button>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+        <ng-template #viewMode>
+          <td class="id-col">{{ cust.id }}</td>
+          <td class="name-col">{{ cust.name }}</td>
+          <td class="email-col">{{ cust.email }}</td>
+          <td class="phone-col">{{ cust.phone || '-' }}</td>
+          <td class="address-col">{{ cust.address || '-' }}</td>
+          <td class="orders-col">{{ cust.orders?.length || 0 }}</td>
+          <td class="actions-col">
             <button class="edit-btn" (click)="startEdit(cust); $event.stopPropagation()">✏ Upravit</button>
             <button class="delete-btn" (click)="deleteCustomer(cust.id); $event.stopPropagation()">🗑 Smazat</button>
-          </div>
-        </div>
-      </ng-template>
-    </li>
-  </ul>
-</div>
+          </td>
+        </ng-template>
+      </tr>
+    </tbody>
+  </table>
 
+  <p *ngIf="(customers$ | async)?.length === 0">Žádní zákazníci nebyli nalezeni.</p>
+</div>

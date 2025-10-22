@@ -8,6 +8,7 @@ export interface Product {
   name: string;
   price: number;
   description?: string;
+  stock: number;
   category?: { id: number; name: string };
 }
 
@@ -15,13 +16,15 @@ export interface CreateProductInput {
   name: string;
   price: number;
   description?: string;
+  stock?: number;
   categoryId?: number;
 }
 
 export interface UpdateProductInput {
-  name: string;
-  price: number;
+  name?: string;
+  price?: number;
   description?: string;
+  stock?: number;
   categoryId?: number;
 }
 
@@ -39,6 +42,7 @@ export class ProductsService {
               name
               price
               description
+              stock
               category {
                 id
                 name
@@ -65,6 +69,7 @@ export class ProductsService {
               name
               price
               description
+              stock
               category {
                 id
                 name
@@ -92,6 +97,7 @@ export class ProductsService {
               name
               price
               description
+              stock
               category {
                 id
                 name
@@ -115,6 +121,7 @@ export class ProductsService {
               name
               price
               description
+              stock
               category {
                 id
                 name

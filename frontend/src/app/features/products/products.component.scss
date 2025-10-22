@@ -111,7 +111,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      text-align: center; // vše vycentrováno
+      text-align: center;
     }
 
     th {
@@ -120,24 +120,26 @@
       color: #f1f1f1;
     }
 
-    /* Šířky sloupců */
     .id-col {
-      width: 5%;
+      width: 2%;
     }
     .category-col {
-      width: 15%;
+      width: 10%;
     }
     .name-col {
       width: 20%;
     }
     .desc-col {
-      width: 30%;
+      width: 25%;
     }
     .price-col {
+      width: 5%;
+    }
+    .stock-col {
       width: 10%;
     }
     .actions-col {
-      width: 20%;
+      width: 15%;
 
       button {
         min-width: 100px;

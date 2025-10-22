@@ -17,15 +17,12 @@ export interface CreateOrderInput {
   productId: number;
   categoryId?: number;
   quantity: number;
-  date: string;
 }
 
 export interface UpdateOrderInput {
-  customerId: number;
   productId?: number;
   categoryId?: number;
-  quantity: number;
-  date: string;
+  quantity?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -130,19 +127,7 @@ export class OrdersService {
           }
         `,
         variables: { id, input },
-        refetchQueries: [
-          'GetOrders',
-          {
-            query: gql`
-              query GetOrdersByCustomer($customerId: Int!) {
-                ordersByCustomer(customerId: $customerId) {
-                  id
-                }
-              }
-            `,
-            variables: { customerId: input.customerId },
-          },
-        ],
+        refetchQueries: ['GetOrders'],
       })
       .pipe(map((res) => res.data?.updateOrder ?? null));
   }

@@ -16,6 +16,7 @@
       <input [(ngModel)]="newProduct.name" placeholder="Název" />
       <input [(ngModel)]="newProduct.description" placeholder="Popis" />
       <input type="number" [(ngModel)]="newProduct.price" placeholder="Cena" />
+      <input type="number" [(ngModel)]="newProduct.stock" placeholder="Sklad" />
       <button class="save-btn" (click)="saveNew()">💾 Uložit</button>
       <button class="cancel-btn" (click)="cancelNew()">✖ Zrušit</button>
     </div>
@@ -29,13 +30,14 @@
         <th class="name-col">Název</th>
         <th class="desc-col">Popis</th>
         <th class="price-col">Cena</th>
+        <th class="stock-col">Sklad</th>
         <th class="actions-col">Akce</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let prod of products" [ngClass]="{ editing: editingProduct?.id === prod.id }">
         <ng-container *ngIf="editingProduct?.id === prod.id; else viewMode">
-          <td colspan="6">
+          <td colspan="7">
             <div class="form-box">
               <div class="inner-form">
                 <select [(ngModel)]="editingProduct!.category" [ngModelOptions]="{standalone: true}">
@@ -45,6 +47,7 @@
                 <input [(ngModel)]="editingProduct!.name" placeholder="Název" />
                 <input [(ngModel)]="editingProduct!.description" placeholder="Popis" />
                 <input type="number" [(ngModel)]="editingProduct!.price" placeholder="Cena" />
+                <input type="number" [(ngModel)]="editingProduct!.stock" placeholder="Sklad" />
                 <button class="save-btn" (click)="saveEdit()">💾 Uložit</button>
                 <button class="cancel-btn" (click)="cancelEdit()">✖ Zrušit</button>
               </div>
@@ -57,6 +60,7 @@
           <td class="name-col">{{ prod.name }}</td>
           <td class="desc-col">{{ prod.description }}</td>
           <td class="price-col">{{ prod.price }} Kč</td>
+          <td class="stock-col">{{ prod.stock }}</td>
           <td class="actions-col">
             <button class="edit-btn" (click)="startEdit(prod)">✏ Upravit</button>
             <button class="delete-btn" (click)="deleteProduct(prod.id)">🗑 Smazat</button>

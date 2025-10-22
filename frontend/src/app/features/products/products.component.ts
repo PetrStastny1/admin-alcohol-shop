@@ -69,7 +69,13 @@ export class ProductsComponent implements OnInit {
 
   startNew() {
     this.resetErrors();
-    this.newProduct = { name: '', description: '', price: 0, category: undefined };
+    this.newProduct = {
+      name: '',
+      description: '',
+      price: 0,
+      stock: 0,
+      category: undefined,
+    };
   }
 
   saveNew() {
@@ -77,11 +83,16 @@ export class ProductsComponent implements OnInit {
       this.errorMsg = 'Vyplňte název a cenu';
       return;
     }
+    if (this.newProduct.stock == null || this.newProduct.stock < 0) {
+      this.errorMsg = 'Sklad nesmí být záporný';
+      return;
+    }
     this.saving = true;
     const input = {
       name: this.newProduct.name.trim(),
       description: this.newProduct.description?.trim() ?? '',
       price: this.newProduct.price,
+      stock: this.newProduct.stock,
       categoryId: this.newProduct.category
         ? this.newProduct.category.id
         : this.categoryId ?? undefined,
@@ -116,11 +127,16 @@ export class ProductsComponent implements OnInit {
       this.errorMsg = 'Vyplňte název a cenu';
       return;
     }
+    if (this.editingProduct.stock == null || this.editingProduct.stock < 0) {
+      this.errorMsg = 'Sklad nesmí být záporný';
+      return;
+    }
     this.saving = true;
     const input = {
       name: this.editingProduct.name.trim(),
       description: this.editingProduct.description?.trim() ?? '',
       price: this.editingProduct.price,
+      stock: this.editingProduct.stock,
       categoryId: this.editingProduct.category?.id ?? this.categoryId ?? undefined,
     };
     this.productsService.update(this.editingProduct.id, input).subscribe({

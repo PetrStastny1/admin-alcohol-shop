@@ -20,11 +20,18 @@ export class OrdersComponent implements OnInit {
   products: Product[] = [];
   customers: Customer[] = [];
   editingOrder: Order | null = null;
-  newOrder: any | null = null;
+  newOrder: {
+    customer: Customer | null;
+    product: Product | null;
+    category: Category | null;
+    quantity: number;
+    date: string;
+  } | null = null;
   loading = false;
   saving = false;
   errorMsg: string | null = null;
   customerIdFilter: number | null = null;
+  today = new Date().toISOString().split('T')[0];
 
   constructor(
     private ordersService: OrdersService,
@@ -104,7 +111,7 @@ export class OrdersComponent implements OnInit {
       product: null,
       category: null,
       quantity: 1,
-      date: new Date().toISOString().split('T')[0],
+      date: this.today,
     };
   }
 
@@ -118,7 +125,7 @@ export class OrdersComponent implements OnInit {
       productId: this.newOrder.product.id,
       categoryId: this.newOrder.category?.id,
       quantity: this.newOrder.quantity ?? 1,
-      date: this.newOrder.date ?? new Date().toISOString(),
+      date: this.newOrder.date,
     };
     this.ordersService.create(input).subscribe({
       next: (created) => {
@@ -165,7 +172,7 @@ export class OrdersComponent implements OnInit {
 
   deleteOrder(id: number) {
     if (!confirm('Opravdu chceš smazat tuto objednávku?')) return;
-    this.ordersService.delete(id).subscribe({
+    this.ordersService.delete(id, this.customerIdFilter ?? undefined).subscribe({
       next: (ok) => {
         if (ok) this.orders = this.orders.filter((o) => o.id !== id);
       },

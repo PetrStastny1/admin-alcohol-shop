@@ -9,23 +9,23 @@
 
   <div *ngIf="newOrder" class="form-box">
     <div class="inner-form">
-      <select [(ngModel)]="newOrder.customer" [ngModelOptions]="{standalone: true}" [compareWith]="compareCustomer">
+      <select [(ngModel)]="newOrder.customer" [compareWith]="compareCustomer">
         <option [ngValue]="undefined">-- Vyber zákazníka --</option>
         <option *ngFor="let cust of customers" [ngValue]="cust">{{ cust.name }}</option>
       </select>
 
-      <select [(ngModel)]="newOrder.category" [ngModelOptions]="{standalone: true}" [compareWith]="compareCategory">
+      <select [(ngModel)]="newOrder.category" [compareWith]="compareCategory">
         <option [ngValue]="undefined">-- Vyber kategorii --</option>
         <option *ngFor="let cat of categories" [ngValue]="cat">{{ cat.name }}</option>
       </select>
 
-      <select [(ngModel)]="newOrder.product" [ngModelOptions]="{standalone: true}" [compareWith]="compareProduct">
+      <select [(ngModel)]="newOrder.product" [compareWith]="compareProduct">
         <option [ngValue]="undefined">-- Vyber produkt --</option>
         <option *ngFor="let prod of products" [ngValue]="prod">{{ prod.name }}</option>
       </select>
 
       <input type="number" [(ngModel)]="newOrder.quantity" placeholder="Množství" />
-      <input type="date" [(ngModel)]="newOrder.date" placeholder="Datum" />
+      <input type="date" [(ngModel)]="newOrder.date" [min]="today" />
 
       <input
         [value]="(newOrder.product?.price ?? 0) * (newOrder.quantity || 0)"
@@ -57,23 +57,23 @@
           <td colspan="8">
             <div class="form-box">
               <div class="inner-form">
-                <select [(ngModel)]="editingOrder!.customer" [ngModelOptions]="{standalone: true}" [compareWith]="compareCustomer">
+                <select [(ngModel)]="editingOrder!.customer" [compareWith]="compareCustomer">
                   <option [ngValue]="undefined">-- Vyber zákazníka --</option>
                   <option *ngFor="let cust of customers" [ngValue]="cust">{{ cust.name }}</option>
                 </select>
 
-                <select [(ngModel)]="editingOrder!.category" [ngModelOptions]="{standalone: true}" [compareWith]="compareCategory">
+                <select [(ngModel)]="editingOrder!.category" [compareWith]="compareCategory">
                   <option [ngValue]="undefined">-- Vyber kategorii --</option>
                   <option *ngFor="let cat of categories" [ngValue]="cat">{{ cat.name }}</option>
                 </select>
 
-                <select [(ngModel)]="editingOrder!.product" [ngModelOptions]="{standalone: true}" [compareWith]="compareProduct">
+                <select [(ngModel)]="editingOrder!.product" [compareWith]="compareProduct">
                   <option [ngValue]="undefined">-- Vyber produkt --</option>
                   <option *ngFor="let prod of products" [ngValue]="prod">{{ prod.name }}</option>
                 </select>
 
                 <input type="number" [(ngModel)]="editingOrder!.quantity" placeholder="Množství" />
-                <input type="date" [(ngModel)]="editingOrder!.date" placeholder="Datum" />
+                <input type="date" [(ngModel)]="editingOrder!.date" [min]="today" />
 
                 <input
                   [value]="(editingOrder!.product?.price ?? 0) * editingOrder!.quantity"
