@@ -5,40 +5,41 @@ import { CreateOrderInput } from './dto/create-order.input';
 import { UpdateOrderInput } from './dto/update-order.input';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Resolver(() => Order)
 export class OrdersResolver {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Query(() => [Order], { name: 'orders' })
+  @UseGuards(GqlAuthGuard)
   async findAll(): Promise<Order[]> {
     return this.ordersService.findAll();
   }
 
   @Query(() => Order, { name: 'order' })
-  async findOne(
-    @Args('id', { type: () => Int }) id: number,
-  ): Promise<Order> {
+  @UseGuards(GqlAuthGuard)
+  async findOne(@Args('id', { type: () => Int }) id: number): Promise<Order> {
     return this.ordersService.findOne(id);
   }
 
   @Query(() => [Order], { name: 'ordersByCustomer' })
-  async findByCustomer(
-    @Args('customerId', { type: () => Int }) customerId: number,
-  ): Promise<Order[]> {
+  @UseGuards(GqlAuthGuard)
+  async findByCustomer(@Args('customerId', { type: () => Int }) customerId: number): Promise<Order[]> {
     return this.ordersService.findByCustomer(customerId);
   }
 
-  @UseGuards(GqlAuthGuard)
   @Mutation(() => Order, { name: 'createOrder' })
-  async createOrder(
-    @Args('input') input: CreateOrderInput,
-  ): Promise<Order> {
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles('admin')
+  async createOrder(@Args('input') input: CreateOrderInput): Promise<Order> {
     return this.ordersService.create(input);
   }
 
-  @UseGuards(GqlAuthGuard)
   @Mutation(() => Order, { name: 'updateOrder' })
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles('admin')
   async updateOrder(
     @Args('id', { type: () => Int }) id: number,
     @Args('input') input: UpdateOrderInput,
@@ -46,11 +47,10 @@ export class OrdersResolver {
     return this.ordersService.update(id, input);
   }
 
-  @UseGuards(GqlAuthGuard)
   @Mutation(() => Boolean, { name: 'deleteOrder' })
-  async deleteOrder(
-    @Args('id', { type: () => Int }) id: number,
-  ): Promise<boolean> {
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles('admin')
+  async deleteOrder(@Args('id', { type: () => Int }) id: number): Promise<boolean> {
     return this.ordersService.delete(id);
   }
 }

@@ -118,11 +118,17 @@ export class ProductsService implements OnModuleInit {
     return this.productRepository.save(product);
   }
 
-  async delete(id: number): Promise<Product> {
+  async delete(id: number): Promise<boolean> {
     const product = await this.findOne(id);
-    if (!product.isActive) return product;
+    if (!product) {
+      throw new NotFoundException(`Produkt s ID ${id} nenalezen`);
+    }
+    if (!product.isActive) {
+      return false;
+    }
     product.isActive = false;
-    return this.productRepository.save(product);
+    await this.productRepository.save(product);
+    return true;
   }
 
   async onModuleInit() {

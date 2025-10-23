@@ -3,6 +3,8 @@ import { ProductsService } from './products.service';
 import { Product } from './products.entity';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
 
@@ -27,8 +29,9 @@ export class ProductsResolver {
     return this.productsService.findByCategory(categoryId);
   }
 
-  @UseGuards(GqlAuthGuard)
   @Mutation(() => Product, { name: 'createProduct' })
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles('admin')
   async createProduct(@Args('input') input: CreateProductInput): Promise<Product> {
     return this.productsService.create({
       name: input.name,
@@ -39,8 +42,9 @@ export class ProductsResolver {
     });
   }
 
-  @UseGuards(GqlAuthGuard)
   @Mutation(() => Product, { name: 'updateProduct' })
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles('admin')
   async updateProduct(
     @Args('id', { type: () => Int }) id: number,
     @Args('input') input: UpdateProductInput,
@@ -54,9 +58,10 @@ export class ProductsResolver {
     });
   }
 
-  @UseGuards(GqlAuthGuard)
-  @Mutation(() => Product, { name: 'deleteProduct' })
-  async deleteProduct(@Args('id', { type: () => Int }) id: number): Promise<Product> {
+  @Mutation(() => Boolean, { name: 'deleteProduct' })
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles('admin')
+  async deleteProduct(@Args('id', { type: () => Int }) id: number): Promise<boolean> {
     return this.productsService.delete(id);
   }
 }

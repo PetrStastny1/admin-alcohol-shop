@@ -10,7 +10,6 @@ import { validate } from './env.validation';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { AdminModule } from './auth/admin.module';
 import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { CategoriesModule } from './categories/categories.module';
@@ -19,7 +18,7 @@ import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
-    // --- Globální konfigurace s validací ---
+    // --- Globální konfigurace ---
     ConfigModule.forRoot({
       isGlobal: true,
       validate,
@@ -33,7 +32,7 @@ import { OrdersModule } from './orders/orders.module';
       username: process.env.DB_USERNAME || 'root',
       password: process.env.DB_PASSWORD || '',
       database: process.env.DB_NAME || 'app_db',
-      entities: [join(__dirname, '/**/*.entity{.ts,.js}')],
+      autoLoadEntities: true,
       synchronize: true,
       logging: process.env.TYPEORM_LOGGING === 'true',
     }),
@@ -45,12 +44,11 @@ import { OrdersModule } from './orders/orders.module';
       sortSchema: true,
       playground: process.env.NODE_ENV !== 'production',
       introspection: true,
-      context: ({ req }: { req: any }) => ({ req }),
+      context: ({ req }: { req: Request }) => ({ req, user: (req as any).user }),
     }),
 
     // --- Moduly aplikace ---
     AuthModule,
-    AdminModule,
     UsersModule,
     ProductsModule,
     CategoriesModule,

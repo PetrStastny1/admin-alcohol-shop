@@ -3,6 +3,8 @@ import { CustomersService } from './customers.service';
 import { Customer } from './customer.entity';
 import { UseGuards, BadRequestException } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { CreateCustomerInput } from './dto/create-customer.input';
 import { UpdateCustomerInput } from './dto/update-customer.input';
 
@@ -11,17 +13,20 @@ export class CustomersResolver {
   constructor(private readonly customersService: CustomersService) {}
 
   @Query(() => [Customer], { name: 'customers' })
+  @UseGuards(GqlAuthGuard)
   async getCustomers(): Promise<Customer[]> {
     return this.customersService.findAll();
   }
 
   @Query(() => Customer, { name: 'customer' })
+  @UseGuards(GqlAuthGuard)
   async getCustomer(@Args('id', { type: () => Int }) id: number): Promise<Customer> {
     return this.customersService.findOne(id);
   }
 
-  @UseGuards(GqlAuthGuard)
   @Mutation(() => Customer, { name: 'createCustomer' })
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles('admin')
   async createCustomer(@Args('input') input: CreateCustomerInput): Promise<Customer> {
     const existing = await this.customersService.findByEmail(input.email);
     if (existing) {
@@ -30,8 +35,9 @@ export class CustomersResolver {
     return this.customersService.create(input);
   }
 
-  @UseGuards(GqlAuthGuard)
   @Mutation(() => Customer, { name: 'updateCustomer' })
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles('admin')
   async updateCustomer(
     @Args('id', { type: () => Int }) id: number,
     @Args('input') input: UpdateCustomerInput,
@@ -39,8 +45,9 @@ export class CustomersResolver {
     return this.customersService.update(id, input);
   }
 
-  @UseGuards(GqlAuthGuard)
   @Mutation(() => Boolean, { name: 'deleteCustomer' })
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles('admin')
   async deleteCustomer(@Args('id', { type: () => Int }) id: number): Promise<boolean> {
     return this.customersService.delete(id);
   }

@@ -65,11 +65,6 @@ type LoginResponseDto {
   username: String!
 }
 
-type MeAdminResponse {
-  id: Int!
-  username: String!
-}
-
 type Mutation {
   createCategory(input: CreateCategoryInput!): Category!
   createCustomer(input: CreateCustomerInput!): Customer!
@@ -79,7 +74,7 @@ type Mutation {
   deleteCategory(id: Int!): Boolean!
   deleteCustomer(id: Int!): Boolean!
   deleteOrder(id: Int!): Boolean!
-  deleteProduct(id: Int!): Product!
+  deleteProduct(id: Int!): Boolean!
   deleteUser(id: Int!): Boolean!
   login(password: String!, username: String!): LoginResponseDto!
   updateCategory(input: UpdateCategoryInput!): Category!
@@ -117,7 +112,6 @@ type Query {
   customer(id: Int!): Customer!
   customers: [Customer!]!
   me: LoginResponseDto!
-  meAdmin: MeAdminResponse!
   order(id: Int!): Order!
   orders: [Order!]!
   ordersByCustomer(customerId: Int!): [Order!]!
