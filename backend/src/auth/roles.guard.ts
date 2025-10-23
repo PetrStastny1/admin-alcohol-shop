@@ -20,6 +20,10 @@ export class RolesGuard implements CanActivate {
     const user = ctx.getContext().req.user;
     if (!user) return false;
 
+    if (user.role === 'admin') {
+      return true;
+    }
+
     return requiredRoles.includes(user.role);
   }
 }
