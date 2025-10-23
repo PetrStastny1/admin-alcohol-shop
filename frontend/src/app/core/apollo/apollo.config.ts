@@ -1,37 +1,44 @@
-import { APOLLO_OPTIONS } from 'apollo-angular';
-import { InMemoryCache, createHttpLink, ApolloLink } from '@apollo/client/core';
-import { setContext } from '@apollo/client/link/context';
-import { HttpHeaders } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { InMemoryCache, ApolloLink, DefaultOptions, ApolloClientOptions } from '@apollo/client/core';
+import { HttpLink } from 'apollo-angular/http';
 
-export const APOLLO_PROVIDER = {
-  provide: APOLLO_OPTIONS,
-  useFactory: () => {
-    const httpLink = createHttpLink({
-      uri: 'http://localhost:3000/graphql',
-    });
+const defaultOptions: DefaultOptions = {
+  watchQuery: {
+    fetchPolicy: 'no-cache',
+    errorPolicy: 'all',
+  },
+  query: {
+    fetchPolicy: 'no-cache',
+    errorPolicy: 'all',
+  },
+  mutate: {
+    errorPolicy: 'all',
+  },
+};
 
-    const authLink = setContext((_, prevContext) => {
-      const token = localStorage.getItem('token');
+export function apolloOptions(): ApolloClientOptions {
+  const httpLink = inject(HttpLink);
 
-      // použijeme HttpHeaders místo obyčejného objektu
-      let headers = prevContext.headers as HttpHeaders | undefined;
-      if (!headers) {
-        headers = new HttpHeaders();
-      }
+  const authLink = new ApolloLink((operation, forward) => {
+    const token = localStorage.getItem('token');
 
-      if (token) {
-        headers = headers.set('Authorization', `Bearer ${token}`);
-      }
-
+    operation.setContext(({ headers }: { headers?: Record<string, string> }) => {
       return {
-        ...prevContext,
-        headers,
+        headers: {
+          ...(headers || {}),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       };
     });
 
-    return {
-      link: ApolloLink.from([authLink, httpLink]),
-      cache: new InMemoryCache(),
-    };
-  },
-};
+    return forward(operation);
+  });
+
+  return {
+    link: authLink.concat(
+      httpLink.create({ uri: 'http://localhost:3000/graphql' })
+    ),
+    cache: new InMemoryCache(),
+    defaultOptions,
+  };
+}

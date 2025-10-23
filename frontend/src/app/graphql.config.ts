@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { InMemoryCache, ApolloLink, DefaultOptions } from '@apollo/client/core';
+import { InMemoryCache, ApolloLink, DefaultOptions, ApolloClientOptions } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
 
 const defaultOptions: DefaultOptions = {
@@ -16,17 +16,21 @@ const defaultOptions: DefaultOptions = {
   },
 };
 
-export const apolloOptions = () => {
+export function apolloOptions(): ApolloClientOptions {
   const httpLink = inject(HttpLink);
 
   const authLink = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem('token');
-    operation.setContext(({ headers = {} }) => ({
-      headers: {
-        ...headers,
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    }));
+
+    operation.setContext(({ headers = {} }) => {
+      return {
+        headers: {
+          ...(headers as Record<string, string>),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      };
+    });
+
     return forward(operation);
   });
 
@@ -37,4 +41,4 @@ export const apolloOptions = () => {
     cache: new InMemoryCache(),
     defaultOptions,
   };
-};
+}
