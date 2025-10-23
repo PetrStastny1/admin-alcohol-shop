@@ -24,6 +24,18 @@ export interface UpdateUserInput {
   role?: string;
 }
 
+const GET_USERS = gql`
+  query GetUsers {
+    users {
+      id
+      email
+      username
+      role
+      created_at
+    }
+  }
+`;
+
 @Injectable({ providedIn: 'root' })
 export class UsersService {
   constructor(private apollo: Apollo) {}
@@ -31,21 +43,11 @@ export class UsersService {
   getUsers(): Observable<User[]> {
     return this.apollo
       .watchQuery<{ users: (User | null)[] }>({
-        query: gql`
-          query GetUsers {
-            users {
-              id
-              email
-              username
-              role
-              created_at
-            }
-          }
-        `,
+        query: GET_USERS,
         fetchPolicy: 'network-only',
       })
       .valueChanges.pipe(
-        map(res => (res.data?.users ?? []).filter((u): u is User => !!u))
+        map((res) => (res.data?.users ?? []).filter((u): u is User => !!u))
       );
   }
 
@@ -64,9 +66,10 @@ export class UsersService {
           }
         `,
         variables: { input },
-        refetchQueries: ['GetUsers'],
+        refetchQueries: [{ query: GET_USERS }],
+        awaitRefetchQueries: true,
       })
-      .pipe(map(res => res.data?.createUser ?? null));
+      .pipe(map((res) => res.data?.createUser ?? null));
   }
 
   update(id: number, input: UpdateUserInput): Observable<User | null> {
@@ -84,9 +87,10 @@ export class UsersService {
           }
         `,
         variables: { id, input },
-        refetchQueries: ['GetUsers'],
+        refetchQueries: [{ query: GET_USERS }],
+        awaitRefetchQueries: true,
       })
-      .pipe(map(res => res.data?.updateUser ?? null));
+      .pipe(map((res) => res.data?.updateUser ?? null));
   }
 
   delete(id: number): Observable<boolean> {
@@ -98,8 +102,9 @@ export class UsersService {
           }
         `,
         variables: { id },
-        refetchQueries: ['GetUsers'],
+        refetchQueries: [{ query: GET_USERS }],
+        awaitRefetchQueries: true,
       })
-      .pipe(map(res => res.data?.deleteUser ?? false));
+      .pipe(map((res) => res.data?.deleteUser ?? false));
   }
 }

@@ -106,7 +106,23 @@ export class ProductsService {
           }
         `,
         variables: { input },
-        refetchQueries: ['GetProducts'],
+        refetchQueries: [
+          'GetProducts',
+          ...(input.categoryId
+            ? [
+                {
+                  query: gql`
+                    query GetProductsByCategory($categoryId: Int!) {
+                      productsByCategory(categoryId: $categoryId) {
+                        id
+                      }
+                    }
+                  `,
+                  variables: { categoryId: input.categoryId },
+                },
+              ]
+            : []),
+        ],
       })
       .pipe(map((res) => res.data?.createProduct ?? null));
   }
@@ -130,12 +146,28 @@ export class ProductsService {
           }
         `,
         variables: { id, input },
-        refetchQueries: ['GetProducts'],
+        refetchQueries: [
+          'GetProducts',
+          ...(input.categoryId
+            ? [
+                {
+                  query: gql`
+                    query GetProductsByCategory($categoryId: Int!) {
+                      productsByCategory(categoryId: $categoryId) {
+                        id
+                      }
+                    }
+                  `,
+                  variables: { categoryId: input.categoryId },
+                },
+              ]
+            : []),
+        ],
       })
       .pipe(map((res) => res.data?.updateProduct ?? null));
   }
 
-  delete(id: number): Observable<boolean> {
+  delete(id: number, categoryId?: number): Observable<boolean> {
     return this.apollo
       .mutate<{ deleteProduct: boolean }>({
         mutation: gql`
@@ -144,7 +176,23 @@ export class ProductsService {
           }
         `,
         variables: { id },
-        refetchQueries: ['GetProducts'],
+        refetchQueries: [
+          'GetProducts',
+          ...(categoryId
+            ? [
+                {
+                  query: gql`
+                    query GetProductsByCategory($categoryId: Int!) {
+                      productsByCategory(categoryId: $categoryId) {
+                        id
+                      }
+                    }
+                  `,
+                  variables: { categoryId },
+                },
+              ]
+            : []),
+        ],
       })
       .pipe(map((res) => res.data?.deleteProduct ?? false));
   }

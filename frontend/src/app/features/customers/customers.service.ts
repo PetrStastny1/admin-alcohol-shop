@@ -25,6 +25,21 @@ export interface UpdateCustomerInput {
   address?: string;
 }
 
+const GET_CUSTOMERS = gql`
+  query GetCustomers {
+    customers {
+      id
+      name
+      email
+      phone
+      address
+      orders {
+        id
+      }
+    }
+  }
+`;
+
 @Injectable({ providedIn: 'root' })
 export class CustomersService {
   constructor(private apollo: Apollo) {}
@@ -32,20 +47,7 @@ export class CustomersService {
   getAll(): Observable<Customer[]> {
     return this.apollo
       .watchQuery<{ customers: (Customer | null)[] }>({
-        query: gql`
-          query GetCustomers {
-            customers {
-              id
-              name
-              email
-              phone
-              address
-              orders {
-                id
-              }
-            }
-          }
-        `,
+        query: GET_CUSTOMERS,
         fetchPolicy: 'network-only',
       })
       .valueChanges.pipe(
@@ -73,7 +75,8 @@ export class CustomersService {
           }
         `,
         variables: { input },
-        refetchQueries: ['GetCustomers'],
+        refetchQueries: [{ query: GET_CUSTOMERS }],
+        awaitRefetchQueries: true,
       })
       .pipe(map((res) => res.data?.createCustomer ?? null));
   }
@@ -96,7 +99,8 @@ export class CustomersService {
           }
         `,
         variables: { id, input },
-        refetchQueries: ['GetCustomers'],
+        refetchQueries: [{ query: GET_CUSTOMERS }],
+        awaitRefetchQueries: true,
       })
       .pipe(map((res) => res.data?.updateCustomer ?? null));
   }
@@ -110,7 +114,8 @@ export class CustomersService {
           }
         `,
         variables: { id },
-        refetchQueries: ['GetCustomers'],
+        refetchQueries: [{ query: GET_CUSTOMERS }],
+        awaitRefetchQueries: true,
       })
       .pipe(map((res) => res.data?.deleteCustomer ?? false));
   }

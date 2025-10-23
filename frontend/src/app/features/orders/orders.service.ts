@@ -25,6 +25,34 @@ export interface UpdateOrderInput {
   quantity?: number;
 }
 
+const GET_ORDERS = gql`
+  query GetOrders {
+    orders {
+      id
+      customer { id name email }
+      quantity
+      date
+      totalPrice
+      product { id name price }
+      category { id name }
+    }
+  }
+`;
+
+const GET_ORDERS_BY_CUSTOMER = gql`
+  query GetOrdersByCustomer($customerId: Int!) {
+    ordersByCustomer(customerId: $customerId) {
+      id
+      customer { id name email }
+      quantity
+      date
+      totalPrice
+      product { id name price }
+      category { id name }
+    }
+  }
+`;
+
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
   constructor(private apollo: Apollo) {}
@@ -32,19 +60,7 @@ export class OrdersService {
   getOrders(): Observable<Order[]> {
     return this.apollo
       .watchQuery<{ orders: (Order | null)[] }>({
-        query: gql`
-          query GetOrders {
-            orders {
-              id
-              customer { id name email }
-              quantity
-              date
-              totalPrice
-              product { id name price }
-              category { id name }
-            }
-          }
-        `,
+        query: GET_ORDERS,
         fetchPolicy: 'network-only',
       })
       .valueChanges.pipe(
@@ -55,24 +71,14 @@ export class OrdersService {
   getOrdersByCustomer(customerId: number): Observable<Order[]> {
     return this.apollo
       .watchQuery<{ ordersByCustomer: (Order | null)[] }>({
-        query: gql`
-          query GetOrdersByCustomer($customerId: Int!) {
-            ordersByCustomer(customerId: $customerId) {
-              id
-              customer { id name email }
-              quantity
-              date
-              totalPrice
-              product { id name price }
-              category { id name }
-            }
-          }
-        `,
+        query: GET_ORDERS_BY_CUSTOMER,
         variables: { customerId },
         fetchPolicy: 'network-only',
       })
       .valueChanges.pipe(
-        map((res) => (res.data?.ordersByCustomer ?? []).filter((o): o is Order => !!o))
+        map((res) =>
+          (res.data?.ordersByCustomer ?? []).filter((o): o is Order => !!o)
+        )
       );
   }
 
@@ -94,18 +100,10 @@ export class OrdersService {
         `,
         variables: { input },
         refetchQueries: [
-          'GetOrders',
-          {
-            query: gql`
-              query GetOrdersByCustomer($customerId: Int!) {
-                ordersByCustomer(customerId: $customerId) {
-                  id
-                }
-              }
-            `,
-            variables: { customerId: input.customerId },
-          },
+          { query: GET_ORDERS },
+          { query: GET_ORDERS_BY_CUSTOMER, variables: { customerId: input.customerId } },
         ],
+        awaitRefetchQueries: true,
       })
       .pipe(map((res) => res.data?.createOrder ?? null));
   }
@@ -127,7 +125,8 @@ export class OrdersService {
           }
         `,
         variables: { id, input },
-        refetchQueries: ['GetOrders'],
+        refetchQueries: [{ query: GET_ORDERS }],
+        awaitRefetchQueries: true,
       })
       .pipe(map((res) => res.data?.updateOrder ?? null));
   }
@@ -142,22 +141,10 @@ export class OrdersService {
         `,
         variables: { id },
         refetchQueries: [
-          'GetOrders',
-          ...(customerId
-            ? [
-                {
-                  query: gql`
-                    query GetOrdersByCustomer($customerId: Int!) {
-                      ordersByCustomer(customerId: $customerId) {
-                        id
-                      }
-                    }
-                  `,
-                  variables: { customerId },
-                },
-              ]
-            : []),
+          { query: GET_ORDERS },
+          ...(customerId ? [{ query: GET_ORDERS_BY_CUSTOMER, variables: { customerId } }] : []),
         ],
+        awaitRefetchQueries: true,
       })
       .pipe(map((res) => res.data?.deleteOrder ?? false));
   }
