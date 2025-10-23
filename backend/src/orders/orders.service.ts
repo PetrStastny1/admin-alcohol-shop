@@ -54,6 +54,7 @@ export class OrdersService implements OnModuleInit {
       { customer: customers[9], product: products[9], quantity: 3 },
     ];
 
+    let dayOffset = 0;
     for (const o of sampleOrders) {
       const totalPrice = Number(o.product.price) * o.quantity;
       const order = this.orderRepository.create({
@@ -61,10 +62,11 @@ export class OrdersService implements OnModuleInit {
         product: o.product,
         category: o.product.category,
         quantity: o.quantity,
-        date: new Date().toISOString(),
+        date: new Date(Date.now() - dayOffset * 86400000).toISOString(),
         totalPrice,
       });
       await this.orderRepository.save(order);
+      dayOffset++;
     }
 
     console.log('✅ Orders seeded (10 položek)');
@@ -121,9 +123,7 @@ export class OrdersService implements OnModuleInit {
 
     let category: Category | null = null;
     if (input.categoryId) {
-      category = await this.categoryRepository.findOne({
-        where: { id: input.categoryId },
-      });
+      category = await this.categoryRepository.findOne({ where: { id: input.categoryId } });
       if (!category) {
         throw new NotFoundException(`Kategorie s ID ${input.categoryId} nenalezena`);
       }
@@ -140,16 +140,14 @@ export class OrdersService implements OnModuleInit {
       totalPrice,
     });
 
-    return await this.orderRepository.save(order);
+    return this.orderRepository.save(order);
   }
 
   async update(id: number, input: UpdateOrderInput): Promise<Order> {
     const order = await this.findOne(id);
 
     if (input.customerId) {
-      const customer = await this.customerRepository.findOne({
-        where: { id: input.customerId },
-      });
+      const customer = await this.customerRepository.findOne({ where: { id: input.customerId } });
       if (!customer) {
         throw new NotFoundException(`Zákazník s ID ${input.customerId} nenalezen`);
       }
@@ -171,9 +169,7 @@ export class OrdersService implements OnModuleInit {
     }
 
     if (input.categoryId) {
-      const category = await this.categoryRepository.findOne({
-        where: { id: input.categoryId },
-      });
+      const category = await this.categoryRepository.findOne({ where: { id: input.categoryId } });
       if (!category) {
         throw new NotFoundException(`Kategorie s ID ${input.categoryId} nenalezena`);
       }
@@ -193,7 +189,7 @@ export class OrdersService implements OnModuleInit {
 
     order.totalPrice = Number(order.product.price) * order.quantity;
 
-    return await this.orderRepository.save(order);
+    return this.orderRepository.save(order);
   }
 
   async delete(id: number): Promise<boolean> {

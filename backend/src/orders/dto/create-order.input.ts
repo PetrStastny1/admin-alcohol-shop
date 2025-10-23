@@ -1,5 +1,5 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { IsInt, Min, IsOptional } from 'class-validator';
+import { IsInt, Min, IsOptional, IsDateString } from 'class-validator';
 
 @InputType()
 export class CreateOrderInput {
@@ -13,6 +13,7 @@ export class CreateOrderInput {
 
   @Field(() => Int, { nullable: true })
   @IsOptional()
+  @IsInt()
   categoryId?: number;
 
   @Field(() => Int)
@@ -22,5 +23,6 @@ export class CreateOrderInput {
 
   @Field({ nullable: true })
   @IsOptional()
+  @IsDateString()
   date?: string;
 }
