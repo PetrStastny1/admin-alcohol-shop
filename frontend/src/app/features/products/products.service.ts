@@ -18,6 +18,7 @@ export interface CreateProductInput {
   description?: string;
   stock?: number;
   categoryId?: number;
+  isActive?: boolean;
 }
 
 export interface UpdateProductInput {
@@ -26,6 +27,7 @@ export interface UpdateProductInput {
   description?: string;
   stock?: number;
   categoryId?: number;
+  isActive?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -53,9 +55,7 @@ export class ProductsService {
         fetchPolicy: 'network-only',
       })
       .valueChanges.pipe(
-        map((res) =>
-          (res.data?.products ?? []).filter((p): p is Product => !!p)
-        )
+        map((res) => (res.data?.products ?? []).filter((p): p is Product => !!p))
       );
   }
 
@@ -105,7 +105,7 @@ export class ProductsService {
             }
           }
         `,
-        variables: { input },
+        variables: { input: { ...input, isActive: true } },
         refetchQueries: [
           'GetProducts',
           ...(input.categoryId
@@ -115,6 +115,14 @@ export class ProductsService {
                     query GetProductsByCategory($categoryId: Int!) {
                       productsByCategory(categoryId: $categoryId) {
                         id
+                        name
+                        price
+                        description
+                        stock
+                        category {
+                          id
+                          name
+                        }
                       }
                     }
                   `,
@@ -123,6 +131,7 @@ export class ProductsService {
               ]
             : []),
         ],
+        awaitRefetchQueries: true,
       })
       .pipe(map((res) => res.data?.createProduct ?? null));
   }
@@ -163,6 +172,7 @@ export class ProductsService {
               ]
             : []),
         ],
+        awaitRefetchQueries: true,
       })
       .pipe(map((res) => res.data?.updateProduct ?? null));
   }
@@ -193,6 +203,7 @@ export class ProductsService {
               ]
             : []),
         ],
+        awaitRefetchQueries: true,
       })
       .pipe(map((res) => res.data?.deleteProduct ?? false));
   }

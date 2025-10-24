@@ -52,9 +52,8 @@ export class ProductsComponent implements OnInit {
         this.products = data ?? [];
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.errorMsg = 'Nepodařilo se načíst produkty';
-        console.error(err);
         this.loading = false;
       },
     });
@@ -63,7 +62,7 @@ export class ProductsComponent implements OnInit {
   fetchCategories(): void {
     this.categoriesService.getAll().subscribe({
       next: (data) => (this.categories = data),
-      error: (err) => console.error('Nepodařilo se načíst kategorie', err),
+      error: () => (this.errorMsg = 'Nepodařilo se načíst kategorie'),
     });
   }
 
@@ -93,19 +92,18 @@ export class ProductsComponent implements OnInit {
       description: this.newProduct.description?.trim() ?? '',
       price: this.newProduct.price,
       stock: this.newProduct.stock,
-      categoryId: this.newProduct.category
-        ? this.newProduct.category.id
-        : this.categoryId ?? undefined,
+      categoryId: this.newProduct.category?.id ?? this.categoryId ?? undefined,
     };
     this.productsService.create(input).subscribe({
       next: (created) => {
-        if (created) this.products.push(created);
+        if (created) {
+          this.products.push(created);
+        }
         this.newProduct = null;
         this.saving = false;
       },
-      error: (err) => {
+      error: () => {
         this.errorMsg = 'Chyba při vytváření produktu';
-        console.error(err);
         this.saving = false;
       },
     });
@@ -149,9 +147,8 @@ export class ProductsComponent implements OnInit {
         this.editingProduct = null;
         this.saving = false;
       },
-      error: (err) => {
+      error: () => {
         this.errorMsg = 'Chyba při ukládání změn';
-        console.error(err);
         this.saving = false;
       },
     });
@@ -166,16 +163,15 @@ export class ProductsComponent implements OnInit {
     if (this.saving) return;
     if (!confirm('Opravdu chceš smazat tento produkt?')) return;
     this.saving = true;
-    this.productsService.delete(id).subscribe({
+    this.productsService.delete(id, this.categoryId ?? undefined).subscribe({
       next: (deleted) => {
         if (deleted) {
           this.products = this.products.filter((p) => p.id !== id);
         }
         this.saving = false;
       },
-      error: (err) => {
+      error: () => {
         this.errorMsg = 'Chyba při mazání produktu';
-        console.error(err);
         this.saving = false;
       },
     });
