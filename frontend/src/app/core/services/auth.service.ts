@@ -9,6 +9,7 @@ export interface LoginResponse {
   access_token: string;
   id: number;
   username: string;
+  role: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -24,6 +25,7 @@ export class AuthService {
               access_token
               id
               username
+              role
             }
           }
         `,
@@ -34,6 +36,7 @@ export class AuthService {
           const data = res.data?.login ?? null;
           if (data?.access_token) {
             this.tokenService.setToken(data.access_token);
+            localStorage.setItem('user_role', data.role);
           }
           return data;
         })
@@ -42,6 +45,7 @@ export class AuthService {
 
   logout(): void {
     this.tokenService.removeToken();
+    localStorage.removeItem('user_role');
   }
 
   isLoggedIn(): boolean {
@@ -50,5 +54,9 @@ export class AuthService {
 
   getToken(): string | null {
     return this.tokenService.getToken();
+  }
+
+  getUserRole(): string | null {
+    return localStorage.getItem('user_role');
   }
 }

@@ -55,6 +55,7 @@ export class CustomersComponent implements OnInit {
       this.errorMsg = 'Vyplňte jméno a email';
       return;
     }
+
     this.saving = true;
     const input: CreateCustomerInput = {
       name: this.newCustomer.name.trim(),
@@ -62,15 +63,19 @@ export class CustomersComponent implements OnInit {
       phone: this.newCustomer.phone?.trim(),
       address: this.newCustomer.address?.trim(),
     };
+
+    console.log('DEBUG saveNew -> input:', input);
+
     this.customersService.create(input).subscribe({
       next: (created) => {
+        console.log('DEBUG createCustomer response:', created);
         if (created) this.loadCustomers();
         this.newCustomer = null;
         this.saving = false;
       },
       error: (err) => {
         this.errorMsg = 'Chyba při vytváření zákazníka';
-        console.error(err);
+        console.error('DEBUG createCustomer error:', err);
         this.saving = false;
       },
     });
@@ -95,6 +100,7 @@ export class CustomersComponent implements OnInit {
       this.errorMsg = 'Vyplňte jméno a email';
       return;
     }
+
     this.saving = true;
     const input: UpdateCustomerInput = {
       name: this.editingCustomer.name.trim(),
@@ -102,15 +108,19 @@ export class CustomersComponent implements OnInit {
       phone: this.editingCustomer.phone?.trim(),
       address: this.editingCustomer.address?.trim(),
     };
+
+    console.log('DEBUG saveEdit -> id:', this.editingCustomer.id, 'input:', input);
+
     this.customersService.update(this.editingCustomer.id, input).subscribe({
       next: (updated) => {
+        console.log('DEBUG updateCustomer response:', updated);
         if (updated) this.loadCustomers();
         this.editingCustomer = null;
         this.saving = false;
       },
       error: (err) => {
         this.errorMsg = 'Chyba při editaci zákazníka';
-        console.error(err);
+        console.error('DEBUG updateCustomer error:', err);
         this.saving = false;
       },
     });
@@ -128,12 +138,13 @@ export class CustomersComponent implements OnInit {
     this.saving = true;
     this.customersService.delete(id).subscribe({
       next: (ok) => {
+        console.log('DEBUG deleteCustomer response:', ok);
         if (ok) this.loadCustomers();
         this.saving = false;
       },
       error: (err) => {
         this.errorMsg = 'Chyba při mazání zákazníka';
-        console.error(err);
+        console.error('DEBUG deleteCustomer error:', err);
         this.saving = false;
       },
     });

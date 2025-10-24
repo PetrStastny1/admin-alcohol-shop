@@ -21,16 +21,12 @@ export function apolloOptions(): ApolloClientOptions {
 
   const authLink = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem('token');
-
-    operation.setContext(({ headers }: { headers?: Record<string, string> }) => {
-      return {
-        headers: {
-          ...(headers || {}),
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      };
-    });
-
+    operation.setContext(({ headers = {} }) => ({
+      headers: {
+        ...(headers as Record<string, string>),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    }));
     return forward(operation);
   });
 
@@ -38,7 +34,19 @@ export function apolloOptions(): ApolloClientOptions {
     link: authLink.concat(
       httpLink.create({ uri: 'http://localhost:3000/graphql' })
     ),
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      typePolicies: {
+        Customer: {
+          fields: {
+            orders: {
+              merge(_existing, incoming) {
+                return incoming;
+              },
+            },
+          },
+        },
+      },
+    }),
     defaultOptions,
   };
 }

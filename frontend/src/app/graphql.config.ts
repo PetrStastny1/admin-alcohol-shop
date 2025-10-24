@@ -20,7 +20,7 @@ export function apolloOptions(): ApolloClientOptions {
   const httpLink = inject(HttpLink);
 
   const authLink = new ApolloLink((operation, forward) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token'); // 👈 sjednoceno
 
     operation.setContext(({ headers = {} }) => {
       return {

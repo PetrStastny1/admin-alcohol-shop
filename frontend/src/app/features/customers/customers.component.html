@@ -45,12 +45,23 @@
                 <input [(ngModel)]="editingCustomer!.email" placeholder="Email" />
                 <input [(ngModel)]="editingCustomer!.phone" placeholder="Telefon" />
                 <input [(ngModel)]="editingCustomer!.address" placeholder="Adresa" />
-                <button class="save-btn" (click)="saveEdit(); $event.stopPropagation()">💾 Uložit</button>
-                <button class="cancel-btn" (click)="cancelEdit(); $event.stopPropagation()">✖ Zrušit</button>
+                <button
+                  class="save-btn"
+                  (click)="saveEdit(); $event.stopPropagation()"
+                >
+                  💾 Uložit
+                </button>
+                <button
+                  class="cancel-btn"
+                  (click)="cancelEdit(); $event.stopPropagation()"
+                >
+                  ✖ Zrušit
+                </button>
               </div>
             </div>
           </td>
         </ng-container>
+
         <ng-template #viewMode>
           <td class="id-col">{{ cust.id }}</td>
           <td class="name-col">{{ cust.name }}</td>
@@ -59,13 +70,29 @@
           <td class="address-col">{{ cust.address || '-' }}</td>
           <td class="orders-col">{{ cust.orders?.length || 0 }}</td>
           <td class="actions-col">
-            <button class="edit-btn" (click)="startEdit(cust); $event.stopPropagation()">✏ Upravit</button>
-            <button class="delete-btn" (click)="deleteCustomer(cust.id); $event.stopPropagation()">🗑 Smazat</button>
+            <button
+              class="edit-btn"
+              (click)="startEdit(cust); $event.stopPropagation()"
+            >
+              ✏ Upravit
+            </button>
+            <button
+              class="delete-btn"
+              (click)="deleteCustomer(cust.id); $event.stopPropagation()"
+            >
+              🗑 Smazat
+            </button>
           </td>
         </ng-template>
       </tr>
     </tbody>
   </table>
 
-  <p *ngIf="(customers$ | async)?.length === 0">Žádní zákazníci nebyli nalezeni.</p>
+  <p *ngIf="(customers$ | async)?.length === 0">
+    Žádní zákazníci nebyli nalezeni.
+  </p>
+
+  <div *ngIf="errorMsg" class="error-box">
+    ⚠️ {{ errorMsg }}
+  </div>
 </div>

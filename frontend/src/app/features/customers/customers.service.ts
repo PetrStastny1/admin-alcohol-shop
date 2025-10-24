@@ -51,13 +51,14 @@ export class CustomersService {
         fetchPolicy: 'network-only',
       })
       .valueChanges.pipe(
-        map((res) =>
-          (res.data?.customers ?? []).filter((c): c is Customer => !!c)
-        )
+        map((res) => {
+          console.log('GraphQL customers response:', res.data);
+          return (res.data?.customers ?? []).filter((c): c is Customer => !!c);
+        })
       );
   }
 
-  create(input: CreateCustomerInput): Observable<Customer | null> {
+  create(input: CreateCustomerInput): Observable<Customer> {
     return this.apollo
       .mutate<{ createCustomer: Customer }>({
         mutation: gql`
@@ -78,10 +79,15 @@ export class CustomersService {
         refetchQueries: [{ query: GET_CUSTOMERS }],
         awaitRefetchQueries: true,
       })
-      .pipe(map((res) => res.data?.createCustomer ?? null));
+      .pipe(
+        map((res) => {
+          console.log('DEBUG GraphQL createCustomer response:', res);
+          return res.data!.createCustomer;
+        })
+      );
   }
 
-  update(id: number, input: UpdateCustomerInput): Observable<Customer | null> {
+  update(id: number, input: UpdateCustomerInput): Observable<Customer> {
     return this.apollo
       .mutate<{ updateCustomer: Customer }>({
         mutation: gql`
@@ -102,7 +108,12 @@ export class CustomersService {
         refetchQueries: [{ query: GET_CUSTOMERS }],
         awaitRefetchQueries: true,
       })
-      .pipe(map((res) => res.data?.updateCustomer ?? null));
+      .pipe(
+        map((res) => {
+          console.log('DEBUG GraphQL updateCustomer response:', res);
+          return res.data!.updateCustomer;
+        })
+      );
   }
 
   delete(id: number): Observable<boolean> {
@@ -117,6 +128,11 @@ export class CustomersService {
         refetchQueries: [{ query: GET_CUSTOMERS }],
         awaitRefetchQueries: true,
       })
-      .pipe(map((res) => res.data?.deleteCustomer ?? false));
+      .pipe(
+        map((res) => {
+          console.log('DEBUG GraphQL deleteCustomer response:', res);
+          return res.data!.deleteCustomer;
+        })
+      );
   }
 }
