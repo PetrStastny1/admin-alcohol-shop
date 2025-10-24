@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 export class UsersComponent implements OnInit {
   users: User[] = [];
   editingUser: User | null = null;
-  editingUserPassword: string = '';
+  editingUserPassword = '';
   newUser: { email: string; username?: string; password: string; role: string } | null = null;
   loading = false;
   saving = false;
@@ -40,8 +40,8 @@ export class UsersComponent implements OnInit {
         this.users = data ?? [];
         this.loading = false;
       },
-      error: () => {
-        this.errorMsg = 'Nepodařilo se načíst uživatele';
+      error: (err) => {
+        this.errorMsg = err.message || 'Nepodařilo se načíst uživatele';
         this.loading = false;
       },
     });
@@ -69,8 +69,8 @@ export class UsersComponent implements OnInit {
         this.newUser = null;
         this.saving = false;
       },
-      error: () => {
-        this.errorMsg = 'Chyba při vytváření uživatele';
+      error: (err) => {
+        this.errorMsg = err.message || 'Chyba při vytváření uživatele';
         this.saving = false;
       },
     });
@@ -91,18 +91,10 @@ export class UsersComponent implements OnInit {
     if (!this.editingUser) return;
     const input: UpdateUserInput = {};
 
-    if (this.editingUser.username?.trim()) {
-      input.username = this.editingUser.username.trim();
-    }
-    if (this.editingUser.email?.trim()) {
-      input.email = this.editingUser.email.trim();
-    }
-    if (this.editingUserPassword.trim()) {
-      input.password = this.editingUserPassword.trim();
-    }
-    if (this.editingUser.role?.trim()) {
-      input.role = this.editingUser.role.trim();
-    }
+    if (this.editingUser.username?.trim()) input.username = this.editingUser.username.trim();
+    if (this.editingUser.email?.trim()) input.email = this.editingUser.email.trim();
+    if (this.editingUserPassword.trim()) input.password = this.editingUserPassword.trim();
+    if (this.editingUser.role?.trim()) input.role = this.editingUser.role.trim();
 
     this.saving = true;
     this.usersService.update(this.editingUser.id, input).subscribe({
@@ -114,8 +106,8 @@ export class UsersComponent implements OnInit {
         this.editingUserPassword = '';
         this.saving = false;
       },
-      error: () => {
-        this.errorMsg = 'Chyba při ukládání změn';
+      error: (err) => {
+        this.errorMsg = err.message || 'Chyba při ukládání změn uživatele';
         this.saving = false;
       },
     });
@@ -136,8 +128,8 @@ export class UsersComponent implements OnInit {
         if (ok) this.users = this.users.filter((u) => u.id !== id);
         this.saving = false;
       },
-      error: () => {
-        this.errorMsg = 'Chyba při mazání uživatele';
+      error: (err) => {
+        this.errorMsg = err.message || 'Chyba při mazání uživatele';
         this.saving = false;
       },
     });
