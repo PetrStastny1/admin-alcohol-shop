@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, BadRequestException, NotFoundException } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -44,7 +44,14 @@ export class UsersResolver {
     @Args('id', { type: () => Int }) id: number,
     @Args('input') input: UpdateUserInput,
   ): Promise<User> {
-    return this.usersService.update(id, input);
+    try {
+      return await this.usersService.update(id, input);
+    } catch (err) {
+      if (err instanceof BadRequestException || err instanceof NotFoundException) {
+        throw err;
+      }
+      throw new BadRequestException('Nepodařilo se aktualizovat uživatele');
+    }
   }
 
   @Mutation(() => Boolean, { name: 'deleteUser' })
@@ -53,6 +60,13 @@ export class UsersResolver {
   async deleteUser(
     @Args('id', { type: () => Int }) id: number,
   ): Promise<boolean> {
-    return this.usersService.delete(id);
+    try {
+      return await this.usersService.delete(id);
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
+      throw new BadRequestException('Nepodařilo se smazat uživatele');
+    }
   }
 }

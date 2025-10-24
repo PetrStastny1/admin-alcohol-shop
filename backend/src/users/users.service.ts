@@ -138,7 +138,17 @@ export class UsersService implements OnModuleInit {
       user.username = input.username;
     }
 
-    if (input.role !== undefined) {
+    if (input.role !== undefined && input.role !== user.role) {
+      if (user.role === 'admin' && input.role === 'user') {
+        const adminCount = await this.userRepository.count({
+          where: { role: 'admin' },
+        });
+        if (adminCount <= 1) {
+          throw new BadRequestException(
+            'Nelze odebrat roli poslednímu adminovi',
+          );
+        }
+      }
       user.role = input.role;
     }
 
