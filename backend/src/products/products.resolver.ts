@@ -37,6 +37,7 @@ export class ProductsResolver {
       name: input.name,
       price: input.price,
       description: input.description,
+      stock: input.stock ?? 0,
       isActive: input.isActive ?? true,
       categoryId: input.categoryId,
     });
@@ -53,6 +54,7 @@ export class ProductsResolver {
       name: input.name,
       price: input.price,
       description: input.description,
+      stock: input.stock,
       isActive: input.isActive,
       categoryId: input.categoryId,
     });

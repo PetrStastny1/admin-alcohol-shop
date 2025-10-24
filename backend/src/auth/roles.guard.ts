@@ -12,18 +12,32 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
+
+    const ctx = GqlExecutionContext.create(context);
+    const user = ctx.getContext().req.user;
+
+    console.log('DEBUG RolesGuard user:', user, 'requiredRoles:', requiredRoles);
+
     if (!requiredRoles) {
       return true;
     }
 
-    const ctx = GqlExecutionContext.create(context);
-    const user = ctx.getContext().req.user;
-    if (!user) return false;
+    if (!user) {
+      console.log('❌ RolesGuard: žádný user v requestu');
+      return false;
+    }
 
     if (user.role === 'admin') {
+      console.log('✅ RolesGuard: user je admin, povoleno');
       return true;
     }
 
-    return requiredRoles.includes(user.role);
+    const allowed = requiredRoles.includes(user.role);
+    console.log(
+      allowed
+        ? '✅ RolesGuard: role odpovídá, povoleno'
+        : '❌ RolesGuard: role neodpovídá, zakázáno'
+    );
+    return allowed;
   }
 }

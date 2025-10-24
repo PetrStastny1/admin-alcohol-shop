@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  OnModuleInit,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, OnModuleInit, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './products.entity';
@@ -40,10 +35,7 @@ export class ProductsService implements OnModuleInit {
     });
   }
 
-  async findByNameAndCategory(
-    name: string,
-    categoryId?: number,
-  ): Promise<Product | null> {
+  async findByNameAndCategory(name: string, categoryId?: number): Promise<Product | null> {
     if (categoryId) {
       return this.productRepository.findOne({
         where: { name, category: { id: categoryId } },
@@ -58,24 +50,14 @@ export class ProductsService implements OnModuleInit {
 
   async create(productData: Partial<Product> & { categoryId?: number }): Promise<Product> {
     let category = undefined;
-
     if (productData.categoryId) {
       category = await this.categoriesService.findOne(productData.categoryId);
-      if (!category) {
-        throw new NotFoundException(
-          `Kategorie s ID ${productData.categoryId} nenalezena`,
-        );
-      }
+      if (!category) throw new NotFoundException(`Kategorie s ID ${productData.categoryId} nenalezena`);
     }
 
-    const existing = await this.findByNameAndCategory(
-      productData.name!,
-      category?.id,
-    );
+    const existing = await this.findByNameAndCategory(productData.name!, category?.id);
     if (existing) {
-      throw new BadRequestException(
-        `Produkt "${productData.name}" v této kategorii již existuje`,
-      );
+      throw new BadRequestException(`Produkt "${productData.name}" v této kategorii již existuje`);
     }
 
     const newProduct = this.productRepository.create({
@@ -90,28 +72,18 @@ export class ProductsService implements OnModuleInit {
     return this.productRepository.save(newProduct);
   }
 
-  async update(
-    id: number,
-    updateData: Partial<Product> & { categoryId?: number },
-  ): Promise<Product> {
+  async update(id: number, updateData: Partial<Product> & { categoryId?: number }): Promise<Product> {
     const product = await this.findOne(id);
 
     if (updateData.name !== undefined) product.name = updateData.name;
     if (updateData.price !== undefined) product.price = updateData.price;
-    if (updateData.description !== undefined)
-      product.description = updateData.description;
-    if (updateData.isActive !== undefined)
-      product.isActive = updateData.isActive;
-    if (updateData.stock !== undefined)
-      product.stock = updateData.stock;
+    if (updateData.description !== undefined) product.description = updateData.description;
+    if (updateData.isActive !== undefined) product.isActive = updateData.isActive;
+    if (updateData.stock !== undefined) product.stock = updateData.stock;
 
     if (updateData.categoryId !== undefined) {
       const category = await this.categoriesService.findOne(updateData.categoryId);
-      if (!category) {
-        throw new NotFoundException(
-          `Kategorie s ID ${updateData.categoryId} nenalezena`,
-        );
-      }
+      if (!category) throw new NotFoundException(`Kategorie s ID ${updateData.categoryId} nenalezena`);
       product.category = category;
     }
 
@@ -134,14 +106,10 @@ export class ProductsService implements OnModuleInit {
   async onModuleInit() {
     const categories = await this.categoriesService.findAll();
     if (!categories.length) {
-      console.log('⚠️ Products seed skipped: no categories found');
       return;
     }
 
-    const seedMap: Record<
-      string,
-      { name: string; price: number; description: string; stock: number }[]
-    > = {
+    const seedMap: Record<string, { name: string; price: number; description: string; stock: number }[]> = {
       Whisky: [
         { name: 'Jameson Irish Whiskey', price: 450, description: 'Jemná irská whiskey s tóny vanilky.', stock: 15 },
         { name: 'Glenfiddich 12y', price: 1200, description: 'Skotská single malt whisky, ovocná a jemná.', stock: 8 },
@@ -229,7 +197,5 @@ export class ProductsService implements OnModuleInit {
         }
       }
     }
-
-    console.log('✅ Products seeded (se stock hodnotami)');
   }
 }

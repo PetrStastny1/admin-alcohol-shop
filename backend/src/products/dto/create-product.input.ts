@@ -42,8 +42,9 @@ export class CreateProductInput {
   @IsOptional()
   isActive?: boolean;
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
   @IsInt({ message: 'Sklad musí být celé číslo' })
   @Min(0)
-  stock!: number;
+  stock?: number;
 }

@@ -35,7 +35,7 @@ input CreateProductInput {
   isActive: Boolean
   name: String!
   price: Float!
-  stock: Int!
+  stock: Int
 }
 
 input CreateUserInput {
@@ -62,6 +62,7 @@ scalar DateTime
 type LoginResponseDto {
   access_token: String!
   id: Int!
+  role: String!
   username: String!
 }
 

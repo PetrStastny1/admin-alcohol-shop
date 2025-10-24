@@ -18,6 +18,7 @@ export class AuthResolver {
       access_token: result.access_token,
       id: result.user.id,
       username: result.user.username,
+      role: result.user.role,
     };
   }
 
@@ -30,8 +31,9 @@ export class AuthResolver {
     }
     return {
       access_token: '',
-      id: payload.sub,
+      id: payload.userId,
       username: payload.username,
+      role: payload.role,
     };
   }
 }

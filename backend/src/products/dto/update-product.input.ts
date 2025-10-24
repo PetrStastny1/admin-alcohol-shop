@@ -1,14 +1,5 @@
 import { InputType, Field, Int, Float } from '@nestjs/graphql';
-import {
-  IsOptional,
-  IsString,
-  IsNumber,
-  IsInt,
-  Min,
-  Max,
-  Length,
-  MaxLength,
-} from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsInt, Min, Max, Length, MaxLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 @InputType()
@@ -16,13 +7,13 @@ export class UpdateProductInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
-  @Length(3, 100, { message: 'Název musí mít 3–100 znaků' })
+  @Length(3, 100)
   @Transform(({ value }) => value?.trim())
   name?: string;
 
   @Field(() => Float, { nullable: true })
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 }, { message: 'Cena může mít max 2 desetinná místa' })
+  @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   @Max(99999)
   price?: number;
@@ -30,7 +21,7 @@ export class UpdateProductInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
-  @MaxLength(1000, { message: 'Popis může mít max 1000 znaků' })
+  @MaxLength(1000)
   @Transform(({ value }) => value?.trim())
   description?: string;
 
@@ -44,7 +35,7 @@ export class UpdateProductInput {
 
   @Field(() => Int, { nullable: true })
   @IsOptional()
-  @IsInt({ message: 'Sklad musí být celé číslo' })
+  @IsInt()
   @Min(0)
   stock?: number;
 }

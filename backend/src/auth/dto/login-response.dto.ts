@@ -10,4 +10,7 @@ export class LoginResponseDto {
 
   @Field()
   username!: string;
+
+  @Field()
+  role!: string;
 }

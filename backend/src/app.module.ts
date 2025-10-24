@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { validate } from './env.validation';
+import { Request } from 'express';
 
 // --- Moduly aplikace ---
 import { AppController } from './app.controller';
@@ -44,7 +45,7 @@ import { OrdersModule } from './orders/orders.module';
       sortSchema: true,
       playground: process.env.NODE_ENV !== 'production',
       introspection: true,
-      context: ({ req }: { req: Request }) => ({ req, user: (req as any).user }),
+      context: ({ req }: { req: Request }) => ({ req }),
     }),
 
     // --- Moduly aplikace ---

@@ -78,7 +78,7 @@ export class CustomersService implements OnModuleInit {
   }
 
   async findByEmail(email: string): Promise<Customer | null> {
-    return this.customerRepository.findOne({ where: { email } });
+    return this.customerRepository.findOne({ where: { email }, relations: ['orders'] });
   }
 
   async create(input: CreateCustomerInput): Promise<Customer> {
@@ -87,7 +87,8 @@ export class CustomersService implements OnModuleInit {
       throw new BadRequestException(`Zákazník s e-mailem "${input.email}" již existuje`);
     }
     const customer = this.customerRepository.create(input);
-    return this.customerRepository.save(customer);
+    await this.customerRepository.save(customer);
+    return this.findOne(customer.id);
   }
 
   async update(id: number, input: UpdateCustomerInput): Promise<Customer> {
@@ -101,11 +102,13 @@ export class CustomersService implements OnModuleInit {
       customer.email = input.email;
     }
 
-    if (input.name) customer.name = input.name;
-    if (input.phone) customer.phone = input.phone;
-    if (input.address) customer.address = input.address;
+    if (input.name !== undefined) customer.name = input.name;
+    if (input.phone !== undefined) customer.phone = input.phone;
+    if (input.address !== undefined) customer.address = input.address;
 
-    return this.customerRepository.save(customer);
+    await this.customerRepository.save(customer);
+
+    return this.findOne(id);
   }
 
   async delete(id: number): Promise<boolean> {
