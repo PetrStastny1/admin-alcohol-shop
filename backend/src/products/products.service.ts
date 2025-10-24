@@ -1,4 +1,9 @@
-import { Injectable, OnModuleInit, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  OnModuleInit,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './products.entity';
@@ -16,6 +21,7 @@ export class ProductsService implements OnModuleInit {
     return this.productRepository.find({
       where: { isActive: true },
       relations: ['category', 'orders'],
+      order: { id: 'ASC' },
     });
   }
 
@@ -32,32 +38,40 @@ export class ProductsService implements OnModuleInit {
     return this.productRepository.find({
       where: { isActive: true, category: { id: categoryId } },
       relations: ['category', 'orders'],
+      order: { id: 'ASC' },
     });
   }
 
-  async findByNameAndCategory(name: string, categoryId?: number): Promise<Product | null> {
-    if (categoryId) {
-      return this.productRepository.findOne({
-        where: { name, category: { id: categoryId } },
-        relations: ['category'],
-      });
-    }
+  async findByNameAndCategory(
+    name: string,
+    categoryId?: number,
+  ): Promise<Product | null> {
     return this.productRepository.findOne({
-      where: { name },
+      where: categoryId ? { name, category: { id: categoryId } } : { name },
       relations: ['category'],
     });
   }
 
-  async create(productData: Partial<Product> & { categoryId?: number }): Promise<Product> {
+  async create(
+    productData: Partial<Product> & { categoryId?: number },
+  ): Promise<Product> {
     let category = undefined;
     if (productData.categoryId) {
       category = await this.categoriesService.findOne(productData.categoryId);
-      if (!category) throw new NotFoundException(`Kategorie s ID ${productData.categoryId} nenalezena`);
+      if (!category)
+        throw new NotFoundException(
+          `Kategorie s ID ${productData.categoryId} nenalezena`,
+        );
     }
 
-    const existing = await this.findByNameAndCategory(productData.name!, category?.id);
+    const existing = await this.findByNameAndCategory(
+      productData.name!,
+      category?.id,
+    );
     if (existing) {
-      throw new BadRequestException(`Produkt "${productData.name}" v této kategorii již existuje`);
+      throw new BadRequestException(
+        `Produkt "${productData.name}" v této kategorii již existuje`,
+      );
     }
 
     const newProduct = this.productRepository.create({
@@ -69,25 +83,37 @@ export class ProductsService implements OnModuleInit {
       category,
     });
 
-    return this.productRepository.save(newProduct);
+    const saved = await this.productRepository.save(newProduct);
+    return this.findOne(saved.id);
   }
 
-  async update(id: number, updateData: Partial<Product> & { categoryId?: number }): Promise<Product> {
+  async update(
+    id: number,
+    updateData: Partial<Product> & { categoryId?: number },
+  ): Promise<Product> {
     const product = await this.findOne(id);
 
     if (updateData.name !== undefined) product.name = updateData.name;
     if (updateData.price !== undefined) product.price = updateData.price;
-    if (updateData.description !== undefined) product.description = updateData.description;
-    if (updateData.isActive !== undefined) product.isActive = updateData.isActive;
+    if (updateData.description !== undefined)
+      product.description = updateData.description;
+    if (updateData.isActive !== undefined)
+      product.isActive = updateData.isActive;
     if (updateData.stock !== undefined) product.stock = updateData.stock;
 
     if (updateData.categoryId !== undefined) {
-      const category = await this.categoriesService.findOne(updateData.categoryId);
-      if (!category) throw new NotFoundException(`Kategorie s ID ${updateData.categoryId} nenalezena`);
+      const category = await this.categoriesService.findOne(
+        updateData.categoryId,
+      );
+      if (!category)
+        throw new NotFoundException(
+          `Kategorie s ID ${updateData.categoryId} nenalezena`,
+        );
       product.category = category;
     }
 
-    return this.productRepository.save(product);
+    await this.productRepository.save(product);
+    return this.findOne(id);
   }
 
   async delete(id: number): Promise<boolean> {
@@ -109,7 +135,10 @@ export class ProductsService implements OnModuleInit {
       return;
     }
 
-    const seedMap: Record<string, { name: string; price: number; description: string; stock: number }[]> = {
+    const seedMap: Record<
+      string,
+      { name: string; price: number; description: string; stock: number }[]
+    > = {
       Whisky: [
         { name: 'Jameson Irish Whiskey', price: 450, description: 'Jemná irská whiskey s tóny vanilky.', stock: 15 },
         { name: 'Glenfiddich 12y', price: 1200, description: 'Skotská single malt whisky, ovocná a jemná.', stock: 8 },
@@ -199,3 +228,4 @@ export class ProductsService implements OnModuleInit {
     }
   }
 }
+

@@ -18,7 +18,9 @@ export class ProductsResolver {
   }
 
   @Query(() => Product, { name: 'product' })
-  async getProduct(@Args('id', { type: () => Int }) id: number): Promise<Product> {
+  async getProduct(
+    @Args('id', { type: () => Int }) id: number,
+  ): Promise<Product> {
     return this.productsService.findOne(id);
   }
 
@@ -32,8 +34,10 @@ export class ProductsResolver {
   @Mutation(() => Product, { name: 'createProduct' })
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('admin')
-  async createProduct(@Args('input') input: CreateProductInput): Promise<Product> {
-    return this.productsService.create({
+  async createProduct(
+    @Args('input') input: CreateProductInput,
+  ): Promise<Product> {
+    const product = await this.productsService.create({
       name: input.name,
       price: input.price,
       description: input.description,
@@ -41,6 +45,7 @@ export class ProductsResolver {
       isActive: input.isActive ?? true,
       categoryId: input.categoryId,
     });
+    return this.productsService.findOne(product.id);
   }
 
   @Mutation(() => Product, { name: 'updateProduct' })
@@ -50,7 +55,7 @@ export class ProductsResolver {
     @Args('id', { type: () => Int }) id: number,
     @Args('input') input: UpdateProductInput,
   ): Promise<Product> {
-    return this.productsService.update(id, {
+    await this.productsService.update(id, {
       name: input.name,
       price: input.price,
       description: input.description,
@@ -58,12 +63,15 @@ export class ProductsResolver {
       isActive: input.isActive,
       categoryId: input.categoryId,
     });
+    return this.productsService.findOne(id);
   }
 
   @Mutation(() => Boolean, { name: 'deleteProduct' })
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('admin')
-  async deleteProduct(@Args('id', { type: () => Int }) id: number): Promise<boolean> {
+  async deleteProduct(
+    @Args('id', { type: () => Int }) id: number,
+  ): Promise<boolean> {
     return this.productsService.delete(id);
   }
 }
