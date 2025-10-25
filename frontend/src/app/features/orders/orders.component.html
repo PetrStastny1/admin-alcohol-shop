@@ -60,10 +60,18 @@
   <table class="orders-table" *ngIf="orders.length > 0">
     <thead>
       <tr>
-        <th class="id-col">ID</th>
-        <th class="customer-col">Zákazník</th>
-        <th class="date-col">Datum</th>
-        <th class="price-col">Cena celkem</th>
+        <th class="id-col" (click)="sortData('id')">
+          ID <span *ngIf="sortColumn === 'id'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+        </th>
+        <th class="customer-col" (click)="sortData('customer')">
+          Zákazník <span *ngIf="sortColumn === 'customer'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+        </th>
+        <th class="date-col" (click)="sortData('date')">
+          Datum <span *ngIf="sortColumn === 'date'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+        </th>
+        <th class="price-col" (click)="sortData('price')">
+          Cena celkem <span *ngIf="sortColumn === 'price'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+        </th>
         <th class="actions-col" *ngIf="isAdmin()">Akce</th>
       </tr>
     </thead>

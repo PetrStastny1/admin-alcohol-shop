@@ -315,17 +315,13 @@ export class OrdersComponent implements OnInit {
     this.currentPage = 1;
   }
 
-  changeSort(column: 'id' | 'customer' | 'date' | 'price') {
+  sortData(column: 'id' | 'customer' | 'date' | 'price') {
     if (this.sortColumn === column) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
       this.sortColumn = column;
       this.sortDirection = 'asc';
     }
-  }
-
-  sortIcon(column: 'id' | 'customer' | 'date' | 'price'): string {
-    if (this.sortColumn !== column) return '';
-    return this.sortDirection === 'asc' ? '⬆' : '⬇';
+    this.currentPage = 1;
   }
 }
