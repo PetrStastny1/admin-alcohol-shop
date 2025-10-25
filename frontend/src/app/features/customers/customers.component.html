@@ -3,11 +3,11 @@
 
   <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
 
-  <div class="new-customer">
+  <div class="new-customer" *ngIf="isAdmin()">
     <button class="add-btn" (click)="startNew()">➕ Přidat zákazníka</button>
   </div>
 
-  <div *ngIf="newCustomer" class="form-box">
+  <div *ngIf="newCustomer && isAdmin()" class="form-box">
     <div class="inner-form">
       <input [(ngModel)]="newCustomer!.name" placeholder="Jméno" />
       <input [(ngModel)]="newCustomer!.email" placeholder="Email" />
@@ -27,7 +27,7 @@
         <th class="phone-col">Telefon</th>
         <th class="address-col">Adresa</th>
         <th class="orders-col">Objednávky</th>
-        <th class="actions-col">Akce</th>
+        <th class="actions-col" *ngIf="isAdmin()">Akce</th>
       </tr>
     </thead>
     <tbody>
@@ -37,7 +37,7 @@
         class="clickable-row"
         (click)="editingCustomer?.id === cust.id ? null : goToOrders(cust.id)"
       >
-        <ng-container *ngIf="editingCustomer?.id === cust.id; else viewMode">
+        <ng-container *ngIf="editingCustomer?.id === cust.id && isAdmin(); else viewMode">
           <td colspan="7">
             <div class="form-box">
               <div class="inner-form">
@@ -45,18 +45,8 @@
                 <input [(ngModel)]="editingCustomer!.email" placeholder="Email" />
                 <input [(ngModel)]="editingCustomer!.phone" placeholder="Telefon" />
                 <input [(ngModel)]="editingCustomer!.address" placeholder="Adresa" />
-                <button
-                  class="save-btn"
-                  (click)="saveEdit(); $event.stopPropagation()"
-                >
-                  💾 Uložit
-                </button>
-                <button
-                  class="cancel-btn"
-                  (click)="cancelEdit(); $event.stopPropagation()"
-                >
-                  ✖ Zrušit
-                </button>
+                <button class="save-btn" (click)="saveEdit(); $event.stopPropagation()">💾 Uložit</button>
+                <button class="cancel-btn" (click)="cancelEdit(); $event.stopPropagation()">✖ Zrušit</button>
               </div>
             </div>
           </td>
@@ -69,19 +59,9 @@
           <td class="phone-col">{{ cust.phone || '-' }}</td>
           <td class="address-col">{{ cust.address || '-' }}</td>
           <td class="orders-col">{{ cust.orders?.length || 0 }}</td>
-          <td class="actions-col">
-            <button
-              class="edit-btn"
-              (click)="startEdit(cust); $event.stopPropagation()"
-            >
-              ✏ Upravit
-            </button>
-            <button
-              class="delete-btn"
-              (click)="deleteCustomer(cust.id); $event.stopPropagation()"
-            >
-              🗑 Smazat
-            </button>
+          <td class="actions-col" *ngIf="isAdmin()">
+            <button class="edit-btn" (click)="startEdit(cust); $event.stopPropagation()">✏ Upravit</button>
+            <button class="delete-btn" (click)="deleteCustomer(cust.id); $event.stopPropagation()">🗑 Smazat</button>
           </td>
         </ng-template>
       </tr>

@@ -6,6 +6,7 @@ import { CategoriesService, Category } from '../categories/categories.service';
 import { ProductsService, Product } from '../products/products.service';
 import { CustomersService, Customer } from '../customers/customers.service';
 import { Router, ActivatedRoute } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-orders',
@@ -39,7 +40,8 @@ export class OrdersComponent implements OnInit {
     private productsService: ProductsService,
     private customersService: CustomersService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -52,6 +54,10 @@ export class OrdersComponent implements OnInit {
     this.fetchCategories();
     this.fetchProducts();
     this.fetchCustomers();
+  }
+
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
   }
 
   goBack() {
@@ -104,6 +110,7 @@ export class OrdersComponent implements OnInit {
   }
 
   startNew() {
+    if (!this.isAdmin()) return;
     this.newOrder = {
       customer: this.customerIdFilter
         ? this.customers.find(c => c.id === this.customerIdFilter) ?? null
@@ -116,7 +123,7 @@ export class OrdersComponent implements OnInit {
   }
 
   saveNew() {
-    if (!this.newOrder?.customer || !this.newOrder.product) {
+    if (!this.isAdmin() || !this.newOrder?.customer || !this.newOrder.product) {
       this.errorMsg = 'Vyplňte zákazníka a produkt';
       return;
     }
@@ -141,11 +148,12 @@ export class OrdersComponent implements OnInit {
   }
 
   startEdit(order: Order) {
+    if (!this.isAdmin()) return;
     this.editingOrder = { ...order };
   }
 
   saveEdit() {
-    if (!this.editingOrder) return;
+    if (!this.isAdmin() || !this.editingOrder) return;
     const input = {
       customerId: this.editingOrder.customer.id,
       productId: this.editingOrder.product?.id,
@@ -171,6 +179,7 @@ export class OrdersComponent implements OnInit {
   }
 
   deleteOrder(id: number) {
+    if (!this.isAdmin()) return;
     if (!confirm('Opravdu chceš smazat tuto objednávku?')) return;
     this.ordersService.delete(id, this.customerIdFilter ?? undefined).subscribe({
       next: (ok) => {

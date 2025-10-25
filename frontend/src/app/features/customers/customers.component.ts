@@ -9,6 +9,7 @@ import {
   UpdateCustomerInput,
 } from './customers.service';
 import { Observable } from 'rxjs';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-customers',
@@ -26,11 +27,16 @@ export class CustomersComponent implements OnInit {
 
   constructor(
     private customersService: CustomersService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
     this.loadCustomers();
+  }
+
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
   }
 
   loadCustomers() {
@@ -46,12 +52,14 @@ export class CustomersComponent implements OnInit {
   }
 
   startNew() {
+    if (!this.isAdmin()) return;
     this.resetErrors();
     this.newCustomer = { name: '', email: '', phone: '', address: '' };
   }
 
   saveNew() {
-    if (!this.newCustomer?.name?.trim() || !this.newCustomer.email?.trim()) {
+    if (!this.isAdmin() || !this.newCustomer) return;
+    if (!this.newCustomer.name?.trim() || !this.newCustomer.email?.trim()) {
       this.errorMsg = 'Vyplňte jméno a email';
       return;
     }
@@ -64,18 +72,14 @@ export class CustomersComponent implements OnInit {
       address: this.newCustomer.address?.trim(),
     };
 
-    console.log('DEBUG saveNew -> input:', input);
-
     this.customersService.create(input).subscribe({
       next: (created) => {
-        console.log('DEBUG createCustomer response:', created);
         if (created) this.loadCustomers();
         this.newCustomer = null;
         this.saving = false;
       },
-      error: (err) => {
+      error: () => {
         this.errorMsg = 'Chyba při vytváření zákazníka';
-        console.error('DEBUG createCustomer error:', err);
         this.saving = false;
       },
     });
@@ -87,16 +91,14 @@ export class CustomersComponent implements OnInit {
   }
 
   startEdit(customer: Customer) {
+    if (!this.isAdmin()) return;
     this.resetErrors();
     this.editingCustomer = { ...customer };
   }
 
   saveEdit() {
-    if (!this.editingCustomer) return;
-    if (
-      !this.editingCustomer.name?.trim() ||
-      !this.editingCustomer.email?.trim()
-    ) {
+    if (!this.isAdmin() || !this.editingCustomer) return;
+    if (!this.editingCustomer.name?.trim() || !this.editingCustomer.email?.trim()) {
       this.errorMsg = 'Vyplňte jméno a email';
       return;
     }
@@ -109,18 +111,14 @@ export class CustomersComponent implements OnInit {
       address: this.editingCustomer.address?.trim(),
     };
 
-    console.log('DEBUG saveEdit -> id:', this.editingCustomer.id, 'input:', input);
-
     this.customersService.update(this.editingCustomer.id, input).subscribe({
       next: (updated) => {
-        console.log('DEBUG updateCustomer response:', updated);
         if (updated) this.loadCustomers();
         this.editingCustomer = null;
         this.saving = false;
       },
-      error: (err) => {
+      error: () => {
         this.errorMsg = 'Chyba při editaci zákazníka';
-        console.error('DEBUG updateCustomer error:', err);
         this.saving = false;
       },
     });
@@ -132,19 +130,17 @@ export class CustomersComponent implements OnInit {
   }
 
   deleteCustomer(id: number) {
-    if (this.saving) return;
+    if (!this.isAdmin() || this.saving) return;
     if (!confirm('Opravdu chceš smazat tohoto zákazníka?')) return;
 
     this.saving = true;
     this.customersService.delete(id).subscribe({
       next: (ok) => {
-        console.log('DEBUG deleteCustomer response:', ok);
         if (ok) this.loadCustomers();
         this.saving = false;
       },
-      error: (err) => {
+      error: () => {
         this.errorMsg = 'Chyba při mazání zákazníka';
-        console.error('DEBUG deleteCustomer error:', err);
         this.saving = false;
       },
     });

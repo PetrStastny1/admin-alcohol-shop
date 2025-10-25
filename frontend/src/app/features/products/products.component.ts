@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ProductsService, Product } from './products.service';
 import { CategoriesService, Category } from '../categories/categories.service';
 import { Router, ActivatedRoute } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-products',
@@ -26,7 +27,8 @@ export class ProductsComponent implements OnInit {
     private productsService: ProductsService,
     private categoriesService: CategoriesService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -35,6 +37,10 @@ export class ProductsComponent implements OnInit {
       this.fetchProducts();
       this.fetchCategories();
     });
+  }
+
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
   }
 
   goBack() {
@@ -67,6 +73,7 @@ export class ProductsComponent implements OnInit {
   }
 
   startNew() {
+    if (!this.isAdmin()) return;
     this.resetErrors();
     this.newProduct = {
       name: '',
@@ -78,7 +85,8 @@ export class ProductsComponent implements OnInit {
   }
 
   saveNew() {
-    if (!this.newProduct?.name?.trim() || this.newProduct.price == null) {
+    if (!this.isAdmin() || !this.newProduct) return;
+    if (!this.newProduct.name?.trim() || this.newProduct.price == null) {
       this.errorMsg = 'Vyplňte název a cenu';
       return;
     }
@@ -115,12 +123,13 @@ export class ProductsComponent implements OnInit {
   }
 
   startEdit(prod: Product) {
+    if (!this.isAdmin()) return;
     this.resetErrors();
     this.editingProduct = { ...prod };
   }
 
   saveEdit() {
-    if (!this.editingProduct) return;
+    if (!this.isAdmin() || !this.editingProduct) return;
     if (!this.editingProduct.name?.trim() || this.editingProduct.price == null) {
       this.errorMsg = 'Vyplňte název a cenu';
       return;
@@ -160,7 +169,7 @@ export class ProductsComponent implements OnInit {
   }
 
   deleteProduct(id: number) {
-    if (this.saving) return;
+    if (!this.isAdmin() || this.saving) return;
     if (!confirm('Opravdu chceš smazat tento produkt?')) return;
     this.saving = true;
     this.productsService.delete(id, this.categoryId ?? undefined).subscribe({

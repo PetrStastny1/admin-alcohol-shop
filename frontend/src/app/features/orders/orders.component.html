@@ -3,7 +3,7 @@
 
   <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
 
-  <div class="new-order">
+  <div class="new-order" *ngIf="isAdmin()">
     <button class="add-btn" (click)="startNew()">➕ Přidat objednávku</button>
   </div>
 
@@ -48,7 +48,7 @@
         <th class="qty-col">Množství</th>
         <th class="date-col">Datum</th>
         <th class="price-col">Cena celkem</th>
-        <th class="actions-col">Akce</th>
+        <th class="actions-col" *ngIf="isAdmin()">Akce</th>
       </tr>
     </thead>
     <tbody>
@@ -95,7 +95,7 @@
           <td class="qty-col">{{ order.quantity }}</td>
           <td class="date-col">{{ order.date | date: 'yyyy-MM-dd' }}</td>
           <td class="price-col">{{ order.totalPrice }} Kč</td>
-          <td class="actions-col">
+          <td class="actions-col" *ngIf="isAdmin()">
             <button class="edit-btn" (click)="startEdit(order)">✏ Upravit</button>
             <button class="delete-btn" (click)="deleteOrder(order.id)">🗑 Smazat</button>
           </td>

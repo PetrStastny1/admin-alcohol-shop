@@ -14,7 +14,11 @@ export interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(private apollo: Apollo, private tokenService: TokenService) {}
+  private currentUser: LoginResponse | null = null;
+
+  constructor(private apollo: Apollo, private tokenService: TokenService) {
+    this.loadUserFromStorage();
+  }
 
   login(username: string, password: string): Observable<LoginResponse | null> {
     return this.apollo
@@ -36,7 +40,8 @@ export class AuthService {
           const data = res.data?.login ?? null;
           if (data?.access_token) {
             this.tokenService.setToken(data.access_token);
-            localStorage.setItem('user_role', data.role);
+            this.currentUser = data;
+            localStorage.setItem('currentUser', JSON.stringify(data));
           }
           return data;
         })
@@ -45,7 +50,8 @@ export class AuthService {
 
   logout(): void {
     this.tokenService.removeToken();
-    localStorage.removeItem('user_role');
+    this.currentUser = null;
+    localStorage.removeItem('currentUser');
   }
 
   isLoggedIn(): boolean {
@@ -56,7 +62,22 @@ export class AuthService {
     return this.tokenService.getToken();
   }
 
+  getCurrentUser(): LoginResponse | null {
+    return this.currentUser;
+  }
+
   getUserRole(): string | null {
-    return localStorage.getItem('user_role');
+    return this.currentUser?.role ?? null;
+  }
+
+  isAdmin(): boolean {
+    return this.getUserRole() === 'admin';
+  }
+
+  private loadUserFromStorage(): void {
+    const stored = localStorage.getItem('currentUser');
+    if (stored) {
+      this.currentUser = JSON.parse(stored) as LoginResponse;
+    }
   }
 }

@@ -3,11 +3,11 @@
 
   <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
 
-  <div class="new-cat">
+  <div class="new-cat" *ngIf="authService.isAdmin()">
     <button (click)="startNew()">➕ Přidat kategorii</button>
   </div>
 
-  <div *ngIf="newCategory" class="new-form">
+  <div *ngIf="newCategory && authService.isAdmin()" class="new-form">
     <div class="inner-form">
       <input [(ngModel)]="newCategory!.name" placeholder="Název" />
       <input [(ngModel)]="newCategory!.description" placeholder="Popis" />
@@ -18,7 +18,7 @@
 
   <ul class="category-list">
     <li *ngFor="let cat of categories$ | async; trackBy: trackById">
-      <div *ngIf="editingCategory?.id === cat.id; else viewMode">
+      <div *ngIf="editingCategory?.id === cat.id && authService.isAdmin(); else viewMode">
         <div class="edit-form">
           <input [(ngModel)]="editingCategory!.name" placeholder="Název" />
           <input [(ngModel)]="editingCategory!.description" placeholder="Popis" />
@@ -33,7 +33,8 @@
             <strong>{{ cat.name }}</strong>
             <span *ngIf="cat.description"> — {{ cat.description }}</span>
           </div>
-          <div class="cat-actions" (click)="$event.stopPropagation()">
+
+          <div class="cat-actions" *ngIf="authService.isAdmin()" (click)="$event.stopPropagation()">
             <button class="edit-btn" (click)="startEdit(cat)">✏ Upravit</button>
             <button class="delete-btn" (click)="deleteCategory(cat.id)">🗑 Smazat</button>
           </div>
