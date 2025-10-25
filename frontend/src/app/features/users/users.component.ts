@@ -20,6 +20,10 @@ export class UsersComponent implements OnInit {
   saving = false;
   errorMsg: string | null = null;
 
+  currentPage = 1;
+  pageSize = 10;
+  pageSizes = [10, 30, 50];
+
   constructor(
     private usersService: UsersService,
     private router: Router,
@@ -69,8 +73,8 @@ export class UsersComponent implements OnInit {
       role: this.newUser.role,
     };
     this.usersService.create(input).subscribe({
-      next: (created) => {
-        if (created) this.users.push(created);
+      next: () => {
+        this.fetchUsers();
         this.newUser = null;
         this.saving = false;
       },
@@ -103,10 +107,8 @@ export class UsersComponent implements OnInit {
 
     this.saving = true;
     this.usersService.update(this.editingUser.id, input).subscribe({
-      next: (updated) => {
-        if (updated) {
-          this.users = this.users.map((u) => (u.id === updated.id ? updated : u));
-        }
+      next: () => {
+        this.fetchUsers();
         this.editingUser = null;
         this.editingUserPassword = '';
         this.saving = false;
@@ -130,7 +132,7 @@ export class UsersComponent implements OnInit {
     this.saving = true;
     this.usersService.delete(id).subscribe({
       next: (ok) => {
-        if (ok) this.users = this.users.filter((u) => u.id !== id);
+        if (ok) this.fetchUsers();
         this.saving = false;
       },
       error: (err) => {
@@ -138,6 +140,26 @@ export class UsersComponent implements OnInit {
         this.saving = false;
       },
     });
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.users.length / this.pageSize);
+  }
+
+  get pagedUsers(): User[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.users.slice(start, start + this.pageSize);
+  }
+
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  changePageSize(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
   }
 
   private resetErrors() {

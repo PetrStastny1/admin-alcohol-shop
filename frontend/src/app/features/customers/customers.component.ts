@@ -8,7 +8,6 @@ import {
   CreateCustomerInput,
   UpdateCustomerInput,
 } from './customers.service';
-import { Observable } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -19,11 +18,15 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrls: ['./customers.component.scss'],
 })
 export class CustomersComponent implements OnInit {
-  customers$!: Observable<Customer[]>;
+  customers: Customer[] = [];
   editingCustomer: Customer | null = null;
   newCustomer: CreateCustomerInput | null = null;
   saving = false;
   errorMsg: string | null = null;
+
+  currentPage = 1;
+  pageSize = 10;
+  pageSizes = [10, 30, 50];
 
   constructor(
     private customersService: CustomersService,
@@ -41,7 +44,15 @@ export class CustomersComponent implements OnInit {
   }
 
   loadCustomers() {
-    this.customers$ = this.customersService.getAll();
+    this.customersService.getAll().subscribe({
+      next: (data) => {
+        this.customers = data ?? [];
+        this.currentPage = 1;
+      },
+      error: () => {
+        this.errorMsg = 'Nepodařilo se načíst zákazníky';
+      },
+    });
   }
 
   goBackOneStep() {
@@ -149,6 +160,26 @@ export class CustomersComponent implements OnInit {
         this.saving = false;
       },
     });
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.customers.length / this.pageSize);
+  }
+
+  get pagedCustomers(): Customer[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.customers.slice(start, start + this.pageSize);
+  }
+
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  changePageSize(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
   }
 
   private resetErrors() {

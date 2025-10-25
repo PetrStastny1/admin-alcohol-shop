@@ -12,14 +12,14 @@
 
   <div *ngIf="newProduct" class="form-box">
     <div class="inner-form">
-      <select [(ngModel)]="newProduct.category" [ngModelOptions]="{standalone: true}">
+      <select [(ngModel)]="newProduct.category" [compareWith]="compareCategory">
         <option [ngValue]="undefined">-- Vyber kategorii --</option>
         <option *ngFor="let cat of categories" [ngValue]="cat">{{ cat.name }}</option>
       </select>
       <input [(ngModel)]="newProduct.name" placeholder="Název" />
       <input [(ngModel)]="newProduct.description" placeholder="Popis" />
-      <input type="number" [(ngModel)]="newProduct.price" placeholder="Cena" />
-      <input type="number" [(ngModel)]="newProduct.stock" placeholder="Sklad" />
+      <input type="number" [(ngModel)]="newProduct.price" placeholder="Cena" min="0" />
+      <input type="number" [(ngModel)]="newProduct.stock" placeholder="Sklad" min="0" />
       <button class="save-btn" (click)="saveNew()">💾 Uložit</button>
       <button class="cancel-btn" (click)="cancelNew()">✖ Zrušit</button>
     </div>
@@ -28,7 +28,6 @@
   <table class="products-table" *ngIf="products.length > 0">
     <thead>
       <tr>
-        <th class="id-col">ID</th>
         <th class="category-col">Kategorie</th>
         <th class="name-col">Název</th>
         <th class="desc-col">Popis</th>
@@ -38,19 +37,19 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let prod of products" [ngClass]="{ editing: editingProduct?.id === prod.id }">
+      <tr *ngFor="let prod of pagedProducts" [ngClass]="{ editing: editingProduct?.id === prod.id }">
         <ng-container *ngIf="editingProduct?.id === prod.id; else viewMode">
-          <td colspan="7">
+          <td colspan="6">
             <div class="form-box">
               <div class="inner-form">
-                <select [(ngModel)]="editingProduct!.category" [ngModelOptions]="{standalone: true}">
+                <select [(ngModel)]="editingProduct!.category" [compareWith]="compareCategory">
                   <option [ngValue]="undefined">-- Vyber kategorii --</option>
                   <option *ngFor="let cat of categories" [ngValue]="cat">{{ cat.name }}</option>
                 </select>
                 <input [(ngModel)]="editingProduct!.name" placeholder="Název" />
                 <input [(ngModel)]="editingProduct!.description" placeholder="Popis" />
-                <input type="number" [(ngModel)]="editingProduct!.price" placeholder="Cena" />
-                <input type="number" [(ngModel)]="editingProduct!.stock" placeholder="Sklad" />
+                <input type="number" [(ngModel)]="editingProduct!.price" placeholder="Cena" min="0" />
+                <input type="number" [(ngModel)]="editingProduct!.stock" placeholder="Sklad" min="0" />
                 <button class="save-btn" (click)="saveEdit()">💾 Uložit</button>
                 <button class="cancel-btn" (click)="cancelEdit()">✖ Zrušit</button>
               </div>
@@ -58,7 +57,6 @@
           </td>
         </ng-container>
         <ng-template #viewMode>
-          <td class="id-col">{{ prod.id }}</td>
           <td class="category-col">{{ prod.category?.name || '-' }}</td>
           <td class="name-col">{{ prod.name }}</td>
           <td class="desc-col">{{ prod.description }}</td>
@@ -74,4 +72,16 @@
   </table>
 
   <p *ngIf="products.length === 0 && !loading">Žádné produkty nebyly nalezeny.</p>
+
+  <div class="pagination">
+    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">⬅ Předchozí</button>
+    <span>Stránka {{ currentPage }} z {{ totalPages }}</span>
+    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Další ➡</button>
+    <label>
+      Záznamů na stránku:
+      <select [(ngModel)]="pageSize" (ngModelChange)="changePageSize($event)">
+        <option *ngFor="let size of pageSizes" [ngValue]="size">{{ size }}</option>
+      </select>
+    </label>
+  </div>
 </div>

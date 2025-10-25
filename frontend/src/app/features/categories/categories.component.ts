@@ -3,7 +3,6 @@ import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CategoriesService, Category } from './categories.service';
-import { Observable } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -14,11 +13,15 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrls: ['./categories.component.scss'],
 })
 export class CategoriesComponent implements OnInit {
-  categories$!: Observable<Category[]>;
+  categories: Category[] = [];
   editingCategory: Category | null = null;
   newCategory: Partial<Category> | null = null;
   saving = false;
   errorMsg: string | null = null;
+
+  currentPage = 1;
+  pageSize = 10;
+  pageSizes = [10, 30, 50];
 
   constructor(
     private categoriesService: CategoriesService,
@@ -32,7 +35,35 @@ export class CategoriesComponent implements OnInit {
   }
 
   loadCategories() {
-    this.categories$ = this.categoriesService.getAll();
+    this.categoriesService.getAll().subscribe({
+      next: (data) => {
+        this.categories = data ?? [];
+        this.currentPage = 1;
+      },
+      error: () => {
+        this.errorMsg = 'Nepodařilo se načíst kategorie';
+      },
+    });
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.categories.length / this.pageSize) || 1;
+  }
+
+  get pagedCategories(): Category[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.categories.slice(start, start + this.pageSize);
+  }
+
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  changePageSize(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
   }
 
   goBackOneStep() {
@@ -61,8 +92,8 @@ export class CategoriesComponent implements OnInit {
     this.categoriesService
       .create(this.newCategory.name.trim(), this.newCategory.description?.trim())
       .subscribe({
-        next: () => {
-          this.loadCategories();
+        next: (created) => {
+          if (created) this.loadCategories();
           this.newCategory = null;
           this.saving = false;
         },
@@ -96,8 +127,8 @@ export class CategoriesComponent implements OnInit {
         this.editingCategory.description?.trim()
       )
       .subscribe({
-        next: () => {
-          this.loadCategories();
+        next: (updated) => {
+          if (updated) this.loadCategories();
           this.editingCategory = null;
           this.saving = false;
         },

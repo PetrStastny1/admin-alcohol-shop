@@ -2,27 +2,31 @@ import { Injectable } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import { Observable, map } from 'rxjs';
 
+export interface OrderItem {
+  id: number;
+  product: { id: number; name: string; price: number; category?: { id: number; name: string } };
+  category?: { id: number; name: string };
+  quantity: number;
+  price: number;
+}
+
 export interface Order {
   id: number;
   customer: { id: number; name: string; email: string };
-  quantity: number;
   date: string;
-  totalPrice: number;
-  product?: { id: number; name: string; price: number };
-  category?: { id: number; name: string };
+  items: OrderItem[];
 }
 
 export interface CreateOrderInput {
   customerId: number;
-  productId: number;
-  categoryId?: number;
-  quantity: number;
+  items: { productId: number; categoryId?: number; quantity: number }[];
+  date?: string;
 }
 
 export interface UpdateOrderInput {
-  productId?: number;
-  categoryId?: number;
-  quantity?: number;
+  customerId?: number;
+  items?: { productId: number; categoryId?: number; quantity: number }[];
+  date?: string;
 }
 
 const GET_ORDERS = gql`
@@ -30,11 +34,14 @@ const GET_ORDERS = gql`
     orders {
       id
       customer { id name email }
-      quantity
       date
-      totalPrice
-      product { id name price }
-      category { id name }
+      items {
+        id
+        quantity
+        price
+        product { id name price }
+        category { id name }
+      }
     }
   }
 `;
@@ -44,11 +51,14 @@ const GET_ORDERS_BY_CUSTOMER = gql`
     ordersByCustomer(customerId: $customerId) {
       id
       customer { id name email }
-      quantity
       date
-      totalPrice
-      product { id name price }
-      category { id name }
+      items {
+        id
+        quantity
+        price
+        product { id name price }
+        category { id name }
+      }
     }
   }
 `;
@@ -90,11 +100,14 @@ export class OrdersService {
             createOrder(input: $input) {
               id
               customer { id name email }
-              quantity
               date
-              totalPrice
-              product { id name price }
-              category { id name }
+              items {
+                id
+                quantity
+                price
+                product { id name price }
+                category { id name }
+              }
             }
           }
         `,
@@ -116,11 +129,14 @@ export class OrdersService {
             updateOrder(id: $id, input: $input) {
               id
               customer { id name email }
-              quantity
               date
-              totalPrice
-              product { id name price }
-              category { id name }
+              items {
+                id
+                quantity
+                price
+                product { id name price }
+                category { id name }
+              }
             }
           }
         `,
@@ -142,7 +158,9 @@ export class OrdersService {
         variables: { id },
         refetchQueries: [
           { query: GET_ORDERS },
-          ...(customerId ? [{ query: GET_ORDERS_BY_CUSTOMER, variables: { customerId } }] : []),
+          ...(customerId
+            ? [{ query: GET_ORDERS_BY_CUSTOMER, variables: { customerId } }]
+            : []),
         ],
         awaitRefetchQueries: true,
       })

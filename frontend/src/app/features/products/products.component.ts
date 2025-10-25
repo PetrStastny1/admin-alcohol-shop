@@ -23,6 +23,10 @@ export class ProductsComponent implements OnInit {
   errorMsg: string | null = null;
   categoryId: number | null = null;
 
+  currentPage = 1;
+  pageSize = 10;
+  pageSizes = [10, 30, 50];
+
   constructor(
     private productsService: ProductsService,
     private categoriesService: CategoriesService,
@@ -62,6 +66,7 @@ export class ProductsComponent implements OnInit {
       next: (data) => {
         this.products = data ?? [];
         this.loading = false;
+        this.currentPage = 1;
       },
       error: () => {
         this.errorMsg = 'Nepodařilo se načíst produkty';
@@ -80,12 +85,18 @@ export class ProductsComponent implements OnInit {
   startNew() {
     if (!this.isAdmin()) return;
     this.resetErrors();
+
+    const preselectedCategory =
+      this.categoryId != null
+        ? this.categories.find((c) => c.id === this.categoryId) ?? undefined
+        : undefined;
+
     this.newProduct = {
       name: '',
       description: '',
       price: 0,
       stock: 0,
-      category: undefined,
+      category: preselectedCategory,
     };
   }
 
@@ -93,6 +104,10 @@ export class ProductsComponent implements OnInit {
     if (!this.isAdmin() || !this.newProduct) return;
     if (!this.newProduct.name?.trim() || this.newProduct.price == null) {
       this.errorMsg = 'Vyplňte název a cenu';
+      return;
+    }
+    if (this.newProduct.price < 0) {
+      this.errorMsg = 'Cena nesmí být záporná';
       return;
     }
     if (this.newProduct.stock == null || this.newProduct.stock < 0) {
@@ -108,10 +123,8 @@ export class ProductsComponent implements OnInit {
       categoryId: this.newProduct.category?.id ?? this.categoryId ?? undefined,
     };
     this.productsService.create(input).subscribe({
-      next: (created) => {
-        if (created) {
-          this.products.push(created);
-        }
+      next: () => {
+        this.fetchProducts();
         this.newProduct = null;
         this.saving = false;
       },
@@ -139,6 +152,10 @@ export class ProductsComponent implements OnInit {
       this.errorMsg = 'Vyplňte název a cenu';
       return;
     }
+    if (this.editingProduct.price < 0) {
+      this.errorMsg = 'Cena nesmí být záporná';
+      return;
+    }
     if (this.editingProduct.stock == null || this.editingProduct.stock < 0) {
       this.errorMsg = 'Sklad nesmí být záporný';
       return;
@@ -152,12 +169,8 @@ export class ProductsComponent implements OnInit {
       categoryId: this.editingProduct.category?.id ?? this.categoryId ?? undefined,
     };
     this.productsService.update(this.editingProduct.id, input).subscribe({
-      next: (updated) => {
-        if (updated) {
-          this.products = this.products.map((p) =>
-            p.id === updated.id ? updated : p
-          );
-        }
+      next: () => {
+        this.fetchProducts();
         this.editingProduct = null;
         this.saving = false;
       },
@@ -179,9 +192,7 @@ export class ProductsComponent implements OnInit {
     this.saving = true;
     this.productsService.delete(id, this.categoryId ?? undefined).subscribe({
       next: (deleted) => {
-        if (deleted) {
-          this.products = this.products.filter((p) => p.id !== id);
-        }
+        if (deleted) this.fetchProducts();
         this.saving = false;
       },
       error: () => {
@@ -189,6 +200,30 @@ export class ProductsComponent implements OnInit {
         this.saving = false;
       },
     });
+  }
+
+  compareCategory(c1: Category | undefined, c2: Category | undefined): boolean {
+    return c1 && c2 ? c1.id === c2.id : c1 === c2;
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.products.length / this.pageSize);
+  }
+
+  get pagedProducts(): Product[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.products.slice(start, start + this.pageSize);
+  }
+
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  changePageSize(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
   }
 
   private resetErrors() {

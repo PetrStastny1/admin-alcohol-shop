@@ -20,7 +20,7 @@
   </div>
 
   <ul class="category-list">
-    <li *ngFor="let cat of categories$ | async; trackBy: trackById">
+    <li *ngFor="let cat of pagedCategories; trackBy: trackById">
       <div *ngIf="editingCategory?.id === cat.id && authService.isAdmin(); else viewMode">
         <div class="edit-form">
           <input [(ngModel)]="editingCategory!.name" placeholder="Název" />
@@ -45,4 +45,20 @@
       </ng-template>
     </li>
   </ul>
+
+  <div class="pagination">
+    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">⬅ Předchozí</button>
+    <span>Stránka {{ currentPage }} z {{ totalPages }}</span>
+    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Další ➡</button>
+    <label>
+      Záznamů na stránku:
+      <select [(ngModel)]="pageSize" (ngModelChange)="changePageSize($event)">
+        <option *ngFor="let size of pageSizes" [ngValue]="size">{{ size }}</option>
+      </select>
+    </label>
+  </div>
+
+  <div *ngIf="errorMsg" class="error-box">
+    ⚠️ {{ errorMsg }}
+  </div>
 </div>

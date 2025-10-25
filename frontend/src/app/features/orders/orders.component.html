@@ -13,28 +13,44 @@
   <div *ngIf="newOrder" class="form-box">
     <div class="inner-form">
       <select [(ngModel)]="newOrder.customer" [compareWith]="compareCustomer">
-        <option [ngValue]="undefined">-- Vyber zákazníka --</option>
-        <option *ngFor="let cust of customers" [ngValue]="cust">{{ cust.name }}</option>
+        <option [ngValue]="null">-- Vyber zákazníka --</option>
+        <option *ngFor="let cust of customers" [ngValue]="cust">
+          {{ cust.name }}
+        </option>
       </select>
 
-      <select [(ngModel)]="newOrder.category" [compareWith]="compareCategory">
-        <option [ngValue]="undefined">-- Vyber kategorii --</option>
-        <option *ngFor="let cat of categories" [ngValue]="cat">{{ cat.name }}</option>
-      </select>
-
-      <select [(ngModel)]="newOrder.product" [compareWith]="compareProduct">
-        <option [ngValue]="undefined">-- Vyber produkt --</option>
-        <option *ngFor="let prod of products" [ngValue]="prod">{{ prod.name }}</option>
-      </select>
-
-      <input type="number" [(ngModel)]="newOrder.quantity" placeholder="Množství" />
       <input type="date" [(ngModel)]="newOrder.date" [min]="today" />
 
-      <input
-        [value]="(newOrder.product?.price ?? 0) * (newOrder.quantity || 0)"
-        placeholder="Cena celkem"
-        readonly
-      />
+      <div class="order-items">
+        <div class="order-item" *ngFor="let item of newOrder.items; let i = index">
+          <select [(ngModel)]="item.category" [compareWith]="compareCategory">
+            <option [ngValue]="undefined">-- Vyber kategorii --</option>
+            <option *ngFor="let cat of categories" [ngValue]="cat">
+              {{ cat.name }}
+            </option>
+          </select>
+
+          <select [(ngModel)]="item.product" [compareWith]="compareProduct">
+            <option [ngValue]="null">-- Vyber produkt --</option>
+            <option *ngFor="let prod of getFilteredProducts(item.category?.id)" [ngValue]="prod">
+              {{ prod.name }}
+            </option>
+          </select>
+
+          <input type="number" [(ngModel)]="item.quantity" placeholder="Množství" min="1" />
+
+          <span class="price">
+            {{ item.product ? item.product.price * (item.quantity || 0) : 0 }} Kč
+          </span>
+
+          <div class="item-actions">
+            <button type="button" class="add-btn" (click)="addItem()">➕ Přidat</button>
+            <button type="button" class="delete-btn" (click)="removeItem(i)">🗑️ Smazat</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-total">Celkem: {{ totalPrice }} Kč</div>
 
       <button class="save-btn" (click)="saveNew()">💾 Uložit</button>
       <button class="cancel-btn" (click)="cancelNew()">✖ Zrušit</button>
@@ -44,45 +60,66 @@
   <table class="orders-table" *ngIf="orders.length > 0">
     <thead>
       <tr>
-        <th class="id-col">ID</th>
-        <th class="customer-col">Zákazník</th>
-        <th class="category-col">Kategorie</th>
-        <th class="product-col">Produkt</th>
-        <th class="qty-col">Množství</th>
-        <th class="date-col">Datum</th>
-        <th class="price-col">Cena celkem</th>
+        <th class="id-col" (click)="changeSort('id')">
+          ID <span>{{ sortIcon('id') }}</span>
+        </th>
+        <th class="customer-col" (click)="changeSort('customer')">
+          Zákazník <span>{{ sortIcon('customer') }}</span>
+        </th>
+        <th class="date-col" (click)="changeSort('date')">
+          Datum <span>{{ sortIcon('date') }}</span>
+        </th>
+        <th class="price-col" (click)="changeSort('price')">
+          Cena celkem <span>{{ sortIcon('price') }}</span>
+        </th>
         <th class="actions-col" *ngIf="isAdmin()">Akce</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let order of orders" [ngClass]="{ editing: editingOrder?.id === order.id }">
+      <tr *ngFor="let order of pagedOrders" [ngClass]="{ editing: editingOrder?.id === order.id }">
         <ng-container *ngIf="editingOrder?.id === order.id; else viewMode">
-          <td colspan="8">
+          <td colspan="5">
             <div class="form-box">
               <div class="inner-form">
                 <select [(ngModel)]="editingOrder!.customer" [compareWith]="compareCustomer">
-                  <option [ngValue]="undefined">-- Vyber zákazníka --</option>
-                  <option *ngFor="let cust of customers" [ngValue]="cust">{{ cust.name }}</option>
+                  <option [ngValue]="null">-- Vyber zákazníka --</option>
+                  <option *ngFor="let cust of customers" [ngValue]="cust">
+                    {{ cust.name }}
+                  </option>
                 </select>
 
-                <select [(ngModel)]="editingOrder!.category" [compareWith]="compareCategory">
-                  <option [ngValue]="undefined">-- Vyber kategorii --</option>
-                  <option *ngFor="let cat of categories" [ngValue]="cat">{{ cat.name }}</option>
-                </select>
-
-                <select [(ngModel)]="editingOrder!.product" [compareWith]="compareProduct">
-                  <option [ngValue]="undefined">-- Vyber produkt --</option>
-                  <option *ngFor="let prod of products" [ngValue]="prod">{{ prod.name }}</option>
-                </select>
-
-                <input type="number" [(ngModel)]="editingOrder!.quantity" placeholder="Množství" />
                 <input type="date" [(ngModel)]="editingOrder!.date" [min]="today" />
 
-                <input
-                  [value]="(editingOrder!.product?.price ?? 0) * editingOrder!.quantity"
-                  placeholder="Cena celkem"
-                  readonly
-                />
+                <div class="order-items">
+                  <div class="order-item" *ngFor="let item of editingOrder!.items; let i = index">
+                    <select [(ngModel)]="item.category" [compareWith]="compareCategory">
+                      <option [ngValue]="undefined">-- Vyber kategorii --</option>
+                      <option *ngFor="let cat of categories" [ngValue]="cat">
+                        {{ cat.name }}
+                      </option>
+                    </select>
+
+                    <select [(ngModel)]="item.product" [compareWith]="compareProduct">
+                      <option [ngValue]="null">-- Vyber produkt --</option>
+                      <option *ngFor="let prod of getFilteredProducts(item.category?.id)" [ngValue]="prod">
+                        {{ prod.name }}
+                      </option>
+                    </select>
+
+                    <input type="number" [(ngModel)]="item.quantity" placeholder="Množství" min="1" />
+
+                    <span class="price">
+                      {{ item.product ? item.product.price * (item.quantity || 0) : 0 }} Kč
+                    </span>
+
+                    <div class="item-actions">
+                      <button type="button" class="add-btn" (click)="addItem()">➕ Přidat</button>
+                      <button type="button" class="delete-btn" (click)="removeItem(i)">🗑️ Smazat</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="order-total">Celkem: {{ getEditingOrderTotal() }} Kč</div>
 
                 <button class="save-btn" (click)="saveEdit()">💾 Uložit</button>
                 <button class="cancel-btn" (click)="cancelEdit()">✖ Zrušit</button>
@@ -90,14 +127,12 @@
             </div>
           </td>
         </ng-container>
+
         <ng-template #viewMode>
           <td class="id-col">{{ order.id }}</td>
           <td class="customer-col">{{ order.customer.name }}</td>
-          <td class="category-col">{{ order.category?.name || '-' }}</td>
-          <td class="product-col">{{ order.product?.name || '-' }}</td>
-          <td class="qty-col">{{ order.quantity }}</td>
-          <td class="date-col">{{ order.date | date: 'yyyy-MM-dd' }}</td>
-          <td class="price-col">{{ order.totalPrice }} Kč</td>
+          <td class="date-col">{{ order.date | date: "yyyy-MM-dd" }}</td>
+          <td class="price-col">{{ getOrderTotal(order) }} Kč</td>
           <td class="actions-col" *ngIf="isAdmin()">
             <button class="edit-btn" (click)="startEdit(order)">✏ Upravit</button>
             <button class="delete-btn" (click)="deleteOrder(order.id)">🗑 Smazat</button>
@@ -106,6 +141,18 @@
       </tr>
     </tbody>
   </table>
+
+  <div class="pagination" *ngIf="orders.length > 0">
+    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">⬅ Předchozí</button>
+    <span>Stránka {{ currentPage }} z {{ totalPages }}</span>
+    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Další ➡</button>
+    <label>
+      Záznamů na stránku:
+      <select [(ngModel)]="pageSize" (ngModelChange)="changePageSize($event)">
+        <option *ngFor="let size of pageSizes" [ngValue]="size">{{ size }}</option>
+      </select>
+    </label>
+  </div>
 
   <p *ngIf="orders.length === 0 && !loading">Žádné objednávky nebyly nalezeny.</p>
 </div>
