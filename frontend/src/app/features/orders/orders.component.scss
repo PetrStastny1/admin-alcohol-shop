@@ -3,272 +3,342 @@
   background: linear-gradient(135deg, #343a40, #1c1f24);
   min-height: 100vh;
   color: #f1f1f1;
-  display: flex;
-  flex-direction: column;
-}
 
-.orders-page h2 {
-  margin-bottom: 1.5rem;
-  font-size: 2rem;
-  color: rgba(0, 123, 255, 0.85);
-  font-weight: 700;
-  text-align: center;
-}
-
-.back-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.back-one-btn,
-.back-btn {
-  width: 180px;
-  height: 40px;
-  background: transparent;
-  border: 2px solid #007bff;
-  color: #007bff;
-  border-radius: 8px;
-  font-weight: 500;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-}
-
-.back-one-btn:hover,
-.back-btn:hover {
-  background: #007bff;
-  color: #fff;
-}
-
-.new-order {
-  margin-bottom: 1rem;
-}
-
-.new-order .add-btn {
-  min-width: 170px;
-  height: 40px;
-  background: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.new-order .add-btn:hover {
-  background: #0056b3;
-}
-
-.form-box {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.form-box .inner-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-}
-
-.form-box select,
-.form-box input {
-  flex: 1 1 200px;
-  padding: 0.6rem;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(0, 0, 0, 0.3);
-  color: #fff;
-  transition: border 0.2s ease;
-}
-
-.form-box select:focus,
-.form-box input:focus {
-  border: 1px solid #007bff;
-  outline: none;
-}
-
-.form-box option {
-  color: #000;
-}
-
-.save-btn,
-.cancel-btn {
-  min-width: 120px;
-  height: 40px;
-  border-radius: 6px;
-  font-weight: 500;
-  color: #fff;
-  transition: all 0.2s ease;
-}
-
-.save-btn {
-  background: #007bff;
-}
-
-.save-btn:hover {
-  background: #0056b3;
-}
-
-.cancel-btn {
-  background: #dc3545;
-}
-
-.cancel-btn:hover {
-  background: #bd2130;
-}
-
-.orders-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-  table-layout: fixed;
-}
-
-.orders-table th,
-.orders-table td {
-  padding: 0.9rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  text-align: center;
-}
-
-.orders-table th {
-  background: rgba(255, 255, 255, 0.1);
-  font-weight: 600;
-  color: #f1f1f1;
-  cursor: pointer;
-  user-select: none;
-}
-
-.orders-table th span {
-  margin-left: 5px;
-  font-size: 0.8rem;
-}
-
-.orders-table th:hover {
-  background: rgba(0, 123, 255, 0.2);
-}
-
-.orders-table .id-col {
-  width: 5%;
-}
-
-.orders-table .customer-col {
-  width: 20%;
-}
-
-.orders-table .date-col {
-  width: 15%;
-}
-
-.orders-table .price-col {
-  width: 10%;
-}
-
-.orders-table .actions-col {
-  width: 22%;
-}
-
-.orders-table .actions-col button {
-  min-width: 110px;
-  height: 40px;
-  margin: 0 0.3rem;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #fff;
-  transition: all 0.2s ease;
-}
-
-.orders-table .actions-col .edit-btn {
-  background: #007bff;
-}
-
-.orders-table .actions-col .edit-btn:hover {
-  background: #0056b3;
-}
-
-.orders-table .actions-col .delete-btn {
-  background: #dc3545;
-}
-
-.orders-table .actions-col .delete-btn:hover {
-  background: #bd2130;
-}
-
-.orders-table tr:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.pagination {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-top: 1rem;
-  gap: 0.5rem;
-}
-
-.pagination button {
-  background: transparent;
-  border: 1px solid #007bff;
-  color: #007bff;
-  border-radius: 6px;
-  padding: 0.4rem 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.pagination button:hover:not(:disabled) {
-  background: #007bff;
-  color: #fff;
-}
-
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.pagination select {
-  padding: 0.3rem 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: rgba(0, 0, 0, 0.3);
-  color: #fff;
-}
-
-.pagination option {
-  color: #000;
-}
-
-@media (max-width: 768px) {
-  .orders-table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
+  h2 {
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: rgba(0, 123, 255, 0.8);
+    font-weight: 700;
+    text-align: center;
   }
 
-  .orders-table td.actions-col {
+  .back-buttons {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+
+    .back-one-btn,
+    .back-btn {
+      width: 180px;
+      height: 40px;
+      background: transparent;
+      border: 2px solid #007bff;
+      color: #007bff;
+      border-radius: 8px;
+      font-weight: 500;
+      white-space: nowrap;
+
+      &:hover {
+        background: #007bff;
+        color: #fff;
+      }
+    }
   }
 
-  .orders-table td.actions-col button {
+  .new-order {
+    margin-bottom: 1rem;
+
+    .add-btn {
+      min-width: 140px;
+      height: 40px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+
+      &:hover {
+        background: #0056b3;
+      }
+    }
+  }
+
+  .form-box {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    .inner-form {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 0.8rem;
+      align-items: center;
+
+      select,
+      input {
+        flex: 1;
+        min-width: 100px;
+        padding: 0.5rem;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        background: rgba(0, 0, 0, 0.2);
+        color: #fff;
+
+        option {
+          color: #000;
+        }
+      }
+
+      .save-btn,
+      .cancel-btn {
+        flex: 0 0 auto;
+        min-width: 110px;
+        height: 40px;
+        border-radius: 6px;
+        font-weight: 500;
+        color: #fff;
+      }
+
+      .save-btn {
+        background: #007bff;
+
+        &:hover {
+          background: #0056b3;
+        }
+      }
+
+      .cancel-btn {
+        background: #dc3545;
+
+        &:hover {
+          background: #bd2130;
+        }
+      }
+    }
+
+    .order-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .order-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: nowrap;
+
+        .category-select {
+          width: 200px;
+          flex: 0 0 auto;
+        }
+
+        .product-select {
+          width: 200px;
+          flex: 0 0 auto;
+        }
+
+        input {
+          width: 80px;
+          flex: 0 0 auto;
+        }
+
+        .price {
+          width: 100px;
+          text-align: right;
+          flex: 0 0 auto;
+        }
+
+        .item-actions {
+          display: flex;
+          gap: 0.5rem;
+
+          .add-btn {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.3rem 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+
+            &:hover {
+              background: #0056b3;
+            }
+          }
+
+          .delete-btn {
+            background: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.3rem 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+
+            &:hover {
+              background: #b52a37;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .orders-table {
     width: 100%;
-    margin: 0;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    table-layout: fixed;
+
+    th,
+    td {
+      padding: 0.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.1);
+      font-weight: 600;
+      color: #f1f1f1;
+      cursor: pointer;
+      user-select: none;
+
+      span {
+        margin-left: 5px;
+        font-size: 0.8rem;
+      }
+
+      &:hover {
+        background: rgba(0, 123, 255, 0.2);
+      }
+    }
+
+    .id-col {
+      width: 5%;
+    }
+
+    .customer-col {
+      width: 20%;
+    }
+
+    .date-col {
+      width: 15%;
+    }
+
+    .price-col {
+      width: 10%;
+    }
+
+    .actions-col {
+      width: 20%;
+
+      button {
+        min-width: 100px;
+        height: 36px;
+        margin: 0 0.2rem;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #fff;
+
+        &.edit-btn {
+          background: #007bff;
+
+          &:hover {
+            background: #0056b3;
+          }
+        }
+
+        &.delete-btn {
+          background: #dc3545;
+
+          &:hover {
+            background: #bd2130;
+          }
+        }
+      }
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
   }
 
   .pagination {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 0.3rem;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+
+    button {
+      background: #007bff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      color: #fff;
+      font-weight: 500;
+      cursor: pointer;
+
+      &:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+      }
+
+      &:hover:not(:disabled) {
+        background: #0056b3;
+      }
+    }
+
+    span {
+      font-weight: 500;
+    }
+
+    select {
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: rgba(0, 0, 0, 0.2);
+      color: #fff;
+
+      option {
+        color: #000;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .form-box .inner-form {
+      flex-wrap: wrap;
+    }
+
+    .form-box .order-items .order-item {
+      flex-wrap: wrap;
+    }
+
+    .orders-table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .orders-table td.actions-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .orders-table td.actions-col button {
+      width: 100%;
+      margin: 0;
+    }
+
+    .pagination {
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
   }
 }
