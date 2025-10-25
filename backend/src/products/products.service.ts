@@ -20,7 +20,7 @@ export class ProductsService implements OnModuleInit {
   async findAll(): Promise<Product[]> {
     return this.productRepository.find({
       where: { isActive: true },
-      relations: ['category', 'orders'],
+      relations: ['category', 'orderItems'],
       order: { id: 'ASC' },
     });
   }
@@ -28,7 +28,7 @@ export class ProductsService implements OnModuleInit {
   async findOne(id: number): Promise<Product> {
     const product = await this.productRepository.findOne({
       where: { id },
-      relations: ['category', 'orders'],
+      relations: ['category', 'orderItems'],
     });
     if (!product) throw new NotFoundException(`Produkt s ID ${id} nenalezen`);
     return product;
@@ -37,7 +37,7 @@ export class ProductsService implements OnModuleInit {
   async findByCategory(categoryId: number): Promise<Product[]> {
     return this.productRepository.find({
       where: { isActive: true, category: { id: categoryId } },
-      relations: ['category', 'orders'],
+      relations: ['category', 'orderItems'],
       order: { id: 'ASC' },
     });
   }
@@ -58,17 +58,28 @@ export class ProductsService implements OnModuleInit {
     let category = undefined;
     if (productData.categoryId) {
       category = await this.categoriesService.findOne(productData.categoryId);
-      if (!category)
+      if (!category) {
         throw new NotFoundException(
           `Kategorie s ID ${productData.categoryId} nenalezena`,
         );
+      }
     }
 
     const existing = await this.findByNameAndCategory(
       productData.name!,
       category?.id,
     );
+
     if (existing) {
+      if (!existing.isActive) {
+        existing.isActive = true;
+        existing.price = productData.price ?? existing.price;
+        existing.description = productData.description ?? existing.description;
+        existing.stock = productData.stock ?? existing.stock;
+        existing.category = category ?? existing.category;
+        await this.productRepository.save(existing);
+        return this.findOne(existing.id);
+      }
       throw new BadRequestException(
         `Produkt "${productData.name}" v této kategorii již existuje`,
       );
@@ -105,10 +116,11 @@ export class ProductsService implements OnModuleInit {
       const category = await this.categoriesService.findOne(
         updateData.categoryId,
       );
-      if (!category)
+      if (!category) {
         throw new NotFoundException(
           `Kategorie s ID ${updateData.categoryId} nenalezena`,
         );
+      }
       product.category = category;
     }
 
@@ -131,9 +143,7 @@ export class ProductsService implements OnModuleInit {
 
   async onModuleInit() {
     const categories = await this.categoriesService.findAll();
-    if (!categories.length) {
-      return;
-    }
+    if (!categories.length) return;
 
     const seedMap: Record<
       string,
@@ -228,4 +238,3 @@ export class ProductsService implements OnModuleInit {
     }
   }
 }
-

@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './order.entity';
+import { OrderItem } from './order-item.entity';
 import { Category } from '../categories/category.entity';
 import { Product } from '../products/products.entity';
 import { Customer } from '../customers/customer.entity';
@@ -18,6 +19,8 @@ export class OrdersService implements OnModuleInit {
   constructor(
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
+    @InjectRepository(OrderItem)
+    private readonly orderItemRepository: Repository<OrderItem>,
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
     @InjectRepository(Product)
@@ -56,15 +59,19 @@ export class OrdersService implements OnModuleInit {
 
     let dayOffset = 0;
     for (const o of sampleOrders) {
-      const totalPrice = Number(o.product.price) * o.quantity;
-      const order = this.orderRepository.create({
-        customer: o.customer,
+      const item = this.orderItemRepository.create({
         product: o.product,
         category: o.product.category,
         quantity: o.quantity,
-        date: new Date(Date.now() - dayOffset * 86400000).toISOString(),
-        totalPrice,
+        price: Number(o.product.price),
       });
+
+      const order = this.orderRepository.create({
+        customer: o.customer,
+        items: [item],
+        date: new Date(Date.now() - dayOffset * 86400000).toISOString(),
+      });
+
       await this.orderRepository.save(order);
       dayOffset++;
     }
@@ -73,15 +80,13 @@ export class OrdersService implements OnModuleInit {
   }
 
   async findAll(): Promise<Order[]> {
-    return this.orderRepository.find({
-      relations: ['category', 'product', 'customer'],
-    });
+    return this.orderRepository.find({ relations: ['items', 'items.product', 'items.category', 'customer'] });
   }
 
   async findOne(id: number): Promise<Order> {
     const order = await this.orderRepository.findOne({
       where: { id },
-      relations: ['category', 'product', 'customer'],
+      relations: ['items', 'items.product', 'items.category', 'customer'],
     });
     if (!order) {
       throw new NotFoundException(`Objednávka s ID ${id} nenalezena`);
@@ -97,47 +102,54 @@ export class OrdersService implements OnModuleInit {
 
     return this.orderRepository.find({
       where: { customer: { id: customerId } },
-      relations: ['category', 'product', 'customer'],
+      relations: ['items', 'items.product', 'items.category', 'customer'],
     });
   }
 
   async create(input: CreateOrderInput): Promise<Order> {
-    if (input.quantity <= 0) {
-      throw new BadRequestException(`Množství musí být větší než 0`);
-    }
-
-    const product = await this.productRepository.findOne({
-      where: { id: input.productId },
-      relations: ['category'],
-    });
-    if (!product) {
-      throw new NotFoundException(`Produkt s ID ${input.productId} nenalezen`);
-    }
-
-    const customer = await this.customerRepository.findOne({
-      where: { id: input.customerId },
-    });
+    const customer = await this.customerRepository.findOne({ where: { id: input.customerId } });
     if (!customer) {
       throw new NotFoundException(`Zákazník s ID ${input.customerId} nenalezen`);
     }
 
-    let category: Category | null = null;
-    if (input.categoryId) {
-      category = await this.categoryRepository.findOne({ where: { id: input.categoryId } });
-      if (!category) {
-        throw new NotFoundException(`Kategorie s ID ${input.categoryId} nenalezena`);
-      }
+    if (!input.items || input.items.length === 0) {
+      throw new BadRequestException(`Objednávka musí obsahovat alespoň jednu položku`);
     }
 
-    const totalPrice = Number(product.price) * input.quantity;
+    const items: OrderItem[] = [];
+    for (const i of input.items) {
+      const product = await this.productRepository.findOne({
+        where: { id: i.productId },
+        relations: ['category'],
+      });
+      if (!product) {
+        throw new NotFoundException(`Produkt s ID ${i.productId} nenalezen`);
+      }
+      if (i.quantity <= 0) {
+        throw new BadRequestException(`Množství musí být větší než 0`);
+      }
+
+      let category: Category | null = null;
+      if (i.categoryId) {
+        category = await this.categoryRepository.findOne({ where: { id: i.categoryId } });
+        if (!category) {
+          throw new NotFoundException(`Kategorie s ID ${i.categoryId} nenalezena`);
+        }
+      }
+
+      const item = this.orderItemRepository.create({
+        product,
+        category: category ?? product.category,
+        quantity: i.quantity,
+        price: Number(product.price),
+      });
+      items.push(item);
+    }
 
     const order = this.orderRepository.create({
       customer,
-      product,
-      category: category ?? product.category,
-      quantity: input.quantity,
+      items,
       date: input.date ?? new Date().toISOString(),
-      totalPrice,
     });
 
     return this.orderRepository.save(order);
@@ -154,40 +166,42 @@ export class OrdersService implements OnModuleInit {
       order.customer = customer;
     }
 
-    if (input.productId) {
-      const product = await this.productRepository.findOne({
-        where: { id: input.productId },
-        relations: ['category'],
-      });
-      if (!product) {
-        throw new NotFoundException(`Produkt s ID ${input.productId} nenalezen`);
-      }
-      order.product = product;
-      if (!input.categoryId) {
-        order.category = product.category;
-      }
-    }
+    if (input.items) {
+      const newItems: OrderItem[] = [];
+      for (const i of input.items) {
+        const product = await this.productRepository.findOne({
+          where: { id: i.productId },
+          relations: ['category'],
+        });
+        if (!product) {
+          throw new NotFoundException(`Produkt s ID ${i.productId} nenalezen`);
+        }
+        if (i.quantity <= 0) {
+          throw new BadRequestException(`Množství musí být větší než 0`);
+        }
 
-    if (input.categoryId) {
-      const category = await this.categoryRepository.findOne({ where: { id: input.categoryId } });
-      if (!category) {
-        throw new NotFoundException(`Kategorie s ID ${input.categoryId} nenalezena`);
-      }
-      order.category = category;
-    }
+        let category: Category | null = null;
+        if (i.categoryId) {
+          category = await this.categoryRepository.findOne({ where: { id: i.categoryId } });
+          if (!category) {
+            throw new NotFoundException(`Kategorie s ID ${i.categoryId} nenalezena`);
+          }
+        }
 
-    if (input.quantity !== undefined) {
-      if (input.quantity <= 0) {
-        throw new BadRequestException(`Množství musí být větší než 0`);
+        const item = this.orderItemRepository.create({
+          product,
+          category: category ?? product.category,
+          quantity: i.quantity,
+          price: Number(product.price),
+        });
+        newItems.push(item);
       }
-      order.quantity = input.quantity;
+      order.items = newItems;
     }
 
     if (input.date) {
       order.date = input.date;
     }
-
-    order.totalPrice = Number(order.product.price) * order.quantity;
 
     return this.orderRepository.save(order);
   }

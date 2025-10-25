@@ -26,4 +26,8 @@ export class User {
   @Field()
   @CreateDateColumn()
   created_at!: Date;
+
+  @Field()
+  @Column({ default: true })
+  isActive!: boolean;
 }

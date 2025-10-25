@@ -1,8 +1,7 @@
-import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Category } from '../categories/category.entity';
-import { Product } from '../products/products.entity';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { Customer } from '../customers/customer.entity';
+import { OrderItem } from './order-item.entity';
 
 @ObjectType()
 @Entity('orders')
@@ -18,28 +17,13 @@ export class Order {
   })
   customer!: Customer;
 
-  @Field(() => Product)
-  @ManyToOne(() => Product, (product) => product.orders, {
+  @Field(() => [OrderItem])
+  @OneToMany(() => OrderItem, (item) => item.order, {
+    cascade: true,
     eager: true,
     onDelete: 'CASCADE',
   })
-  product!: Product;
-
-  @Field(() => Category, { nullable: true })
-  @ManyToOne(() => Category, (category) => category.products, {
-    eager: true,
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
-  category?: Category;
-
-  @Field(() => Int)
-  @Column()
-  quantity!: number;
-
-  @Field(() => Float)
-  @Column('decimal', { precision: 10, scale: 2 })
-  totalPrice!: number;
+  items!: OrderItem[];
 
   @Field()
   @Column()

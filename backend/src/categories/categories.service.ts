@@ -36,16 +36,20 @@ export class CategoriesService implements OnModuleInit {
         where: { name: cat.name },
       });
       if (!exists) {
-        const category = this.categoryRepository.create(cat);
+        const category = this.categoryRepository.create({
+          ...cat,
+          isActive: true,
+        });
         await this.categoryRepository.save(category);
       }
     }
-
-    console.log('✅ Categories seeded (pokud chyběly)');
   }
 
   async findAll(): Promise<Category[]> {
-    return this.categoryRepository.find({ relations: ['products'] });
+    return this.categoryRepository.find({
+      where: { isActive: true },
+      relations: ['products'],
+    });
   }
 
   async findOne(id: number): Promise<Category> {
@@ -53,7 +57,7 @@ export class CategoriesService implements OnModuleInit {
       where: { id },
       relations: ['products'],
     });
-    if (!category) {
+    if (!category || !category.isActive) {
       throw new NotFoundException(`Kategorie s ID ${id} nenalezena`);
     }
     return category;
@@ -63,11 +67,21 @@ export class CategoriesService implements OnModuleInit {
     const existing = await this.categoryRepository.findOne({
       where: { name: input.name },
     });
+
     if (existing) {
-      throw new BadRequestException(`Kategorie "${input.name}" už existuje`);
+      if (!existing.isActive) {
+        existing.isActive = true;
+        existing.description = input.description ?? existing.description;
+        return this.categoryRepository.save(existing);
+      } else {
+        throw new BadRequestException(`Kategorie "${input.name}" už existuje`);
+      }
     }
 
-    const category = this.categoryRepository.create(input);
+    const category = this.categoryRepository.create({
+      ...input,
+      isActive: true,
+    });
     return this.categoryRepository.save(category);
   }
 
@@ -78,7 +92,7 @@ export class CategoriesService implements OnModuleInit {
       const existing = await this.categoryRepository.findOne({
         where: { name: input.name },
       });
-      if (existing) {
+      if (existing && existing.id !== input.id && existing.isActive) {
         throw new BadRequestException(`Kategorie "${input.name}" už existuje`);
       }
       category.name = input.name;
@@ -92,10 +106,15 @@ export class CategoriesService implements OnModuleInit {
   }
 
   async delete(id: number): Promise<boolean> {
-    const result = await this.categoryRepository.delete(id);
-    if ((result.affected ?? 0) === 0) {
+    const category = await this.findOne(id);
+    if (!category) {
       throw new NotFoundException(`Kategorie s ID ${id} nenalezena`);
     }
+    if (!category.isActive) {
+      return false;
+    }
+    category.isActive = false;
+    await this.categoryRepository.save(category);
     return true;
   }
 }

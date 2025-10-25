@@ -26,14 +26,18 @@ export class OrdersResolver {
 
   @Query(() => [Order], { name: 'ordersByCustomer' })
   @UseGuards(GqlAuthGuard)
-  async findByCustomer(@Args('customerId', { type: () => Int }) customerId: number): Promise<Order[]> {
+  async findByCustomer(
+    @Args('customerId', { type: () => Int }) customerId: number,
+  ): Promise<Order[]> {
     return this.ordersService.findByCustomer(customerId);
   }
 
   @Mutation(() => Order, { name: 'createOrder' })
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('admin')
-  async createOrder(@Args('input') input: CreateOrderInput): Promise<Order> {
+  async createOrder(
+    @Args('input') input: CreateOrderInput,
+  ): Promise<Order> {
     return this.ordersService.create(input);
   }
 
@@ -50,7 +54,9 @@ export class OrdersResolver {
   @Mutation(() => Boolean, { name: 'deleteOrder' })
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('admin')
-  async deleteOrder(@Args('id', { type: () => Int }) id: number): Promise<boolean> {
+  async deleteOrder(
+    @Args('id', { type: () => Int }) id: number,
+  ): Promise<boolean> {
     return this.ordersService.delete(id);
   }
 }

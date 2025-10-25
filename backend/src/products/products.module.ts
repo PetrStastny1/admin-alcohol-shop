@@ -7,10 +7,7 @@ import { ProductsResolver } from './products.resolver';
 import { CategoriesModule } from '../categories/categories.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Product]),
-    CategoriesModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Product]), CategoriesModule],
   controllers: [ProductsController],
   providers: [ProductsService, ProductsResolver],
   exports: [ProductsService],

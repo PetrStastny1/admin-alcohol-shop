@@ -5,6 +5,7 @@ import { Customer } from './customer.entity';
 import { CreateCustomerInput } from './dto/create-customer.input';
 import { UpdateCustomerInput } from './dto/update-customer.input';
 import { Order } from '../orders/order.entity';
+import { OrderItem } from '../orders/order-item.entity';
 import { Product } from '../products/products.entity';
 
 @Injectable()
@@ -14,6 +15,8 @@ export class CustomersService implements OnModuleInit {
     private readonly customerRepository: Repository<Customer>,
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
+    @InjectRepository(OrderItem)
+    private readonly orderItemRepository: Repository<OrderItem>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
   ) {}
@@ -44,16 +47,22 @@ export class CustomersService implements OnModuleInit {
         for (let i = 0; i < numberOfOrders; i++) {
           const product = products[Math.floor(Math.random() * products.length)];
           const quantity = 1 + Math.floor(Math.random() * 3);
-          const order = this.orderRepository.create({
-            customer,
+
+          const item = this.orderItemRepository.create({
             product,
             category: product.category,
             quantity,
-            totalPrice: product.price * quantity,
+            price: Number(product.price),
+          });
+
+          const order = this.orderRepository.create({
+            customer,
+            items: [item],
             date: new Date(
               Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000
             ).toISOString(),
           });
+
           await this.orderRepository.save(order);
         }
       }

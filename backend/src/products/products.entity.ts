@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
-import { Order } from '../orders/order.entity';
+import { OrderItem } from '../orders/order-item.entity';
 import { Category } from '../categories/category.entity';
 
 @ObjectType()
@@ -30,9 +30,9 @@ export class Product {
   @Column({ type: 'int', default: 0 })
   stock!: number;
 
-  @Field(() => [Order], { nullable: true })
-  @OneToMany(() => Order, (order) => order.product)
-  orders?: Order[];
+  @Field(() => [OrderItem], { nullable: true })
+  @OneToMany(() => OrderItem, (item) => item.product)
+  orderItems?: OrderItem[];
 
   @Field(() => Category, { nullable: true })
   @ManyToOne(() => Category, (category) => category.products, {

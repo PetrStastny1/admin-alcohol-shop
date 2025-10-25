@@ -5,7 +5,9 @@
 type Category {
   description: String
   id: Int!
+  isActive: Boolean!
   name: String!
+  orderItems: [OrderItem!]
   products: [Product!]
 }
 
@@ -22,11 +24,9 @@ input CreateCustomerInput {
 }
 
 input CreateOrderInput {
-  categoryId: Int
   customerId: Int!
   date: String
-  productId: Int!
-  quantity: Int!
+  items: [OrderItemInput!]!
 }
 
 input CreateProductInput {
@@ -86,13 +86,26 @@ type Mutation {
 }
 
 type Order {
-  category: Category
   customer: Customer!
   date: String!
   id: Int!
+  items: [OrderItem!]!
+}
+
+type OrderItem {
+  category: Category
+  id: Int!
+  order: Order!
+  price: Float!
   product: Product!
   quantity: Int!
-  totalPrice: Float!
+}
+
+input OrderItemInput {
+  categoryId: Int
+  price: Float
+  productId: Int!
+  quantity: Int!
 }
 
 type Product {
@@ -102,7 +115,7 @@ type Product {
   id: Int!
   isActive: Boolean!
   name: String!
-  orders: [Order!]
+  orderItems: [OrderItem!]
   price: Float!
   stock: Int!
 }
@@ -137,11 +150,9 @@ input UpdateCustomerInput {
 }
 
 input UpdateOrderInput {
-  categoryId: Int
   customerId: Int
   date: String
-  productId: Int
-  quantity: Int
+  items: [OrderItemInput!]
 }
 
 input UpdateProductInput {
@@ -164,6 +175,7 @@ type User {
   created_at: DateTime!
   email: String!
   id: Int!
+  isActive: Boolean!
   role: String!
   username: String!
 }

@@ -1,5 +1,7 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { IsInt, IsOptional, Min, IsDateString } from 'class-validator';
+import { IsInt, IsOptional, IsDateString, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { OrderItemInput } from './order-item.input';
 
 @InputType()
 export class UpdateOrderInput {
@@ -8,21 +10,11 @@ export class UpdateOrderInput {
   @IsInt()
   customerId?: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => [OrderItemInput], { nullable: true })
   @IsOptional()
-  @IsInt()
-  productId?: number;
-
-  @Field(() => Int, { nullable: true })
-  @IsOptional()
-  @IsInt()
-  categoryId?: number;
-
-  @Field(() => Int, { nullable: true })
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  quantity?: number;
+  @ValidateNested({ each: true })
+  @Type(() => OrderItemInput)
+  items?: OrderItemInput[];
 
   @Field({ nullable: true })
   @IsOptional()
