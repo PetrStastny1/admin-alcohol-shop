@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsersService, User, CreateUserInput, UpdateUserInput } from './users.service';
 import { Router } from '@angular/router';
@@ -22,11 +22,16 @@ export class UsersComponent implements OnInit {
 
   constructor(
     private usersService: UsersService,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
     this.fetchUsers();
+  }
+
+  goBackOneStep() {
+    this.location.back();
   }
 
   goBack() {

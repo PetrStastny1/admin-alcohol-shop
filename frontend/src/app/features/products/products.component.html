@@ -1,7 +1,10 @@
 <div class="products-page">
   <h2>🍾 Produkty</h2>
 
-  <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
+  <div class="back-buttons">
+    <button class="back-one-btn" (click)="goBackOneStep()">⬅ O krok zpět</button>
+    <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
+  </div>
 
   <div class="new-product" *ngIf="isAdmin()">
     <button class="add-btn" (click)="startNew()">➕ Přidat produkt</button>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OrdersService, Order } from './orders.service';
 import { CategoriesService, Category } from '../categories/categories.service';
@@ -41,7 +41,8 @@ export class OrdersComponent implements OnInit {
     private customersService: CustomersService,
     private router: Router,
     private route: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
@@ -58,6 +59,10 @@ export class OrdersComponent implements OnInit {
 
   isAdmin(): boolean {
     return this.authService.isAdmin();
+  }
+
+  goBackOneStep() {
+    this.location.back();
   }
 
   goBack() {

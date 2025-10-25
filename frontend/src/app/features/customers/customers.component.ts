@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -28,7 +28,8 @@ export class CustomersComponent implements OnInit {
   constructor(
     private customersService: CustomersService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private location: Location
   ) {}
 
   ngOnInit() {
@@ -41,6 +42,10 @@ export class CustomersComponent implements OnInit {
 
   loadCustomers() {
     this.customers$ = this.customersService.getAll();
+  }
+
+  goBackOneStep() {
+    this.location.back();
   }
 
   goBack() {

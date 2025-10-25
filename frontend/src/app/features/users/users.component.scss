@@ -12,20 +12,28 @@
     text-align: center;
   }
 
-  .back-btn {
-    min-width: 120px;
-    height: 40px;
-    background: transparent;
-    border: 2px solid #007bff;
-    color: #007bff;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
+  .back-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
 
-    &:hover {
-      background: #007bff;
-      color: #fff;
+    .back-one-btn,
+    .back-btn {
+      width: 180px;
+      height: 40px;
+      background: transparent;
+      border: 2px solid #007bff;
+      color: #007bff;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+
+      &:hover {
+        background: #007bff;
+        color: #fff;
+      }
     }
   }
 
@@ -120,7 +128,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      text-align: center; // ✅ vše vycentrováno
+      text-align: center;
     }
 
     th {
@@ -129,23 +137,18 @@
       color: #f1f1f1;
     }
 
-    /* Šířky sloupců */
     .id-col {
       width: 5%;
     }
-
     .email-col {
       width: 25%;
     }
-
     .username-col {
       width: 20%;
     }
-
     .role-col {
       width: 10%;
     }
-
     .created-col {
       width: 18%;
     }

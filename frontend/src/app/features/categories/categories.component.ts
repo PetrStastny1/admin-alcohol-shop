@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CategoriesService, Category } from './categories.service';
@@ -23,7 +23,8 @@ export class CategoriesComponent implements OnInit {
   constructor(
     private categoriesService: CategoriesService,
     private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
+    private location: Location
   ) {}
 
   ngOnInit() {
@@ -32,6 +33,10 @@ export class CategoriesComponent implements OnInit {
 
   loadCategories() {
     this.categories$ = this.categoriesService.getAll();
+  }
+
+  goBackOneStep() {
+    this.location.back();
   }
 
   goBack() {
@@ -43,13 +48,11 @@ export class CategoriesComponent implements OnInit {
   }
 
   startNew() {
-    if (!this.authService.isAdmin()) return;
     this.errorMsg = null;
     this.newCategory = { name: '', description: '' };
   }
 
   saveNew() {
-    if (!this.authService.isAdmin()) return;
     if (!this.newCategory?.name?.trim()) {
       this.errorMsg = 'Vyplňte název kategorie';
       return;
@@ -76,13 +79,11 @@ export class CategoriesComponent implements OnInit {
   }
 
   startEdit(category: Category) {
-    if (!this.authService.isAdmin()) return;
     this.errorMsg = null;
     this.editingCategory = { ...category };
   }
 
   saveEdit() {
-    if (!this.authService.isAdmin()) return;
     if (!this.editingCategory?.name?.trim()) {
       this.errorMsg = 'Vyplňte název kategorie';
       return;
@@ -113,7 +114,7 @@ export class CategoriesComponent implements OnInit {
   }
 
   deleteCategory(id: number) {
-    if (!this.authService.isAdmin() || this.saving) return;
+    if (this.saving) return;
     if (!confirm('Opravdu chceš smazat tuto kategorii?')) return;
     this.saving = true;
     this.categoriesService.delete(id).subscribe({
