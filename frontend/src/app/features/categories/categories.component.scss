@@ -38,6 +38,7 @@
   .new-cat button {
     @extend .btn;
     @extend .btn-primary;
+    width: 200px;
   }
 
   .new-form,
