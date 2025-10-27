@@ -3,30 +3,26 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-
-  background: linear-gradient(135deg, #bdc3c7, #2c3e50);
-
-  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
 .login-box {
-  background: rgba(30, 30, 30, 0.6);
+  background: rgba(255, 255, 255, 0.18); // světlejší průhledný
+  backdrop-filter: blur(12px);
   padding: 3rem 2.5rem;
   border-radius: 12px;
   width: 100%;
   max-width: 380px;
   text-align: center;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 
   h2 {
     margin-bottom: 2rem;
-    color: #fff;
+    color: #0f172a;
     font-weight: 600;
+    font-size: 1.8rem;
   }
 
   .login-form {
@@ -42,49 +38,66 @@
     max-width: 280px;
     padding: 0.8rem;
     border-radius: 8px;
-    border: none;
+    border: 1px solid rgba(148, 163, 184, 0.6);
     font-size: 1rem;
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
+    background: rgba(255, 255, 255, 0.6);
+    color: #1e293b;
     text-align: center;
+    transition: border 0.2s, box-shadow 0.2s, background 0.2s;
 
     &::placeholder {
-      color: rgba(255, 255, 255, 0.7);
+      color: #475569;
     }
 
     &:focus {
       outline: none;
-      border: 2px solid #3498db;
-      background: rgba(255, 255, 255, 0.25);
+      border-color: #3b82f6;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
     }
   }
 
   button {
     width: 100%;
     max-width: 280px;
-    padding: 0.9rem;
-    border-radius: 8px;
-    border: none;
-    background: #1a2a6c;
-    color: #fff;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
-
-    &:hover {
-      background: #0f1c4d;
-    }
-
-    &:disabled {
-      background: #555;
-      cursor: not-allowed;
-    }
+    @extend .btn;
+    @extend .btn-primary;
   }
 
   .error-msg {
     margin-top: 1rem;
-    color: #ff6b6b;
+    color: #dc2626;
     font-size: 0.9rem;
+    font-weight: 500;
+  }
+}
+
+.btn {
+  border-radius: 10px;
+  padding: 0.8rem 1.2rem;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  border: 1px solid #2563eb;
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: #2563eb;
+    border-color: #1d4ed8;
+  }
+
+  &:active {
+    background: #1d4ed8;
+    border-color: #1e40af;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
