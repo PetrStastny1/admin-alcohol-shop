@@ -2,9 +2,16 @@ import { Injectable } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import { Observable, map } from 'rxjs';
 
+export interface OrderProduct {
+  id: number;
+  name: string;
+  price: number;
+  category?: { id: number; name: string };
+}
+
 export interface OrderItem {
   id: number;
-  product: { id: number; name: string; price: number; category?: { id: number; name: string } };
+  product: OrderProduct | null;
   category?: { id: number; name: string };
   quantity: number;
   price: number;
@@ -39,7 +46,7 @@ const GET_ORDERS = gql`
         id
         quantity
         price
-        product { id name price }
+        product { id name price category { id name } }
         category { id name }
       }
     }
@@ -56,7 +63,7 @@ const GET_ORDERS_BY_CUSTOMER = gql`
         id
         quantity
         price
-        product { id name price }
+        product { id name price category { id name } }
         category { id name }
       }
     }
@@ -105,7 +112,7 @@ export class OrdersService {
                 id
                 quantity
                 price
-                product { id name price }
+                product { id name price category { id name } }
                 category { id name }
               }
             }
@@ -134,7 +141,7 @@ export class OrdersService {
                 id
                 quantity
                 price
-                product { id name price }
+                product { id name price category { id name } }
                 category { id name }
               }
             }

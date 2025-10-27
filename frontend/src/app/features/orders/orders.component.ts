@@ -1,12 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { OrdersService, Order } from './orders.service';
+import { OrdersService, Order, OrderProduct } from './orders.service';
 import { CategoriesService, Category } from '../categories/categories.service';
-import { ProductsService, Product } from '../products/products.service';
+import { ProductsService } from '../products/products.service';
 import { CustomersService, Customer } from '../customers/customers.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+
+type EditableOrderItem = {
+  category?: Category;
+  product: OrderProduct | null;
+  quantity: number;
+};
+
+type EditableOrder = {
+  id?: number;
+  customer: Customer | null;
+  date: string;
+  items: EditableOrderItem[];
+};
 
 @Component({
   selector: 'app-orders',
@@ -18,14 +31,10 @@ import { AuthService } from '../../core/services/auth.service';
 export class OrdersComponent implements OnInit {
   orders: Order[] = [];
   categories: Category[] = [];
-  products: Product[] = [];
+  products: OrderProduct[] = [];
   customers: Customer[] = [];
-  editingOrder: Order | null = null;
-  newOrder: {
-    customer: Customer | null;
-    date: string;
-    items: { category?: Category; product: Product | null; quantity: number }[];
-  } | null = null;
+  editingOrder: EditableOrder | null = null;
+  newOrder: EditableOrder | null = null;
   loading = false;
   saving = false;
   errorMsg: string | null = null;
@@ -102,7 +111,7 @@ export class OrdersComponent implements OnInit {
 
   fetchProducts() {
     this.productsService.getProducts().subscribe({
-      next: (data) => (this.products = data),
+      next: (data) => (this.products = data as OrderProduct[]),
     });
   }
 
@@ -131,6 +140,14 @@ export class OrdersComponent implements OnInit {
     this.newOrder?.items.splice(index, 1);
   }
 
+  addEditItem() {
+    this.editingOrder?.items.push({ category: undefined, product: null, quantity: 1 });
+  }
+
+  removeEditItem(index: number) {
+    this.editingOrder?.items.splice(index, 1);
+  }
+
   get totalPrice(): number {
     if (!this.newOrder) return 0;
     return this.newOrder.items.reduce((sum, item) => {
@@ -142,7 +159,7 @@ export class OrdersComponent implements OnInit {
   compareCustomer = (c1: Customer, c2: Customer): boolean =>
     c1 && c2 ? c1.id === c2.id : c1 === c2;
 
-  compareProduct = (p1: Product, p2: Product): boolean =>
+  compareProduct = (p1: OrderProduct, p2: OrderProduct): boolean =>
     p1 && p2 ? p1.id === p2.id : p1 === p2;
 
   compareCategory = (cat1: Category, cat2: Category): boolean =>
@@ -190,10 +207,13 @@ export class OrdersComponent implements OnInit {
   startEdit(order: Order) {
     if (!this.isAdmin()) return;
     this.editingOrder = {
-      ...order,
+      id: order.id,
+      customer: order.customer,
+      date: order.date,
       items: order.items.map((i) => ({
-        ...i,
-        category: i.product.category ?? undefined,
+        category: i.product?.category ?? undefined,
+        product: i.product,
+        quantity: i.quantity,
       })),
     };
   }
@@ -203,17 +223,17 @@ export class OrdersComponent implements OnInit {
     const items = this.editingOrder.items
       .filter((i) => i.product && i.quantity > 0)
       .map((i) => ({
-        productId: i.product.id,
+        productId: i.product!.id,
         quantity: i.quantity,
         categoryId: i.category?.id,
       }));
     const input = {
-      customerId: this.editingOrder.customer.id,
+      customerId: this.editingOrder.customer!.id,
       date: this.editingOrder.date,
       items,
     };
     this.saving = true;
-    this.ordersService.update(this.editingOrder.id, input).subscribe({
+    this.ordersService.update(this.editingOrder.id!, input).subscribe({
       next: () => {
         this.fetchOrders();
         this.editingOrder = null;
