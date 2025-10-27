@@ -1,13 +1,15 @@
 <div class="orders-page">
   <h2>📦 Objednávky</h2>
 
-  <div class="back-buttons">
-    <button class="back-one-btn" (click)="goBackOneStep()">⬅ O krok zpět</button>
-    <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
-  </div>
+  <div class="page-header">
+    <div class="back-buttons">
+      <button class="back-one-btn" (click)="goBackOneStep()">⬅ O krok zpět</button>
+      <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
+    </div>
 
-  <div class="new-order" *ngIf="isAdmin()">
-    <button class="add-btn" (click)="startNew()">➕ Přidat objednávku</button>
+    <div class="new-order" *ngIf="isAdmin()">
+      <button class="add-btn" (click)="startNew()">➕ Přidat objednávku</button>
+    </div>
   </div>
 
   <div *ngIf="newOrder" class="form-box">
@@ -78,7 +80,7 @@
     <tbody>
       <tr *ngFor="let order of pagedOrders" [ngClass]="{ editing: editingOrder?.id === order.id }">
         <ng-container *ngIf="editingOrder?.id === order.id; else viewMode">
-          <td colspan="5">
+          <td [attr.colspan]="isAdmin() ? 5 : 4">
             <div class="form-box">
               <div class="inner-form">
                 <select [(ngModel)]="editingOrder!.customer" [compareWith]="compareCustomer">
