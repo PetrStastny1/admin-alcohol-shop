@@ -1,249 +1,262 @@
 .customers-page {
   padding: 2rem;
-  background: linear-gradient(135deg, #2c2f33, #1c1f24);
+  background: linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%);
   min-height: 100vh;
-  color: #f1f1f1;
-  display: flex;
-  flex-direction: column;
-}
+  color: #1e293b;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
 
-.customers-page h2 {
-  margin-bottom: 1.5rem;
-  font-size: 2rem;
-  color: rgba(0, 123, 255, 0.85);
-  font-weight: 700;
-  text-align: center;
-}
-
-.back-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.back-one-btn,
-.back-btn {
-  width: 180px;
-  height: 40px;
-  background: transparent;
-  border: 2px solid #007bff;
-  color: #007bff;
-  border-radius: 8px;
-  font-weight: 500;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-}
-
-.back-one-btn:hover,
-.back-btn:hover {
-  background: #007bff;
-  color: #fff;
-}
-
-.new-customer {
-  margin-bottom: 1rem;
-}
-
-.new-customer .add-btn {
-  min-width: 170px;
-  height: 40px;
-  background: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.new-customer .add-btn:hover {
-  background: #0056b3;
-}
-
-.form-box {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.form-box .inner-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-}
-
-.form-box input {
-  flex: 1 1 200px;
-  padding: 0.6rem;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(0, 0, 0, 0.3);
-  color: #fff;
-  transition: border 0.2s ease;
-}
-
-.form-box input:focus {
-  border: 1px solid #007bff;
-  outline: none;
-}
-
-.save-btn,
-.cancel-btn {
-  min-width: 120px;
-  height: 40px;
-  border-radius: 6px;
-  font-weight: 500;
-  color: #fff;
-  transition: all 0.2s ease;
-}
-
-.save-btn {
-  background: #007bff;
-}
-
-.save-btn:hover {
-  background: #0056b3;
-}
-
-.cancel-btn {
-  background: #dc3545;
-}
-
-.cancel-btn:hover {
-  background: #bd2130;
-}
-
-.customers-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-  table-layout: fixed;
-}
-
-.customers-table th,
-.customers-table td {
-  padding: 0.9rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.customers-table th {
-  background: rgba(255, 255, 255, 0.1);
-  font-weight: 600;
-  color: #f1f1f1;
-}
-
-.customers-table tr.clickable-row {
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.customers-table tr.clickable-row:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.actions-col {
-  width: 22%;
-}
-
-.actions-col button {
-  min-width: 110px;
-  height: 40px;
-  margin: 0 0.3rem;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #fff;
-  transition: all 0.2s ease;
-}
-
-.actions-col .edit-btn {
-  background: #007bff;
-}
-
-.actions-col .edit-btn:hover {
-  background: #0056b3;
-}
-
-.actions-col .delete-btn {
-  background: #dc3545;
-}
-
-.actions-col .delete-btn:hover {
-  background: #bd2130;
-}
-
-.customers-table tr:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.pagination {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-top: 1rem;
-  gap: 0.5rem;
-}
-
-.pagination button {
-  background: transparent;
-  border: 1px solid #007bff;
-  color: #007bff;
-  border-radius: 6px;
-  padding: 0.4rem 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.pagination button:hover:not(:disabled) {
-  background: #007bff;
-  color: #fff;
-}
-
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.pagination select {
-  padding: 0.3rem 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: rgba(0, 0, 0, 0.3);
-  color: #fff;
-}
-
-.pagination option {
-  color: #000;
-}
-
-@media (max-width: 768px) {
-  .customers-table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
+  h2 {
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+    color: #0f172a;
+    letter-spacing: -0.3px;
   }
 
-  .customers-table td.actions-col {
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .back-buttons {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.5rem;
+
+    button {
+      @extend .btn;
+      @extend .btn-secondary;
+      width: 200px;
+      text-align: left;
+    }
   }
 
-  .customers-table td.actions-col button {
+  .new-customer button {
+    @extend .btn;
+    @extend .btn-primary;
+    width: 200px;
+  }
+
+  .form-box {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    .inner-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+
+      input {
+        flex: 1 1 200px;
+        padding: 0.65rem;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        background: #fff;
+        color: #1e293b;
+        font-size: 0.95rem;
+        transition: border 0.2s, box-shadow 0.2s;
+
+        &:focus {
+          outline: none;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+      }
+
+      .save-btn {
+        @extend .btn;
+        @extend .btn-primary;
+        width: 110px;
+        height: 40px;
+        font-size: 0.9rem;
+      }
+
+      .cancel-btn {
+        @extend .btn;
+        @extend .btn-danger;
+        width: 110px;
+        height: 40px;
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  .customers-table {
     width: 100%;
-    margin: 0;
+    border-collapse: collapse;
+    margin-top: 1rem;
+
+    th,
+    td {
+      padding: 0.9rem;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: center;
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    tr.clickable-row:hover {
+      background: #f1f5f9;
+    }
+
+    .actions-col {
+      width: 260px;
+      text-align: center;
+
+      button {
+        @extend .btn;
+        margin: 0 0.3rem;
+        font-size: 0.9rem;
+      }
+
+      .edit-btn {
+        @extend .btn-primary;
+      }
+
+      .delete-btn {
+        @extend .btn-danger;
+      }
+    }
   }
 
   .pagination {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 0.3rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 1.5rem;
+    gap: 0.8rem;
+    font-size: 0.95rem;
+
+    button {
+      @extend .btn;
+      @extend .btn-secondary;
+      padding: 0.4rem 0.9rem;
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    select {
+      padding: 0.35rem 0.6rem;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background-color: #fff !important;
+      color: #000 !important;
+      font-size: 0.9rem;
+      appearance: none;
+
+      option {
+        background-color: #fff !important;
+        color: #000 !important;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+    }
+
+    .new-customer button,
+    .back-buttons button {
+      width: 100%;
+    }
+
+    .customers-table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .customers-table td.actions-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .customers-table td.actions-col button {
+      width: 100%;
+      margin: 0;
+    }
+
+    .pagination {
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+  }
+}
+
+.btn {
+  border-radius: 10px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+
+  &:hover:not(:disabled) {
+    background: #f9fafb;
+    border-color: #94a3b8;
+  }
+
+  &:active {
+    background: #e2e8f0;
+  }
+}
+
+.btn-primary {
+  background: #e0f2fe;
+  border: 1px solid #bae6fd;
+  color: #1e3a8a;
+
+  &:hover:not(:disabled) {
+    background: #bfdbfe;
+    border-color: #93c5fd;
+    color: #1e40af;
+  }
+
+  &:active {
+    background: #93c5fd;
+    border-color: #60a5fa;
+    color: #1e3a8a;
+  }
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 5px rgba(220, 38, 38, 0.25);
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);
   }
 }

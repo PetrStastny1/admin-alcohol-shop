@@ -1,13 +1,15 @@
 <div class="customers-page">
   <h2>👥 Zákazníci</h2>
 
-  <div class="back-buttons">
-    <button class="back-one-btn" (click)="goBackOneStep()">⬅ O krok zpět</button>
-    <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
-  </div>
+  <div class="page-header">
+    <div class="back-buttons">
+      <button class="back-one-btn" (click)="goBackOneStep()">⬅ O krok zpět</button>
+      <button class="back-btn" (click)="goBack()">⬅ Zpět na Dashboard</button>
+    </div>
 
-  <div class="new-customer" *ngIf="isAdmin()">
-    <button class="add-btn" (click)="startNew()">➕ Přidat zákazníka</button>
+    <div class="new-customer" *ngIf="isAdmin()">
+      <button class="add-btn" (click)="startNew()">➕ Přidat zákazníka</button>
+    </div>
   </div>
 
   <div *ngIf="newCustomer && isAdmin()" class="form-box">
