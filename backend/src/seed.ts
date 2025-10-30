@@ -53,6 +53,9 @@ async function bootstrap() {
       { email: 'admin@example.com', username: 'admin', password: 'admin123', role: 'admin' },
       { email: 'user1@example.com', username: 'user1', password: 'password1', role: 'user' },
       { email: 'user2@example.com', username: 'user2', password: 'password2', role: 'user' },
+      { email: 'user3@example.com', username: 'user3', password: 'password3', role: 'user' },
+      { email: 'user4@example.com', username: 'user4', password: 'password4', role: 'user' },
+      { email: 'user5@example.com', username: 'user5', password: 'password5', role: 'user' },
     ];
 
     for (const u of defaultUsers) {

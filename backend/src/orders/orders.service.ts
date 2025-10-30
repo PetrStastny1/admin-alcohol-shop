@@ -69,7 +69,7 @@ export class OrdersService implements OnModuleInit {
       const order = this.orderRepository.create({
         customer: o.customer,
         items: [item],
-        date: new Date(Date.now() - dayOffset * 86400000),
+        date: new Date(Date.now() - dayOffset * 86400000).toISOString(),
       });
 
       await this.orderRepository.save(order);
@@ -149,7 +149,7 @@ export class OrdersService implements OnModuleInit {
     const order = this.orderRepository.create({
       customer,
       items,
-      date: input.date ? new Date(input.date) : new Date(),
+      date: input.date ?? new Date().toISOString(),
     });
 
     return this.orderRepository.save(order);
@@ -200,7 +200,7 @@ export class OrdersService implements OnModuleInit {
     }
 
     if (input.date) {
-      order.date = new Date(input.date);
+      order.date = input.date;
     }
 
     return this.orderRepository.save(order);
