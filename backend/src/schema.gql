@@ -54,10 +54,8 @@ type Customer {
   phone: String
 }
 
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
+"""Date scalar in format dd.mm.yyyy"""
+scalar FormattedDate
 
 type LoginResponseDto {
   access_token: String!
@@ -87,7 +85,7 @@ type Mutation {
 
 type Order {
   customer: Customer!
-  date: String!
+  date: FormattedDate!
   id: Int!
   items: [OrderItem!]!
 }
@@ -172,10 +170,11 @@ input UpdateUserInput {
 }
 
 type User {
-  created_at: DateTime!
+  created_at: FormattedDate!
   email: String!
   id: Int!
   isActive: Boolean!
   role: String!
+  updated_at: FormattedDate!
   username: String!
 }

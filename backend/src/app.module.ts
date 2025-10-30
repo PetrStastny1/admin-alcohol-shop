@@ -6,6 +6,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { validate } from './env.validation';
 import { Request } from 'express';
+import { FormattedDateScalar } from './common/scalars/date.scalar';
 
 // --- Moduly aplikace ---
 import { AppController } from './app.controller';
@@ -57,6 +58,6 @@ import { OrdersModule } from './orders/orders.module';
     OrdersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, FormattedDateScalar],
 })
 export class AppModule {}

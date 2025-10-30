@@ -2,6 +2,7 @@ import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { Customer } from '../customers/customer.entity';
 import { OrderItem } from './order-item.entity';
+import { FormattedDateScalar } from '../common/scalars/date.scalar';
 
 @ObjectType()
 @Entity('orders')
@@ -25,7 +26,7 @@ export class Order {
   })
   items!: OrderItem[];
 
-  @Field()
-  @Column()
-  date!: string;
+  @Field(() => FormattedDateScalar)
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  date!: Date;
 }
