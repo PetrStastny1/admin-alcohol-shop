@@ -20,16 +20,16 @@ import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
-    // --- Servírování Angular buildu (frontend/dist/frontend/browser) ---
+    // --- Servírování Angular buildu ---
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', '..', 'frontend', 'dist', 'frontend', 'browser'),
+      rootPath: join(__dirname, '..', '..', '..', 'backend', 'frontend', 'dist', 'frontend', 'browser'),
       exclude: ['/graphql*', '/api*'],
       serveStaticOptions: {
         index: 'index.html',
       },
     }),
 
-    // --- Globální konfigurace ---
+    // --- Konfigurace prostředí ---
     ConfigModule.forRoot({
       isGlobal: true,
       validate,
