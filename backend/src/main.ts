@@ -5,12 +5,16 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: 'http://localhost:4200',
+    origin: process.env.NODE_ENV === 'production' ? '*' : 'http://localhost:4200',
     credentials: true,
     allowedHeaders: 'Content-Type, Authorization',
-    methods: 'GET,POST,PUT,DELETE,OPTIONS'
+    methods: 'GET,POST,PUT,DELETE,OPTIONS',
   });
 
-  await app.listen(3000);
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+
+  console.log(`🚀 Server běží na portu ${port} (${process.env.NODE_ENV})`);
 }
+
 bootstrap();

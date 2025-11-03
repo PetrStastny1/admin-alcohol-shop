@@ -6,6 +6,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { validate } from './env.validation';
 import { Request } from 'express';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 // --- Moduly aplikace ---
 import { AppController } from './app.controller';
@@ -19,6 +20,11 @@ import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
+    // --- Servírování Angular buildu ---
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'frontend', 'dist', 'frontend'),
+    }),
+
     // --- Globální konfigurace ---
     ConfigModule.forRoot({
       isGlobal: true,
