@@ -3,10 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { validate } from './env.validation';
 import { Request } from 'express';
-import { ServeStaticModule } from '@nestjs/serve-static';
 
 // --- Moduly aplikace ---
 import { AppController } from './app.controller';
@@ -20,9 +20,9 @@ import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
-    // --- Servírování Angular buildu ---
+    // --- Servírování Angular buildu (frontend/dist/frontend) ---
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'frontend', 'dist', 'frontend'),
+      rootPath: join(__dirname, '..', 'frontend', 'dist', 'frontend'),
     }),
 
     // --- Globální konfigurace ---
@@ -49,7 +49,7 @@ import { OrdersModule } from './orders/orders.module';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
-      playground: process.env.NODE_ENV !== 'production',
+      playground: true,
       introspection: true,
       context: ({ req }: { req: Request }) => ({ req }),
     }),
