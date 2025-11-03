@@ -23,6 +23,9 @@ import { OrdersModule } from './orders/orders.module';
     // --- Servírování Angular buildu (frontend/dist/frontend) ---
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'frontend', 'dist', 'frontend'),
+      serveStaticOptions: {
+        index: false,
+      },
     }),
 
     // --- Globální konfigurace ---
@@ -49,7 +52,7 @@ import { OrdersModule } from './orders/orders.module';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
-      playground: true,
+      playground: process.env.NODE_ENV !== 'production',
       introspection: true,
       context: ({ req }: { req: Request }) => ({ req }),
     }),
