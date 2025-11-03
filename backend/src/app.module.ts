@@ -20,11 +20,12 @@ import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
-    // --- Servírování Angular buildu (frontend/dist/frontend) ---
+    // --- Servírování Angular buildu (frontend/dist/frontend/browser) ---
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'frontend', 'dist', 'frontend'),
+      rootPath: join(__dirname, '..', 'frontend', 'dist', 'frontend', 'browser'),
+      exclude: ['/graphql*', '/api*'],
       serveStaticOptions: {
-        index: false,
+        index: 'index.html',
       },
     }),
 
