@@ -32,14 +32,17 @@ console.log('🧭 Angular rootPath:', frontendRoot);
 
 @Module({
   imports: [
+    // ✅ Servování frontendu
     ServeStaticModule.forRoot({
       rootPath: frontendRoot,
       exclude: ['/graphql', '/api'],
       serveStaticOptions: { index: 'index.html' },
     }),
 
+    // ✅ Globální konfigurace
     ConfigModule.forRoot({ isGlobal: true, validate }),
 
+    // ✅ TypeORM připojení
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST || 'localhost',
@@ -52,7 +55,7 @@ console.log('🧭 Angular rootPath:', frontendRoot);
       logging: process.env.TYPEORM_LOGGING === 'true',
     }),
 
-    // ✅ GraphQL bez CSRF 
+    // ✅ GraphQL bez CSRF
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -74,4 +77,8 @@ console.log('🧭 Angular rootPath:', frontendRoot);
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    console.log('⚙️ GraphQL CSRF prevention je vypnutá (Safari fix aktivní)');
+  }
+}
