@@ -21,22 +21,20 @@ export class AuthService {
       throw new UnauthorizedException('Neplatné uživatelské jméno nebo heslo');
     }
 
-    return user;
+    const { password: _, ...result } = user;
+    return result;
   }
 
-  async loginUser(username: string, password: string): Promise<{ access_token: string; user: any }> {
+  async loginUser(
+    username: string,
+    password: string,
+  ): Promise<{ access_token: string; user: any }> {
     const user = await this.validateUser(username, password);
     const payload = { sub: user.id, username: user.username, role: user.role };
 
     return {
       access_token: this.jwtService.sign(payload, { expiresIn: '365d' }),
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        created_at: user.created_at,
-      },
+      user,
     };
   }
 }
