@@ -6,11 +6,19 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const allowedOrigins = [
+    'http://localhost:4200',
+    'http://localhost:3000',
+    'https://admin-alcohol-shop-production.up.railway.app',
+  ];
+
   const corsOptions: CorsOptions = {
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-      if (!origin || origin.startsWith('https://') || origin.startsWith('http://localhost')) {
+    origin: (origin: string | undefined, callback) => {
+      if (!origin || allowedOrigins.includes(origin) || origin.startsWith('https://')) {
+        console.log('✅ CORS povoleno pro:', origin || '— žádný origin (např. Postman)');
         callback(null, true);
       } else {
+        console.warn('❌ CORS zablokováno pro:', origin);
         callback(new Error(`CORS blocked for origin: ${origin}`));
       }
     },
