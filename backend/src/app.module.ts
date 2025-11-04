@@ -19,7 +19,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
 
-// ✅ Automatická detekce buildu
+// ✅ Automatická detekce buildu (Angular)
 const pathsToTry = [
   join(process.cwd(), 'frontend', 'dist', 'frontend', 'browser'),
   join(__dirname, '..', 'frontend', 'dist', 'frontend', 'browser'),
@@ -27,8 +27,14 @@ const pathsToTry = [
   join(process.cwd(), 'backend', 'frontend', 'dist', 'frontend', 'browser'),
 ];
 
-const frontendRoot = pathsToTry.find(p => existsSync(p)) ?? process.cwd();
+const frontendRoot = pathsToTry.find((p) => existsSync(p)) ?? process.cwd();
 console.log('🧭 Angular rootPath:', frontendRoot);
+
+// ✅ Povolené originy podle prostředí
+const allowedOrigins =
+  process.env.NODE_ENV === 'production'
+    ? ['https://admin-alcohol-shop-production.up.railway.app']
+    : true; // ve vývoji povolíme všechno
 
 @Module({
   imports: [
@@ -52,15 +58,18 @@ console.log('🧭 Angular rootPath:', frontendRoot);
       logging: process.env.TYPEORM_LOGGING === 'true',
     }),
 
+    // ✅ GraphQL – CSRF ON, CORS řeší main.ts (globálně)
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       playground: process.env.NODE_ENV !== 'production',
       introspection: true,
+      csrfPrevention: true,
       context: ({ req }: { req: Request }) => ({ req }),
     }),
 
+    // ✅ Moduly aplikace
     AuthModule,
     UsersModule,
     ProductsModule,
