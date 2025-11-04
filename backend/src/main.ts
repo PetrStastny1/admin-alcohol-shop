@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { seedDatabase } from './seed';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,8 +16,13 @@ async function bootstrap() {
   });
 
   const port = process.env.PORT || 3000;
-  await app.listen(port);
 
+  if (process.env.RUN_SEED === 'true') {
+    console.log('🌱 Spouštím seed databáze (RUN_SEED=true)...');
+    await seedDatabase();
+  }
+
+  await app.listen(port);
   console.log(`🚀 Server běží na portu ${port} (NODE_ENV=${process.env.NODE_ENV})`);
 }
 
