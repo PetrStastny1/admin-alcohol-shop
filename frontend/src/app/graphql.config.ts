@@ -17,7 +17,11 @@ const defaultOptions: DefaultOptions = {
 export function apolloOptions(): ApolloClientOptions {
   const httpLink = inject(HttpLink);
 
-  const graphqlUri = environment.graphqlUri;
+  const graphqlUri =
+    environment.graphqlUri ||
+    (environment.production
+      ? 'https://admin-alcohol-shop-production.up.railway.app/graphql'
+      : 'http://localhost:3000/graphql');
 
   const authLink = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem('auth_token');
