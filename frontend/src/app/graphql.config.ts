@@ -25,14 +25,20 @@ export function apolloOptions(): ApolloClientOptions {
 
   const authLink = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem('auth_token');
+
     operation.setContext(({ headers = {} }) => ({
       headers: {
         'Content-Type': 'application/json',
+        'apollo-require-preflight': 'true',
+
         'x-apollo-operation-name': operation.operationName || 'unknown',
-        ...(headers as Record<string, string>),
+
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+
+        ...(headers as Record<string, string>),
       },
     }));
+
     return forward(operation);
   });
 
