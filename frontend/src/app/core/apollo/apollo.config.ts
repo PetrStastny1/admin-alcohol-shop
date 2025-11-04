@@ -18,7 +18,7 @@ const defaultOptions: DefaultOptions = {
 export function apolloOptions(): ApolloClientOptions {
   const httpLink = inject(HttpLink);
 
-  // ✅ Použij relativní endpoint v produkci (funguje i z mobilu)
+  // ✅ Použij relativní endpoint v produkci (funguje i na mobilu / Railway)
   const graphqlUri = environment.production
     ? '/graphql'
     : 'http://localhost:3000/graphql';
@@ -36,7 +36,7 @@ export function apolloOptions(): ApolloClientOptions {
         ...(headers as Record<string, string>),
         'Content-Type': 'application/json',
         'x-apollo-operation-name': operation.operationName || 'unknown',
-        'apollo-require-preflight': 'true',
+        'apollo-require-preflight': 'true', // Safari / CSRF fix
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     }));
