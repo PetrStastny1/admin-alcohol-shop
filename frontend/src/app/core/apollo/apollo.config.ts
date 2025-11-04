@@ -18,7 +18,6 @@ const defaultOptions: DefaultOptions = {
 export function apolloOptions(): ApolloClientOptions {
   const httpLink = inject(HttpLink);
 
-  // ✅ Použij relativní endpoint v produkci (funguje i na mobilu / Railway)
   const graphqlUri = environment.production
     ? '/graphql'
     : 'http://localhost:3000/graphql';
