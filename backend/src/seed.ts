@@ -7,7 +7,7 @@ import { CustomersService } from './customers/customers.service';
 import { OrdersService } from './orders/orders.service';
 import { UsersService } from './users/users.service';
 
-async function bootstrap() {
+export async function seedDatabase() {
   const app = await NestFactory.createApplicationContext(AppModule);
 
   const dataSource = app.get(DataSource);
@@ -75,4 +75,9 @@ async function bootstrap() {
   }
 }
 
-bootstrap();
+if (require.main === module) {
+  seedDatabase().then(() => {
+    console.log('🌱 Seed dokončen (samostatné spuštění)');
+    process.exit(0);
+  });
+}
