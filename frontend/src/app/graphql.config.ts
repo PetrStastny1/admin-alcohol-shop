@@ -18,10 +18,9 @@ const defaultOptions: DefaultOptions = {
 export function apolloOptions(): ApolloClientOptions {
   const httpLink = inject(HttpLink);
 
-  const graphqlUri =
-    environment.production
-      ? '/graphql' // ✅ relativní endpoint – funguje i na Railway i na mobilu
-      : 'http://localhost:3000/graphql';
+  const graphqlUri = environment.production
+    ? 'https://admin-alcohol-shop-production.up.railway.app/graphql'
+    : 'http://localhost:3000/graphql';
 
   console.log('🚀 Apollo client initializing...');
   console.log('✅ Environment:', environment);
