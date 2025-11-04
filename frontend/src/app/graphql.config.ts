@@ -24,14 +24,17 @@ export function apolloOptions(): ApolloClientOptions {
       ? 'https://admin-alcohol-shop-production.up.railway.app/graphql'
       : 'http://localhost:3000/graphql');
 
-  console.log('🚀 Apollo client initializing...');
-  console.log('✅ Environment:', environment);
-  console.log('✅ GraphQL URI:', graphqlUri);
+  const infoMsg = `🚀 Apollo init → ENV: ${environment.production ? 'production' : 'dev'} | URI: ${graphqlUri}`;
+  console.log(infoMsg);
+  const banner = document.createElement('div');
+  banner.textContent = infoMsg;
+  banner.style.cssText =
+    'position:fixed;bottom:0;left:0;width:100%;background:#1e293b;color:#fff;padding:4px 8px;font-size:10px;text-align:center;z-index:9999;';
+  document.body.appendChild(banner);
 
   const authLink = new ApolloLink((operation, forward) => {
-    console.log('➡️ Apollo operation:', operation.operationName);
-
     const token = localStorage.getItem('auth_token');
+    console.log('➡️ Apollo operation:', operation.operationName);
 
     operation.setContext(({ headers = {} }) => ({
       headers: {
@@ -43,10 +46,9 @@ export function apolloOptions(): ApolloClientOptions {
       },
     }));
 
-    // ✅ Typově korektní varianta – vrátíme prázdný Observable, pokud forward chybí
     if (!forward) {
       console.error('❌ Apollo forward() je undefined — link chain se přerušil!');
-      return new Observable(); // místo null
+      return new Observable();
     }
 
     return forward(operation);
