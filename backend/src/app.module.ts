@@ -34,7 +34,7 @@ console.log('🧭 Angular rootPath:', frontendRoot);
   imports: [
     ServeStaticModule.forRoot({
       rootPath: frontendRoot,
-      exclude: ['/graphql*', '/api*'],
+      exclude: ['/graphql', '/api'],
       serveStaticOptions: { index: 'index.html' },
     }),
 
