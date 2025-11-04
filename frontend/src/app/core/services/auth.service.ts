@@ -38,7 +38,8 @@ export class AuthService {
 
         context: {
           headers: new HttpHeaders({
-            'x-apollo-operation-name': 'LoginMutation',
+            'Content-Type': 'application/json',
+            'apollo-require-preflight': 'true',
           }),
         },
       })
