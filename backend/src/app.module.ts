@@ -7,6 +7,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { validate } from './env.validation';
 import { Request } from 'express';
+import { existsSync } from 'fs';
 
 // --- Moduly aplikace ---
 import { AppController } from './app.controller';
@@ -18,21 +19,27 @@ import { CategoriesModule } from './categories/categories.module';
 import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
 
+// ✅ Automatická detekce buildu
+const pathsToTry = [
+  join(process.cwd(), 'frontend', 'dist', 'frontend', 'browser'),
+  join(__dirname, '..', 'frontend', 'dist', 'frontend', 'browser'),
+  join(__dirname, '..', '..', 'frontend', 'dist', 'frontend', 'browser'),
+  join(process.cwd(), 'backend', 'frontend', 'dist', 'frontend', 'browser'),
+];
+
+const frontendRoot = pathsToTry.find(p => existsSync(p)) ?? process.cwd();
+console.log('🧭 Angular rootPath:', frontendRoot);
+
 @Module({
   imports: [
-    // --- Servírování Angular buildu (frontend/dist/frontend/browser) ---
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'frontend', 'dist', 'frontend', 'browser'),
+      rootPath: frontendRoot,
       exclude: ['/graphql*', '/api*'],
+      serveStaticOptions: { index: 'index.html' },
     }),
 
-    // --- Konfigurace prostředí ---
-    ConfigModule.forRoot({
-      isGlobal: true,
-      validate,
-    }),
+    ConfigModule.forRoot({ isGlobal: true, validate }),
 
-    // --- Databázové připojení ---
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST || 'localhost',
@@ -45,7 +52,6 @@ import { OrdersModule } from './orders/orders.module';
       logging: process.env.TYPEORM_LOGGING === 'true',
     }),
 
-    // --- GraphQL konfigurace ---
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -55,7 +61,6 @@ import { OrdersModule } from './orders/orders.module';
       context: ({ req }: { req: Request }) => ({ req }),
     }),
 
-    // --- Moduly aplikace ---
     AuthModule,
     UsersModule,
     ProductsModule,
