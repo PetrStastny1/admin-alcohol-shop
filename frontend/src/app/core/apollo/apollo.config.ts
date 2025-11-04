@@ -10,25 +10,17 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 const defaultOptions: DefaultOptions = {
-  watchQuery: {
-    fetchPolicy: 'no-cache',
-    errorPolicy: 'all',
-  },
-  query: {
-    fetchPolicy: 'no-cache',
-    errorPolicy: 'all',
-  },
-  mutate: {
-    errorPolicy: 'all',
-  },
+  watchQuery: { fetchPolicy: 'no-cache', errorPolicy: 'all' },
+  query: { fetchPolicy: 'no-cache', errorPolicy: 'all' },
+  mutate: { errorPolicy: 'all' },
 };
 
 export function apolloOptions(): ApolloClientOptions {
   const httpLink = inject(HttpLink);
 
-  // ✅ Absolutní URL pro produkci, lokální pro vývoj
+  // ✅ Použij relativní endpoint v produkci (funguje i z mobilu)
   const graphqlUri = environment.production
-    ? 'https://admin-alcohol-shop-production.up.railway.app/graphql'
+    ? '/graphql'
     : 'http://localhost:3000/graphql';
 
   if (!environment.production) {
@@ -44,7 +36,7 @@ export function apolloOptions(): ApolloClientOptions {
         ...(headers as Record<string, string>),
         'Content-Type': 'application/json',
         'x-apollo-operation-name': operation.operationName || 'unknown',
-        'apollo-require-preflight': 'true', // ✅ nutné kvůli Safari/CSRF
+        'apollo-require-preflight': 'true',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     }));
