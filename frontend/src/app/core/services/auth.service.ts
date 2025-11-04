@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { TokenService } from './token.service';
+import { HttpHeaders } from '@angular/common/http';
 
 export interface LoginResponse {
   access_token: string;
@@ -34,6 +35,12 @@ export class AuthService {
           }
         `,
         variables: { username, password },
+
+        context: {
+          headers: new HttpHeaders({
+            'x-apollo-operation-name': 'LoginMutation',
+          }),
+        },
       })
       .pipe(
         map((res) => {
