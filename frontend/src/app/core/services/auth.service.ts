@@ -4,7 +4,6 @@ import gql from 'graphql-tag';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { TokenService } from './token.service';
-import { HttpHeaders } from '@angular/common/http';
 
 export interface LoginResponse {
   access_token: string;
@@ -22,6 +21,8 @@ export class AuthService {
   }
 
   login(username: string, password: string): Observable<LoginResponse | null> {
+    console.log('🚀 Spouštím login mutation přes Apollo...');
+
     return this.apollo
       .mutate<{ login: LoginResponse }>({
         mutation: gql`
@@ -35,16 +36,11 @@ export class AuthService {
           }
         `,
         variables: { username, password },
-
-        context: {
-          headers: new HttpHeaders({
-            'Content-Type': 'application/json',
-            'apollo-require-preflight': 'true',
-          }),
-        },
       })
       .pipe(
         map((res) => {
+          console.log('🛰️ Apollo response:', res);
+
           const data = res.data?.login ?? null;
           if (data?.access_token) {
             this.tokenService.setToken(data.access_token);
