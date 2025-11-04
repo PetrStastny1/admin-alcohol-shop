@@ -7,22 +7,25 @@ import { Request, Response, NextFunction } from 'express';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // ✅ Povolené originy pro FE (lokální + produkční)
+  // ✅ Povolené originy (pouze bezpečné, žádný localhost v produkci)
   const allowedOrigins = [
     'http://localhost:4200',
-    'http://localhost:3000',
     'https://admin-alcohol-shop-production.up.railway.app',
   ];
 
-  // ✅ CORS konfigurace
+  // ✅ Dynamická CORS konfigurace
   const corsOptions: CorsOptions = {
     origin: (origin, callback) => {
-      const safeOrigin =
+      const isLocal =
+        origin?.startsWith('http://localhost') ||
+        origin?.startsWith('capacitor://') ||
+        origin?.startsWith('ionic://');
+      const isAllowed =
         !origin ||
         allowedOrigins.includes(origin) ||
-        (typeof origin === 'string' && origin.startsWith('https://'));
+        isLocal;
 
-      if (safeOrigin) {
+      if (isAllowed) {
         console.log('✅ CORS povoleno pro:', origin || '— žádný origin (např. Postman)');
         callback(null, true);
       } else {
@@ -43,32 +46,27 @@ async function bootstrap() {
 
   app.enableCors(corsOptions);
 
-  // 🧩 Logování GraphQL requestů 
+  // 🧩 Logování GraphQL requestů
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.path === '/graphql') {
       console.log('\n📩 GraphQL request zachycen:');
       console.log('  🔹 Method:', req.method);
       console.log('  🔹 Origin:', req.headers.origin || '(žádný)');
+      console.log('  🔹 URL:', req.protocol + '://' + req.get('host') + req.originalUrl);
       console.log('  🔹 Content-Type:', req.headers['content-type']);
-      console.log('  🔹 Apollo headers:', {
-        operationName: req.headers['x-apollo-operation-name'],
-        preflight: req.headers['apollo-require-preflight'],
-        requestedWith: req.headers['x-requested-with'],
-      });
       console.log('─────────────────────────────');
     }
     next();
   });
 
-  // ✅ Spuštění seedování, pokud je zapnuto
+  // ✅ Seed databáze (jen pokud je RUN_SEED=true)
   if (process.env.RUN_SEED === 'true') {
     console.log('🌱 Spouštím seed databáze (RUN_SEED=true)...');
     await seedDatabase();
   }
 
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 8080;
   await app.listen(port);
-
   console.log(`🚀 Server běží na portu ${port} (NODE_ENV=${process.env.NODE_ENV})`);
 }
 
