@@ -19,20 +19,24 @@ import { CategoriesModule } from './categories/categories.module';
 import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
 
-// ✅ Automatická detekce buildu Angular frontendu
+// ✅ Detekce Angular buildu po kopírování do backend/dist/frontend/browser
 const pathsToTry = [
-  join(process.cwd(), 'frontend', 'dist', 'frontend', 'browser'),
+  join(__dirname, 'frontend', 'browser'),
   join(__dirname, '..', 'frontend', 'dist', 'frontend', 'browser'),
-  join(__dirname, '..', '..', 'frontend', 'dist', 'frontend', 'browser'),
+  join(process.cwd(), 'frontend', 'dist', 'frontend', 'browser'),
   join(process.cwd(), 'backend', 'frontend', 'dist', 'frontend', 'browser'),
 ];
 
 const frontendRoot = pathsToTry.find((p) => existsSync(p)) ?? process.cwd();
+
 console.log('🧭 Angular rootPath:', frontendRoot);
+if (!existsSync(frontendRoot)) {
+  console.warn('⚠️ Nebyl nalezen Angular build! Možná chybí kopírování do dist/frontend/browser.');
+}
 
 @Module({
   imports: [
-    // ✅ Servování frontendu
+    // ✅ Servování Angular frontendu
     ServeStaticModule.forRoot({
       rootPath: frontendRoot,
       exclude: ['/graphql', '/api'],
@@ -55,7 +59,7 @@ console.log('🧭 Angular rootPath:', frontendRoot);
       logging: process.env.TYPEORM_LOGGING === 'true',
     }),
 
-    // ✅ GraphQL bez CSRF
+    // ✅ GraphQL modul
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -79,6 +83,6 @@ console.log('🧭 Angular rootPath:', frontendRoot);
 })
 export class AppModule {
   constructor() {
-    console.log('⚙️ GraphQL CSRF prevention je vypnutá (Safari fix aktivní)');
+    console.log('⚙️ GraphQL CSRF prevention je vypnutá (Safari & mobilní fix aktivní)');
   }
 }
