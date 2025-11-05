@@ -17,7 +17,9 @@ const defaultOptions: DefaultOptions = {
 export function apolloOptions(): ApolloClientOptions {
   const httpLink = inject(HttpLink);
 
-  const graphqlUri = environment.graphqlUri;
+  const graphqlUri = environment.graphqlUri.startsWith('http')
+    ? environment.graphqlUri
+    : `${environment.apiUrl}${environment.graphqlUri}`;
 
   console.log('🚀 Apollo client initializing...');
   console.log('✅ Environment:', environment);
@@ -26,19 +28,25 @@ export function apolloOptions(): ApolloClientOptions {
   const authLink = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem('auth_token');
 
-    operation.setContext((context?: { headers?: Record<string, string> }) => {
-      const safeHeaders: Record<string, string> =
-        typeof context?.headers === 'object' && context.headers !== null
-          ? { ...context.headers }
-          : {};
+    operation.setContext(({
+      headers,
+    }: {
+      headers?: Headers | Record<string, string> | null;
+    }) => {
+      const safeHeaders: Record<string, string> = {};
 
-      if (token) {
-        safeHeaders['Authorization'] = `Bearer ${token}`;
+      if (headers instanceof Headers) {
+        headers.forEach((value, key) => {
+          safeHeaders[key] = value;
+        });
+      } else if (typeof headers === 'object' && headers !== null) {
+        Object.assign(safeHeaders, headers);
       }
 
       safeHeaders['Content-Type'] = 'application/json';
       safeHeaders['x-apollo-operation-name'] = operation.operationName || 'unknown';
       safeHeaders['apollo-require-preflight'] = 'true';
+      if (token) safeHeaders['Authorization'] = `Bearer ${token}`;
 
       return { headers: safeHeaders };
     });
