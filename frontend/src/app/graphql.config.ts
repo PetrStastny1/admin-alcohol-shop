@@ -22,8 +22,8 @@ export function apolloOptions(): ApolloClientOptions {
     ? environment.graphqlUri
     : `${environment.apiUrl}${environment.graphqlUri}`;
 
-  console.log(' Apollo client initializing...');
-  console.log(' GraphQL URI:', graphqlUri);
+  console.log('Apollo client initializing...');
+  console.log('GraphQL URI:', graphqlUri);
 
   const authLink = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem('auth_token');
@@ -36,7 +36,12 @@ export function apolloOptions(): ApolloClientOptions {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     });
 
-    operation.setContext({ headers });
+    operation.setContext({
+      headers,
+      method: 'POST',
+      useGETForQueries: false,
+    });
+
     return forward(operation);
   });
 
@@ -44,9 +49,8 @@ export function apolloOptions(): ApolloClientOptions {
     authLink,
     httpLink.create({
       uri: graphqlUri,
-      includeExtensions: true,
       withCredentials: false,
-      method: 'POST',
+      includeExtensions: true,
     }),
   ]);
 
