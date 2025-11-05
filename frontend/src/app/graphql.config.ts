@@ -7,7 +7,6 @@ import {
 } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
 import { environment } from '../environments/environment';
-import { Observable } from 'rxjs';
 
 const defaultOptions: DefaultOptions = {
   watchQuery: { fetchPolicy: 'no-cache', errorPolicy: 'all' },
@@ -37,7 +36,7 @@ export function apolloOptions(): ApolloClientOptions {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     }));
-    return forward ? forward(operation) : new Observable();
+    return forward(operation); // ✅ klíčová oprava
   });
 
   return {
