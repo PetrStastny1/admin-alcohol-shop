@@ -10,15 +10,17 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
-    "moduleResolution": "Node16",
-    "module": "Node16",
+
+    "moduleResolution": "bundler",
+    "module": "esnext",
     "target": "ES2022",
 
-    "lib": ["es2022", "dom"],
+    "lib": ["es2022", "dom", "dom.iterable"],
 
     "importHelpers": true,
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
+    "resolveJsonModule": true,
 
     "outDir": "./dist/out-tsc"
   },
