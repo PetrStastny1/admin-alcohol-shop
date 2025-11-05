@@ -58,7 +58,7 @@ async function bootstrap() {
     await seedDatabase();
   }
 
-  const port = Number(process.env.PORT) || 8080;
+  const port = parseInt(process.env.PORT || '') || 3000;
   await app.listen(port, '0.0.0.0');
   console.log(`🚀 Server běží na portu ${port} (NODE_ENV=${process.env.NODE_ENV})`);
 }
