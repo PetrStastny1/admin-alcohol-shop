@@ -25,15 +25,24 @@ export function apolloOptions(): ApolloClientOptions {
 
   const authLink = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem('auth_token');
-    operation.setContext(({ headers = {} }) => ({
-      headers: {
-        ...(headers as Record<string, string>),
-        'Content-Type': 'application/json',
-        'x-apollo-operation-name': operation.operationName || 'unknown',
-        'apollo-require-preflight': 'true',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    }));
+
+    operation.setContext((context?: { headers?: Record<string, string> }) => {
+      const safeHeaders: Record<string, string> =
+        typeof context?.headers === 'object' && context.headers !== null
+          ? { ...context.headers }
+          : {};
+
+      if (token) {
+        safeHeaders['Authorization'] = `Bearer ${token}`;
+      }
+
+      safeHeaders['Content-Type'] = 'application/json';
+      safeHeaders['x-apollo-operation-name'] = operation.operationName || 'unknown';
+      safeHeaders['apollo-require-preflight'] = 'true';
+
+      return { headers: safeHeaders };
+    });
+
     return forward(operation);
   });
 
