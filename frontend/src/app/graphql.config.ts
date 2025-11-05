@@ -17,9 +17,7 @@ const defaultOptions: DefaultOptions = {
 export function apolloOptions(): ApolloClientOptions {
   const httpLink = inject(HttpLink);
 
-  const graphqlUri = environment.production
-    ? 'https://admin-alcohol-shop-production.up.railway.app/graphql'
-    : 'http://localhost:3000/graphql';
+  const graphqlUri = environment.graphqlUri;
 
   console.log('🚀 Apollo client initializing...');
   console.log('✅ Environment:', environment);
@@ -36,7 +34,7 @@ export function apolloOptions(): ApolloClientOptions {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     }));
-    return forward(operation); // ✅ klíčová oprava
+    return forward(operation);
   });
 
   return {
