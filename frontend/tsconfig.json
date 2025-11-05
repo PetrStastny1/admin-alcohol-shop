@@ -10,8 +10,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
-    "moduleResolution": "node16",
-    "module": "esnext",
+    "moduleResolution": "Node16",
+    "module": "Node16",
     "target": "ES2022",
 
     "lib": ["es2022", "dom"],
