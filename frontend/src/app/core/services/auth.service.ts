@@ -6,22 +6,26 @@ import { Observable } from 'rxjs';
 import { TokenService } from './token.service';
 import { HttpHeaders } from '@angular/common/http';
 
-export interface LoginResponse {
-  access_token: string;
+export interface User {
   id: number;
   username: string;
   role: string;
 }
 
+export interface LoginResponse {
+  access_token: string;
+  user: User;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private currentUser: LoginResponse | null = null;
+  private currentUser: User | null = null;
 
   constructor(private apollo: Apollo, private tokenService: TokenService) {
     this.loadUserFromStorage();
   }
 
-  login(username: string, password: string): Observable<LoginResponse | null> {
+  login(username: string, password: string): Observable<User | null> {
     console.log('🚀 Spouštím login mutation přes Apollo...');
 
     return this.apollo
@@ -30,9 +34,11 @@ export class AuthService {
           mutation Login($username: String!, $password: String!) {
             login(username: $username, password: $password) {
               access_token
-              id
-              username
-              role
+              user {
+                id
+                username
+                role
+              }
             }
           }
         `,
@@ -49,13 +55,20 @@ export class AuthService {
         map((res) => {
           console.log('🛰️ Apollo response:', res);
 
-          const data = res.data?.login ?? null;
-          if (data?.access_token) {
-            this.tokenService.setToken(data.access_token);
-            this.currentUser = data;
-            localStorage.setItem('currentUser', JSON.stringify(data));
+          const loginData = res.data?.login ?? null;
+          if (loginData?.access_token && loginData.user) {
+            this.tokenService.setToken(loginData.access_token);
+            this.currentUser = loginData.user;
+            localStorage.setItem(
+              'currentUser',
+              JSON.stringify({
+                ...loginData.user,
+                access_token: loginData.access_token,
+              })
+            );
+            return loginData.user;
           }
-          return data;
+          return null;
         })
       );
   }
@@ -74,7 +87,7 @@ export class AuthService {
     return this.tokenService.getToken();
   }
 
-  getCurrentUser(): LoginResponse | null {
+  getCurrentUser(): User | null {
     return this.currentUser;
   }
 
@@ -89,7 +102,7 @@ export class AuthService {
   private loadUserFromStorage(): void {
     const stored = localStorage.getItem('currentUser');
     if (stored) {
-      this.currentUser = JSON.parse(stored) as LoginResponse;
+      this.currentUser = JSON.parse(stored) as User;
     }
   }
 }

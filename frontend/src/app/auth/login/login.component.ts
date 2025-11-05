@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
-import { AuthService, LoginResponse } from '../../core/services/auth.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -40,10 +40,10 @@ export class LoginComponent {
     this.errorMsg = null;
 
     this.authService.login(this.username, this.password).subscribe({
-      next: (res: LoginResponse | null) => {
+      next: (user) => {
         this.loading = false;
-        if (res?.access_token) {
-          console.log('✅ Přihlášení OK:', res);
+        if (user) {
+          console.log('✅ Přihlášení OK:', user);
           this.router.navigate(['/dashboard']);
         } else {
           this.errorMsg = '❌ Neplatné přihlašovací údaje';
