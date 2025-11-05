@@ -6,6 +6,7 @@ import {
   DefaultOptions,
 } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
+import { HttpHeaders } from '@angular/common/http';
 import { environment } from '../environments/environment';
 
 const defaultOptions: DefaultOptions = {
@@ -27,24 +28,14 @@ export function apolloOptions(): ApolloClientOptions {
   const authLink = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem('auth_token');
 
-    operation.setContext((ctx: Record<string, any> = {}) => {
-      const newHeaders: Record<string, string> = {};
-      const existingHeaders = ctx['headers'];
-
-      if (existingHeaders instanceof Headers) {
-        existingHeaders.forEach((v, k) => (newHeaders[k] = v));
-      } else if (existingHeaders && typeof existingHeaders === 'object') {
-        Object.assign(newHeaders, existingHeaders as Record<string, string>);
-      }
-
-      newHeaders['Content-Type'] = 'application/json';
-      newHeaders['x-apollo-operation-name'] = operation.operationName || 'unknown';
-      newHeaders['apollo-require-preflight'] = 'true';
-      if (token) newHeaders['Authorization'] = `Bearer ${token}`;
-
-      return { ...ctx, headers: newHeaders };
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'x-apollo-operation-name': operation.operationName || 'unknown',
+      'apollo-require-preflight': 'true',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     });
 
+    operation.setContext({ headers });
     return forward(operation);
   });
 
