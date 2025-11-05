@@ -22,33 +22,31 @@ export function apolloOptions(): ApolloClientOptions {
     : `${environment.apiUrl}${environment.graphqlUri}`;
 
   console.log('🚀 Apollo client initializing...');
-  console.log('✅ Environment:', environment);
   console.log('✅ GraphQL URI:', graphqlUri);
 
   const authLink = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem('auth_token');
 
-    operation.setContext(({
-      headers,
-    }: {
-      headers?: Headers | Record<string, string> | null;
-    }) => {
-      const safeHeaders: Record<string, string> = {};
+    operation.setContext((ctx: Record<string, any> = {}) => {
+      const newHeaders: Record<string, string> = {};
+      const existingHeaders = ctx['headers'];
 
-      if (headers instanceof Headers) {
-        headers.forEach((value, key) => {
-          safeHeaders[key] = value;
-        });
-      } else if (typeof headers === 'object' && headers !== null) {
-        Object.assign(safeHeaders, headers);
+      if (existingHeaders instanceof Headers) {
+        existingHeaders.forEach((v, k) => (newHeaders[k] = v));
+      } else if (
+        existingHeaders &&
+        typeof existingHeaders === 'object' &&
+        !(existingHeaders instanceof Headers)
+      ) {
+        Object.assign(newHeaders, existingHeaders as Record<string, string>);
       }
 
-      safeHeaders['Content-Type'] = 'application/json';
-      safeHeaders['x-apollo-operation-name'] = operation.operationName || 'unknown';
-      safeHeaders['apollo-require-preflight'] = 'true';
-      if (token) safeHeaders['Authorization'] = `Bearer ${token}`;
+      newHeaders['Content-Type'] = 'application/json';
+      newHeaders['x-apollo-operation-name'] = operation.operationName || 'unknown';
+      newHeaders['apollo-require-preflight'] = 'true';
+      if (token) newHeaders['Authorization'] = `Bearer ${token}`;
 
-      return { headers: safeHeaders };
+      return { ...ctx, headers: newHeaders };
     });
 
     return forward(operation);
