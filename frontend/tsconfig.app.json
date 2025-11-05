@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "./out-tsc/app",
     "types": [],
-    "lib": ["es2022", "dom"]
+    "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.spec.ts"]
