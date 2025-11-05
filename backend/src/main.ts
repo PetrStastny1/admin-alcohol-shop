@@ -7,23 +7,18 @@ import { Request, Response, NextFunction } from 'express';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // ✅ Povolené originy (pouze bezpečné, žádný localhost v produkci)
   const allowedOrigins = [
     'http://localhost:4200',
     'https://admin-alcohol-shop-production.up.railway.app',
   ];
 
-  // ✅ Dynamická CORS konfigurace
   const corsOptions: CorsOptions = {
     origin: (origin, callback) => {
       const isLocal =
         origin?.startsWith('http://localhost') ||
         origin?.startsWith('capacitor://') ||
         origin?.startsWith('ionic://');
-      const isAllowed =
-        !origin ||
-        allowedOrigins.includes(origin) ||
-        isLocal;
+      const isAllowed = !origin || allowedOrigins.includes(origin) || isLocal;
 
       if (isAllowed) {
         console.log('✅ CORS povoleno pro:', origin || '— žádný origin (např. Postman)');
@@ -46,7 +41,6 @@ async function bootstrap() {
 
   app.enableCors(corsOptions);
 
-  // 🧩 Logování GraphQL requestů
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.path === '/graphql') {
       console.log('\n📩 GraphQL request zachycen:');
@@ -59,14 +53,13 @@ async function bootstrap() {
     next();
   });
 
-  // ✅ Seed databáze (jen pokud je RUN_SEED=true)
   if (process.env.RUN_SEED === 'true') {
     console.log('🌱 Spouštím seed databáze (RUN_SEED=true)...');
     await seedDatabase();
   }
 
-  const port = process.env.PORT || 8080;
-  await app.listen(port);
+  const port = Number(process.env.PORT) || 8080;
+  await app.listen(port, '0.0.0.0');
   console.log(`🚀 Server běží na portu ${port} (NODE_ENV=${process.env.NODE_ENV})`);
 }
 
