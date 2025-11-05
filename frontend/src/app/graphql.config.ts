@@ -33,11 +33,7 @@ export function apolloOptions(): ApolloClientOptions {
 
       if (existingHeaders instanceof Headers) {
         existingHeaders.forEach((v, k) => (newHeaders[k] = v));
-      } else if (
-        existingHeaders &&
-        typeof existingHeaders === 'object' &&
-        !(existingHeaders instanceof Headers)
-      ) {
+      } else if (existingHeaders && typeof existingHeaders === 'object') {
         Object.assign(newHeaders, existingHeaders as Record<string, string>);
       }
 
