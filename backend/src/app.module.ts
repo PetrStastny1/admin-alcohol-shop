@@ -20,7 +20,7 @@ import { OrdersModule } from './orders/orders.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, 'frontend'),
+      rootPath: join(__dirname, 'frontend', 'browser'),
       exclude: ['/graphql', '/api'],
     }),
 

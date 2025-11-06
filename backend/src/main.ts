@@ -1,15 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { seedDatabase } from './seed';
-import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { Request, Response, NextFunction } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const corsOptions: CorsOptions = {
-    origin: 'https://admin-alcohol-shop-production.up.railway.app',
-    methods: ['POST', 'OPTIONS'],
+  app.enableCors({
+    origin: [
+      'http://localhost:4200',
+      'https://admin-alcohol-shop-production.up.railway.app',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
       'Authorization',
@@ -17,10 +19,8 @@ async function bootstrap() {
       'apollo-require-preflight',
       'Accept',
     ],
-    credentials: false,
-  };
-
-  app.enableCors(corsOptions);
+    credentials: true,
+  });
 
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.path === '/graphql') {
