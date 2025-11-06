@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
+import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { TokenService } from './token.service';
-import { HttpHeaders } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+
 
 export interface User {
   id: number;
@@ -21,39 +21,21 @@ export interface LoginResponse {
 export class AuthService {
   private currentUser: User | null = null;
 
-  constructor(private apollo: Apollo, private tokenService: TokenService) {
+  constructor(
+    private http: HttpClient,
+    private tokenService: TokenService
+  ) {
     this.loadUserFromStorage();
   }
 
   login(username: string, password: string): Observable<User | null> {
-    return this.apollo
-      .mutate<{ loginAdmin: LoginResponse }>({
-        mutation: gql`
-          mutation Login($input: LoginAdminInput!) {
-            loginAdmin(input: $input) {
-              access_token
-              user {
-                id
-                username
-                role
-              }
-            }
-          }
-        `,
-        variables: {
-          input: { username, password },
-        },
-        context: {
-          headers: new HttpHeaders({
-            'Content-Type': 'application/json',
-            'x-apollo-operation-name': 'Login',
-            'apollo-require-preflight': 'true',
-          }),
-        },
+    return this.http
+      .post<LoginResponse>(`${environment.apiUrl}/auth/login`, {
+        username,
+        password,
       })
       .pipe(
-        map((res) => {
-          const loginData = res.data?.loginAdmin ?? null;
+        map((loginData) => {
           if (loginData?.access_token && loginData.user) {
             this.tokenService.setToken(loginData.access_token);
             this.currentUser = loginData.user;
@@ -102,7 +84,12 @@ export class AuthService {
   private loadUserFromStorage(): void {
     const stored = localStorage.getItem('currentUser');
     if (stored) {
-      this.currentUser = JSON.parse(stored) as User;
+      const parsed = JSON.parse(stored);
+      this.currentUser = {
+        id: parsed.id,
+        username: parsed.username,
+        role: parsed.role,
+      };
     }
   }
 }
