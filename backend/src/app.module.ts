@@ -8,7 +8,6 @@ import { join } from 'path';
 import { validate } from './env.validation';
 import { Request } from 'express';
 
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -21,7 +20,7 @@ import { OrdersModule } from './orders/orders.module';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, 'frontend', 'browser'),
-      exclude: ['/graphql*', '/api*'],
+      exclude: ['/graphql*', '/api*', '/auth*', '/users*'],
     }),
 
     ConfigModule.forRoot({ isGlobal: true, validate }),
@@ -55,7 +54,7 @@ import { OrdersModule } from './orders/orders.module';
     CustomersModule,
     OrdersModule,
   ],
-  controllers: [AppController],
+  controllers: [], 
   providers: [AppService],
 })
 export class AppModule {}
