@@ -16,7 +16,7 @@ export class User {
   @Column({ unique: true })
   username!: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255, select: false })
   password!: string;
 
   @Field()

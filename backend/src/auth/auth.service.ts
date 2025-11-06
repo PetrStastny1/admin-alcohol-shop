@@ -16,13 +16,13 @@ export class AuthService {
       throw new UnauthorizedException('Neplatné uživatelské jméno nebo heslo');
     }
 
-    const passwordValid = await bcrypt.compare(password, user.password);
-    if (!passwordValid) {
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
       throw new UnauthorizedException('Neplatné uživatelské jméno nebo heslo');
     }
 
-    const { password: _, ...result } = user;
-    return result;
+    const { password: _, ...safeUser } = user;
+    return safeUser;
   }
 
   async loginUser(

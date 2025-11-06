@@ -39,7 +39,7 @@ export class UsersService implements OnModuleInit {
       }
     }
 
-    console.log('✅ Users soft-seeded (pokud chyběli)');
+    console.log('Users soft-seeded (pokud chyběli)');
   }
 
   async create(input: CreateUserInput): Promise<User> {
@@ -85,7 +85,12 @@ export class UsersService implements OnModuleInit {
   }
 
   async findOneByUsername(username: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { username } });
+    return this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.username = :username', { username })
+      .andWhere('user.isActive = true')
+      .getOne();
   }
 
   async findOneById(id: number): Promise<User> {
