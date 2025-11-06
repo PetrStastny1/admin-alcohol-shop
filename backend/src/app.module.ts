@@ -20,7 +20,6 @@ import { OrdersModule } from './orders/orders.module';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, 'frontend', 'browser'),
-      exclude: ['/graphql*', '/api*', '/auth*', '/users*'],
     }),
 
     ConfigModule.forRoot({ isGlobal: true, validate }),
@@ -54,7 +53,7 @@ import { OrdersModule } from './orders/orders.module';
     CustomersModule,
     OrdersModule,
   ],
-  controllers: [], 
+  controllers: [],
   providers: [AppService],
 })
 export class AppModule {}
