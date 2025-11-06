@@ -21,10 +21,7 @@ import { OrdersModule } from './orders/orders.module';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, 'frontend', 'browser'),
-      exclude: [
-        '/graphql*',
-        '/api*',
-      ],
+      exclude: ['/graphql(.*)', '/api(.*)'],
     }),
 
     ConfigModule.forRoot({ isGlobal: true, validate }),

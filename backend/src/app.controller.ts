@@ -4,18 +4,7 @@ import { join } from 'path';
 
 @Controller()
 export class AppController {
-  @Get([
-    '/', 
-    '/login',
-    '/dashboard',
-    '/products',
-    '/orders',
-    '/categories',
-    '/customers',
-    '/users',
-    '/settings',
-    '/**',
-  ])
+  @Get('/:path(*)')
   serveFrontend(@Res() res: Response) {
     const indexPath = join(__dirname, 'frontend', 'browser', 'index.html');
     res.sendFile(indexPath);
