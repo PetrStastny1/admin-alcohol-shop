@@ -34,14 +34,13 @@ async function bootstrap() {
     next();
   });
 
-  const isProd = process.env.NODE_ENV === 'production';
   const runSeedFlag = process.env.RUN_SEED === 'true';
 
-  if (!isProd && runSeedFlag) {
-    console.log('Spouštím seed databáze (development)...');
+  if (runSeedFlag) {
+    console.log(`Spouštím seed databáze (RUN_SEED=true)...`);
     await seedDatabase();
   } else {
-    console.log(`Seed přeskočen (NODE_ENV=${process.env.NODE_ENV}, RUN_SEED=${process.env.RUN_SEED})`);
+    console.log(`Seed přeskočen (RUN_SEED=${process.env.RUN_SEED})`);
   }
 
   const port = Number(process.env.PORT) || 3000;
