@@ -1,12 +1,6 @@
 import { inject } from '@angular/core';
-import {
-  InMemoryCache,
-  ApolloLink,
-  ApolloClientOptions,
-  DefaultOptions,
-} from '@apollo/client/core';
+import { InMemoryCache, ApolloLink, ApolloClientOptions, DefaultOptions } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
-import { HttpHeaders } from '@angular/common/http';
 import { environment } from '../environments/environment';
 
 const defaultOptions: DefaultOptions = {
@@ -22,25 +16,22 @@ export function apolloOptions(): ApolloClientOptions {
     ? environment.graphqlUri
     : `${environment.apiUrl}${environment.graphqlUri}`;
 
-  console.log('Apollo client initializing...');
-  console.log('GraphQL URI:', graphqlUri);
+  console.log('🚀 Apollo client initializing...');
+  console.log('✅ GraphQL URI:', graphqlUri);
 
   const authLink = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem('auth_token');
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      'x-apollo-operation-name': operation.operationName || 'unknown',
-      'apollo-require-preflight': 'true',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    });
-
-    operation.setContext({
-      headers,
-      method: 'POST',
-      useGETForQueries: false,
-    });
+    operation.setContext(({ headers = {} }) => ({
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'x-apollo-operation-name': operation.operationName || 'unknown',
+        'apollo-require-preflight': 'true',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    }));
 
     return forward(operation);
   });
