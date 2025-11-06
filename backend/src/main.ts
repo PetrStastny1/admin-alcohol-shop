@@ -7,36 +7,17 @@ import { Request, Response, NextFunction } from 'express';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const allowedOrigins = [
-    'http://localhost:4200',
-    'https://admin-alcohol-shop-production.up.railway.app',
-  ];
-
   const corsOptions: CorsOptions = {
-    origin: (origin, callback) => {
-      const isLocal =
-        origin?.startsWith('http://localhost') ||
-        origin?.startsWith('capacitor://') ||
-        origin?.startsWith('ionic://');
-      const isAllowed = !origin || allowedOrigins.includes(origin) || isLocal;
-
-      if (isAllowed) {
-        console.log('✅ CORS povoleno pro:', origin || '— žádný origin (např. Postman)');
-        callback(null, true);
-      } else {
-        console.warn('❌ CORS zablokováno pro:', origin);
-        callback(new Error(`CORS blocked for origin: ${origin}`));
-      }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    origin: 'https://admin-alcohol-shop-production.up.railway.app',
+    methods: ['POST', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
       'Authorization',
       'x-apollo-operation-name',
       'apollo-require-preflight',
-      'X-Requested-With',
+      'Accept',
     ],
-    credentials: true,
+    credentials: false,
   };
 
   app.enableCors(corsOptions);
@@ -44,10 +25,10 @@ async function bootstrap() {
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.path === '/graphql') {
       console.log('\n📩 GraphQL request zachycen:');
-      console.log('  🔹 Method:', req.method);
-      console.log('  🔹 Origin:', req.headers.origin || '(žádný)');
-      console.log('  🔹 URL:', req.protocol + '://' + req.get('host') + req.originalUrl);
-      console.log('  🔹 Content-Type:', req.headers['content-type']);
+      console.log('  Method:', req.method);
+      console.log('  Origin:', req.headers.origin || '(žádný)');
+      console.log('  URL:', req.protocol + '://' + req.get('host') + req.originalUrl);
+      console.log('  Content-Type:', req.headers['content-type']);
       console.log('─────────────────────────────');
     }
     next();
@@ -59,7 +40,6 @@ async function bootstrap() {
   }
 
   const port = Number(process.env.PORT) || 3000;
-  console.log('🧠 Detekovaný PORT z env:', process.env.PORT);
   await app.listen(port, '0.0.0.0');
   console.log(`🚀 Server běží na portu ${port} (NODE_ENV=${process.env.NODE_ENV})`);
 }

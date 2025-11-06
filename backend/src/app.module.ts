@@ -7,9 +7,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { validate } from './env.validation';
 import { Request } from 'express';
-import { existsSync } from 'fs';
 
-// --- Moduly aplikace ---
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -19,34 +17,15 @@ import { CategoriesModule } from './categories/categories.module';
 import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
 
-// ✅ Detekce Angular buildu po kopírování do backend/dist/frontend/browser
-const pathsToTry = [
-  join(__dirname, 'frontend', 'browser'),
-  join(__dirname, '..', 'frontend', 'dist', 'frontend', 'browser'),
-  join(process.cwd(), 'frontend', 'dist', 'frontend', 'browser'),
-  join(process.cwd(), 'backend', 'frontend', 'dist', 'frontend', 'browser'),
-];
-
-const frontendRoot = pathsToTry.find((p) => existsSync(p)) ?? process.cwd();
-
-console.log('🧭 Angular rootPath:', frontendRoot);
-if (!existsSync(frontendRoot)) {
-  console.warn('⚠️ Nebyl nalezen Angular build! Možná chybí kopírování do dist/frontend/browser.');
-}
-
 @Module({
   imports: [
-    // ✅ Servování Angular frontendu
     ServeStaticModule.forRoot({
-      rootPath: frontendRoot,
+      rootPath: join(__dirname, 'frontend'),
       exclude: ['/graphql', '/api'],
-      serveStaticOptions: { index: 'index.html' },
     }),
 
-    // ✅ Globální konfigurace
     ConfigModule.forRoot({ isGlobal: true, validate }),
 
-    // ✅ TypeORM připojení
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST || 'localhost',
@@ -59,7 +38,6 @@ if (!existsSync(frontendRoot)) {
       logging: process.env.TYPEORM_LOGGING === 'true',
     }),
 
-    // ✅ GraphQL modul
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -70,7 +48,6 @@ if (!existsSync(frontendRoot)) {
       context: ({ req }: { req: Request }) => ({ req }),
     }),
 
-    // ✅ Aplikační moduly
     AuthModule,
     UsersModule,
     ProductsModule,
@@ -81,8 +58,4 @@ if (!existsSync(frontendRoot)) {
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-  constructor() {
-    console.log('⚙️ GraphQL CSRF prevention je vypnutá (Safari & mobilní fix aktivní)');
-  }
-}
+export class AppModule {}
