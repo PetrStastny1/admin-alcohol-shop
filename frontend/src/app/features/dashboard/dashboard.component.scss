@@ -5,6 +5,7 @@
   color: #1e293b;
   display: flex;
   flex-direction: column;
+  position: relative;
 
   .header {
     width: 100%;
@@ -20,7 +21,6 @@
       color: #0f172a;
       letter-spacing: -0.3px;
       margin: 0;
-      text-align: center;
     }
 
     .logout-btn {
@@ -37,18 +37,18 @@
       font-size: 0.95rem;
       cursor: pointer;
       transition: all 0.25s ease;
+    }
 
-      &:hover {
-        background: linear-gradient(135deg, #dc2626, #b91c1c);
-        box-shadow: 0 4px 10px rgba(220, 38, 38, 0.25);
-        transform: translateY(-1px);
-      }
+    .logout-btn:hover {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      box-shadow: 0 4px 10px rgba(220, 38, 38, 0.25);
+      transform: translateY(-1px);
+    }
 
-      &:active {
-        background: #b91c1c;
-        transform: translateY(1px);
-        box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
-      }
+    .logout-btn:active {
+      background: #b91c1c;
+      transform: translateY(1px);
+      box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
     }
   }
 
@@ -79,74 +79,50 @@
     justify-content: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
 
-    &:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-      border-color: #cbd5e1;
-    }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    border-color: #cbd5e1;
+  }
 
-    &:active {
-      transform: translateY(1px);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    }
+  .card:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   }
 
   @media (max-width: 768px) {
-    padding: 1.5rem;
-
     .header {
-      margin-bottom: 1.5rem;
-
-      h1 {
-        font-size: 1.6rem;
-      }
+      margin-bottom: 1rem;
 
       .logout-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.85rem;
+        right: 12px;
+        top: 12px;
+        transform: none;
+        padding: 0.4rem 0.6rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        background: transparent;
+        color: transparent;
+        box-shadow: none;
+      }
+
+      .logout-btn::after {
+        content: "🚪";
+        font-size: 1.2rem;
+        color: #ef4444;
       }
     }
 
     .card-grid {
       grid-template-columns: 1fr;
-      padding-top: 6vh;
-    }
-
-    .card {
-      height: 100px;
-      font-size: 1rem;
-    }
-  }
-
-  @media (max-height: 500px) and (orientation: landscape) {
-    padding: 1rem;
-
-    .header {
-      flex-direction: row;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-
-      h1 {
-        font-size: 1.3rem;
-      }
-
-      .logout-btn {
-        padding: 0.35rem 0.8rem;
-        font-size: 0.75rem;
-      }
-    }
-
-    .card-grid {
-      grid-template-columns: repeat(2, 1fr);
+      padding-top: 8vh;
       gap: 1rem;
-      padding-top: 1rem;
-      align-content: flex-start;
     }
 
     .card {
-      height: 70px;
-      font-size: 0.85rem;
+      height: 90px;
     }
   }
 }
