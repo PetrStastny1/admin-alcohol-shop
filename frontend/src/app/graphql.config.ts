@@ -1,11 +1,7 @@
 import { inject } from '@angular/core';
-import {
-  InMemoryCache,
-  ApolloLink,
-  ApolloClientOptions,
-  DefaultOptions,
-} from '@apollo/client/core';
+import { InMemoryCache, ApolloLink, ApolloClientOptions, DefaultOptions } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
+import { HttpHeaders } from '@angular/common/http';
 import { environment } from '../environments/environment';
 
 const defaultOptions: DefaultOptions = {
@@ -17,43 +13,43 @@ const defaultOptions: DefaultOptions = {
 export function apolloOptions(): ApolloClientOptions {
   const httpLink = inject(HttpLink);
 
-  // ✅ Korektní GraphQL endpoint
   const graphqlUri = environment.graphqlUri.startsWith('http')
     ? environment.graphqlUri
     : `${environment.apiUrl}${environment.graphqlUri}`;
 
-  console.log('🚀 Apollo client initializing...');
-  console.log('✅ GraphQL URI:', graphqlUri);
-
-  // ✅ Autorizace + hlavičky
   const authLink = new ApolloLink((operation, forward) => {
-    const token = localStorage.getItem('auth_token') || '';
+    const token = localStorage.getItem('auth_token') ?? null;
 
-    operation.setContext(({ headers = {} }) => ({
-      headers: {
-        ...headers,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: token ? `Bearer ${token}` : '',
-      },
-      fetchOptions: {
-        method: 'POST', // ✅ Vynucený POST
-      },
-    }));
+    operation.setContext((prev: { headers?: HttpHeaders | Record<string, string> } = {}) => {
+      const base =
+        prev.headers instanceof HttpHeaders
+          ? prev.headers
+          : new HttpHeaders(prev.headers ?? {});
+
+      let headers = base
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+        .set('x-apollo-operation-name', operation.operationName || 'unknown');
+
+      if (token) headers = headers.set('Authorization', `Bearer ${token}`);
+
+      return { headers };
+    });
 
     return forward(operation);
   });
 
-  // ✅ HTTP transport
-  const http = httpLink.create({
-    uri: graphqlUri,
-    includeExtensions: false,
-    withCredentials: false,
-  });
+  const link = ApolloLink.from([
+    authLink,
+    httpLink.create({
+      uri: graphqlUri,
+      withCredentials: false,
+      includeExtensions: false,
+    }),
+  ]);
 
-  // ✅ Finální klient
   return {
-    link: ApolloLink.from([authLink, http]),
+    link,
     cache: new InMemoryCache(),
     defaultOptions,
   };
