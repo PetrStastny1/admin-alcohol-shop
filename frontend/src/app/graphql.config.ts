@@ -1,7 +1,10 @@
 import { inject } from '@angular/core';
-import { InMemoryCache, ApolloLink, ApolloClientOptions, DefaultOptions } from '@apollo/client/core';
+import {
+  ApolloLink,
+  InMemoryCache,
+  DefaultOptions
+} from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
-import { HttpHeaders } from '@angular/common/http';
 import { environment } from '../environments/environment';
 
 const defaultOptions: DefaultOptions = {
@@ -10,7 +13,7 @@ const defaultOptions: DefaultOptions = {
   mutate: { errorPolicy: 'all' },
 };
 
-export function apolloOptions(): ApolloClientOptions {
+export function apolloOptions() {
   const httpLink = inject(HttpLink);
 
   const graphqlUri = environment.graphqlUri.startsWith('http')
@@ -18,38 +21,29 @@ export function apolloOptions(): ApolloClientOptions {
     : `${environment.apiUrl}${environment.graphqlUri}`;
 
   const authLink = new ApolloLink((operation, forward) => {
-    const token = localStorage.getItem('auth_token') ?? null;
+    const token = localStorage.getItem('auth_token');
 
-    operation.setContext((prev: { headers?: HttpHeaders | Record<string, string> } = {}) => {
-      const base =
-        prev.headers instanceof HttpHeaders
-          ? prev.headers
-          : new HttpHeaders(prev.headers ?? {});
-
-      let headers = base
-        .set('Content-Type', 'application/json')
-        .set('Accept', 'application/json')
-        .set('x-apollo-operation-name', operation.operationName || 'unknown');
-
-      if (token) headers = headers.set('Authorization', `Bearer ${token}`);
-
-      return { headers };
-    });
+    operation.setContext((prev: any) => ({
+      ...prev,
+      headers: {
+        ...(prev?.headers || {}),
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'x-apollo-operation-name': operation.operationName || 'unknown',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    }));
 
     return forward(operation);
   });
 
-  const link = ApolloLink.from([
-    authLink,
-    httpLink.create({
-      uri: graphqlUri,
-      withCredentials: false,
-      includeExtensions: false,
-    }),
-  ]);
+  const http = httpLink.create({
+    uri: graphqlUri,
+    withCredentials: false,
+  });
 
   return {
-    link,
+    link: authLink.concat(http),
     cache: new InMemoryCache(),
     defaultOptions,
   };
