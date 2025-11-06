@@ -1,4 +1,4 @@
-import { Controller, Get, Res, Param } from '@nestjs/common';
+import { Controller, Get, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { join } from 'path';
 
@@ -6,13 +6,15 @@ import { join } from 'path';
 export class AppController {
   @Get()
   serveRoot(@Res() res: Response) {
-    const indexPath = join(__dirname, 'frontend', 'browser', 'index.html');
-    return res.sendFile(indexPath);
+    return res.sendFile(
+      join(__dirname, 'frontend', 'browser', 'index.html'),
+    );
   }
 
-  @Get('*path')
-  serveSpa(@Res() res: Response) {
-    const indexPath = join(__dirname, 'frontend', 'browser', 'index.html');
-    return res.sendFile(indexPath);
+  @Get('*')
+  serveSPA(@Res() res: Response) {
+    return res.sendFile(
+      join(__dirname, 'frontend', 'browser', 'index.html'),
+    );
   }
 }
