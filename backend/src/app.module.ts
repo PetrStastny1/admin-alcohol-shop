@@ -21,18 +21,18 @@ import { OrdersModule } from './orders/orders.module';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, 'frontend', 'browser'),
-      exclude: ['/graphql(.*)', '/api(.*)'],
+      exclude: ['/graphql', '/graphql/*', '/api', '/api/*'],
     }),
 
     ConfigModule.forRoot({ isGlobal: true, validate }),
 
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '3306', 10),
-      username: process.env.DB_USERNAME || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'app_db',
+      host: process.env.DB_HOST ?? 'localhost',
+      port: Number(process.env.DB_PORT ?? 3306),
+      username: process.env.DB_USERNAME ?? 'root',
+      password: process.env.DB_PASSWORD ?? '',
+      database: process.env.DB_NAME ?? 'app_db',
       autoLoadEntities: true,
       synchronize: true,
       logging: process.env.TYPEORM_LOGGING === 'true',
