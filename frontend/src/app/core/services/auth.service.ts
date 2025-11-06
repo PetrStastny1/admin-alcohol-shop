@@ -26,13 +26,11 @@ export class AuthService {
   }
 
   login(username: string, password: string): Observable<User | null> {
-    console.log('🚀 Spouštím login mutation přes Apollo...');
-
     return this.apollo
-      .mutate<{ login: LoginResponse }>({
+      .mutate<{ loginAdmin: LoginResponse }>({
         mutation: gql`
-          mutation Login($username: String!, $password: String!) {
-            login(username: $username, password: $password) {
+          mutation Login($input: LoginAdminInput!) {
+            loginAdmin(input: $input) {
               access_token
               user {
                 id
@@ -42,7 +40,9 @@ export class AuthService {
             }
           }
         `,
-        variables: { username, password },
+        variables: {
+          input: { username, password },
+        },
         context: {
           headers: new HttpHeaders({
             'Content-Type': 'application/json',
@@ -53,12 +53,11 @@ export class AuthService {
       })
       .pipe(
         map((res) => {
-          console.log('🛰️ Apollo response:', res);
-
-          const loginData = res.data?.login ?? null;
+          const loginData = res.data?.loginAdmin ?? null;
           if (loginData?.access_token && loginData.user) {
             this.tokenService.setToken(loginData.access_token);
             this.currentUser = loginData.user;
+
             localStorage.setItem(
               'currentUser',
               JSON.stringify({
@@ -66,6 +65,7 @@ export class AuthService {
                 access_token: loginData.access_token,
               })
             );
+
             return loginData.user;
           }
           return null;
