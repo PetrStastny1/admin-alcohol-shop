@@ -21,7 +21,6 @@ export function apolloOptions(): ApolloClientOptions {
 
   const authLink = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem('auth_token');
-
     operation.setContext(({ headers = {} }) => ({
       headers: {
         ...headers,
@@ -32,18 +31,23 @@ export function apolloOptions(): ApolloClientOptions {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     }));
-
     return forward(operation);
   });
 
-  const link = ApolloLink.from([
-    authLink,
-    httpLink.create({
-      uri: graphqlUri,
-      withCredentials: false,
-      includeExtensions: true,
-    }),
-  ]);
+  const http = httpLink.create({
+    uri: graphqlUri,
+    withCredentials: false,
+    includeExtensions: true,
+  });
+
+  const forcePostLink = new ApolloLink((operation, forward) => {
+    operation.setContext({
+      fetchOptions: { method: 'POST' },
+    });
+    return forward(operation);
+  });
+
+  const link = ApolloLink.from([authLink, forcePostLink, http]);
 
   return {
     link,
