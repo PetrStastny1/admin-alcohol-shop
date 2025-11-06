@@ -6,7 +6,7 @@ WORKDIR /app
 COPY frontend/package*.json ./frontend/
 RUN cd frontend && npm install
 COPY frontend ./frontend
-RUN cd frontend && npm run build --configuration production
+RUN cd frontend && npm run build -- --project frontend
 
 # -----------------------------------------------------
 # 2) Build Backend (NestJS)
@@ -23,11 +23,11 @@ RUN cd backend && npm run build
 # -----------------------------------------------------
 FROM node:22-alpine AS production
 WORKDIR /app
+
 COPY --from=backend-build /app/backend/dist ./dist
 COPY --from=backend-build /app/backend/node_modules ./node_modules
 
-# Angular build → kopie do dist/frontend/browser
-COPY --from=frontend-build /app/frontend/dist/frontend/browser ./dist/frontend/browser
+COPY --from=frontend-build /app/frontend/dist/frontend ./dist/frontend/browser
 
 ENV NODE_ENV=production
 EXPOSE 8080
