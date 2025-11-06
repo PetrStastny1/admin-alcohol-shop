@@ -20,11 +20,13 @@ import { OrdersModule } from './orders/orders.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, 'frontend', 'browser'),
-      exclude: ['/graphql*', '/api*'],
-      serveStaticOptions: {
-        index: false,
-      },
+      rootPath: join(__dirname, '..', 'dist', 'frontend', 'browser'),
+      exclude: [
+        '/graphql',
+        '/graphql/',
+        '/graphql/batch',
+        '/api'
+      ],
     }),
 
     ConfigModule.forRoot({ isGlobal: true, validate }),
