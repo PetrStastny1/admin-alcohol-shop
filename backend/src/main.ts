@@ -24,7 +24,7 @@ async function bootstrap() {
 
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.path === '/graphql') {
-      console.log('\n📩 GraphQL request zachycen:');
+      console.log('\n GraphQL request zachycen:');
       console.log('  Method:', req.method);
       console.log('  Origin:', req.headers.origin || '(žádný)');
       console.log('  URL:', req.protocol + '://' + req.get('host') + req.originalUrl);
@@ -34,14 +34,19 @@ async function bootstrap() {
     next();
   });
 
-  if (process.env.RUN_SEED === 'true') {
-    console.log('🌱 Spouštím seed databáze (RUN_SEED=true)...');
+  const isProd = process.env.NODE_ENV === 'production';
+  const runSeedFlag = process.env.RUN_SEED === 'true';
+
+  if (!isProd && runSeedFlag) {
+    console.log('Spouštím seed databáze (development)...');
     await seedDatabase();
+  } else {
+    console.log(`Seed přeskočen (NODE_ENV=${process.env.NODE_ENV}, RUN_SEED=${process.env.RUN_SEED})`);
   }
 
   const port = Number(process.env.PORT) || 3000;
   await app.listen(port, '0.0.0.0');
-  console.log(`🚀 Server běží na portu ${port} (NODE_ENV=${process.env.NODE_ENV})`);
+  console.log(`Server běží na portu ${port} (NODE_ENV=${process.env.NODE_ENV})`);
 }
 
 bootstrap();
