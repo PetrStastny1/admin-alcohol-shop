@@ -1,4 +1,4 @@
-.customers-page {
+.users-page {
   padding: 2rem;
   background: linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%);
   min-height: 100vh;
@@ -19,25 +19,30 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    width: 100%;
   }
 
   .back-buttons {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    align-items: flex-start;
+    gap: 0.6rem;
 
     button {
       @extend .btn;
       @extend .btn-secondary;
       width: 200px;
       text-align: left;
+      font-size: 0.95rem;
+      padding: 0.6rem 1.2rem;
     }
   }
 
-  .new-customer button {
+  .new-user button {
     @extend .btn;
     @extend .btn-primary;
     width: 200px;
+    font-size: 0.95rem;
   }
 
   .form-box {
@@ -48,55 +53,55 @@
     margin-bottom: 1rem;
 
     .inner-form {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr auto auto;
       gap: 0.8rem;
+      align-items: center;
 
-      input {
-        flex: 1 1 200px;
-        padding: 0.65rem;
+      input,
+      select {
+        padding: 0.75rem;
         border-radius: 8px;
         border: 1px solid #cbd5e1;
         background: #fff;
         color: #1e293b;
         font-size: 0.95rem;
-        transition: border 0.2s, box-shadow 0.2s;
+      }
 
-        &:focus {
-          outline: none;
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-        }
+      .save-btn,
+      .cancel-btn {
+        @extend .btn;
+        width: 110px;
+        height: 40px;
+        font-size: 0.9rem;
+        justify-self: end;
       }
 
       .save-btn {
-        @extend .btn;
         @extend .btn-primary;
-        width: 110px;
-        height: 40px;
-        font-size: 0.9rem;
       }
 
       .cancel-btn {
-        @extend .btn;
         @extend .btn-danger;
-        width: 110px;
-        height: 40px;
-        font-size: 0.9rem;
       }
     }
   }
 
-  .customers-table {
+  .users-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
+    table-layout: fixed;
 
     th,
     td {
       padding: 0.9rem;
       border-bottom: 1px solid #e2e8f0;
       text-align: center;
+      font-size: 0.95rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     th {
@@ -105,12 +110,28 @@
       color: #0f172a;
     }
 
-    tr.clickable-row:hover {
+    tr:hover {
       background: #f1f5f9;
     }
 
+    .email-col {
+      width: 25%;
+    }
+
+    .username-col {
+      width: 20%;
+    }
+
+    .role-col {
+      width: 10%;
+    }
+
+    .created-col {
+      width: 20%;
+    }
+
     .actions-col {
-      width: 260px;
+      width: 25%;
       text-align: center;
 
       button {
@@ -155,7 +176,6 @@
       background-color: #fff !important;
       color: #000 !important;
       font-size: 0.9rem;
-      appearance: none;
 
       option {
         background-color: #fff !important;
@@ -163,133 +183,112 @@
       }
     }
   }
+}
 
-  @media (max-width: 1200px) {
-    .customers-table th,
-    .customers-table td {
-      padding: 0.7rem;
-    }
-  }
-
-  @media (max-width: 992px) {
-    .customers-table th,
-    .customers-table td {
-      padding: 0.65rem;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .page-header {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 1rem;
-    }
-
-    .back-buttons button,
-    .new-customer button {
-      width: 100%;
-    }
-
-    .customers-table {
-      display: block;
-      overflow-x: auto;
-      white-space: nowrap;
-    }
-
-    .customers-table td.actions-col {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-
-    .customers-table td.actions-col button {
-      width: 100%;
-      margin: 0;
-    }
-
-    .pagination {
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 0.3rem;
-    }
-  }
-
-  @media (max-width: 768px) and (orientation: landscape) {
-    padding: 1rem;
-
-    h2 {
-      margin-bottom: 1rem;
-      font-size: 1.4rem;
-    }
-
-    .customers-table th,
-    .customers-table td {
-      padding: 0.45rem;
-      font-size: 0.82rem;
-    }
-
-    .actions-col button {
-      font-size: 0.75rem;
-    }
+@media (max-width: 1200px) {
+  .users-page .form-box .inner-form {
+    grid-template-columns: 1fr 1fr 1fr auto auto;
   }
 }
 
-.btn {
-  border-radius: 10px;
-  padding: 0.6rem 1.2rem;
-  font-weight: 500;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-secondary {
-  background: #fff;
-  border: 1px solid #cbd5e1;
-  color: #1e293b;
-
-  &:hover:not(:disabled) {
-    background: #f9fafb;
-    border-color: #94a3b8;
+@media (max-width: 992px) {
+  .users-page .form-box .inner-form {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: auto;
   }
 
-  &:active {
-    background: #e2e8f0;
+  .users-page .form-box .inner-form .save-btn,
+  .users-page .form-box .inner-form .cancel-btn {
+    justify-self: stretch;
   }
 }
 
-.btn-primary {
-  background: #e0f2fe;
-  border: 1px solid #bae6fd;
-  color: #1e3a8a;
-
-  &:hover:not(:disabled) {
-    background: #bfdbfe;
-    border-color: #93c5fd;
-    color: #1e40af;
+@media (max-width: 768px) {
+  .users-page .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
   }
 
-  &:active {
-    background: #93c5fd;
-    border-color: #60a5fa;
-    color: #1e3a8a;
+  .users-page .new-user button,
+  .users-page .back-buttons button {
+    width: 100%;
+  }
+
+  .users-page .users-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .users-page .users-table td.actions-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .users-page .users-table td.actions-col button {
+    width: 100%;
+  }
+
+  .users-page .pagination {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.3rem;
   }
 }
 
-.btn-danger {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: #fff;
-  border: none;
-  box-shadow: 0 2px 5px rgba(220, 38, 38, 0.25);
-
-  &:hover:not(:disabled) {
-    background: linear-gradient(135deg, #dc2626, #b91c1c);
-    box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
-    transform: translateY(-1px);
+@media only screen and (max-height: 500px) and (orientation: landscape) {
+  .users-page h2 {
+    margin-top: 0.3rem;
+    margin-bottom: 0.8rem;
+    font-size: 1.4rem;
   }
 
-  &:active {
-    transform: translateY(1px);
-    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);
+  .users-page .users-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .users-page .users-table th,
+  .users-page .users-table td {
+    padding: 0.55rem 0.6rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .users-page .users-table .actions-col button {
+    font-size: 0.75rem !important;
+    padding: 0.3rem 0.6rem !important;
+  }
+
+  .users-page .form-box .inner-form {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 0.45rem !important;
+  }
+
+  .users-page .form-box .inner-form input,
+  .users-page .form-box .inner-form select {
+    padding: 0.55rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  .users-page .form-box .save-btn,
+  .users-page .form-box .cancel-btn {
+    width: auto !important;
+    padding: 0.45rem 0.8rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .users-page .pagination {
+    justify-content: center;
+    gap: 0.4rem !important;
+    margin-top: 1rem;
+  }
+
+  .users-page .pagination button,
+  .users-page .pagination select {
+    padding: 0.3rem 0.6rem !important;
+    font-size: 0.8rem !important;
   }
 }
