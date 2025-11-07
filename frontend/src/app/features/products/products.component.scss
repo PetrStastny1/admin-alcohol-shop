@@ -1,4 +1,4 @@
-.products-page {
+.orders-page {
   padding: 2rem;
   background: linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%);
   min-height: 100vh;
@@ -38,7 +38,7 @@
     }
   }
 
-  .new-product button {
+  .new-order button {
     @extend .btn;
     @extend .btn-primary;
     width: 200px;
@@ -87,7 +87,7 @@
     }
   }
 
-  .products-table {
+  .orders-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
@@ -166,52 +166,52 @@
 }
 
 @media (max-width: 1200px) {
-  .products-page .form-box .inner-form {
+  .orders-page .form-box .inner-form {
     grid-template-columns: 1fr 1fr 1fr auto auto;
   }
 }
 
 @media (max-width: 992px) {
-  .products-page .form-box .inner-form {
+  .orders-page .form-box .inner-form {
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: auto;
   }
 
-  .products-page .form-box .inner-form .save-btn,
-  .products-page .form-box .inner-form .cancel-btn {
+  .orders-page .form-box .inner-form .save-btn,
+  .orders-page .form-box .inner-form .cancel-btn {
     justify-self: stretch;
   }
 }
 
 @media (max-width: 768px) {
-  .products-page .page-header {
+  .orders-page .page-header {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
   }
 
-  .products-page .new-product button,
-  .products-page .back-buttons button {
+  .orders-page .new-order button,
+  .orders-page .back-buttons button {
     width: 100%;
   }
 
-  .products-page .products-table {
+  .orders-page .orders-table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
 
-  .products-page .products-table td.actions-col {
+  .orders-page .orders-table td.actions-col {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
   }
 
-  .products-page .products-table td.actions-col button {
+  .orders-page .orders-table td.actions-col button {
     width: 100%;
   }
 
-  .products-page .pagination {
+  .orders-page .pagination {
     justify-content: center;
     flex-wrap: wrap;
     gap: 0.3rem;
@@ -219,55 +219,55 @@
 }
 
 @media only screen and (max-height: 500px) and (orientation: landscape) {
-  .products-page h2 {
+  .orders-page h2 {
     margin-top: 0.3rem;
     margin-bottom: 0.8rem;
     font-size: 1.4rem;
   }
 
-  .products-page .products-table {
+  .orders-page .orders-table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
 
-  .products-page .products-table th,
-  .products-page .products-table td {
+  .orders-page .orders-table th,
+  .orders-page .orders-table td {
     padding: 0.55rem 0.6rem !important;
     font-size: 0.78rem !important;
   }
 
-  .products-page .products-table .actions-col button {
+  .orders-page .orders-table .actions-col button {
     font-size: 0.75rem !important;
     padding: 0.3rem 0.6rem !important;
   }
 
-  .products-page .form-box .inner-form {
+  .orders-page .form-box .inner-form {
     grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
     gap: 0.45rem !important;
   }
 
-  .products-page .form-box .inner-form input,
-  .products-page .form-box .inner-form select {
+  .orders-page .form-box .inner-form input,
+  .orders-page .form-box .inner-form select {
     padding: 0.55rem !important;
     font-size: 0.8rem !important;
   }
 
-  .products-page .form-box .save-btn,
-  .products-page .form-box .cancel-btn {
+  .orders-page .form-box .save-btn,
+  .orders-page .form-box .cancel-btn {
     width: auto !important;
     padding: 0.45rem 0.8rem !important;
     font-size: 0.78rem !important;
   }
 
-  .products-page .pagination {
+  .orders-page .pagination {
     justify-content: center;
     gap: 0.4rem !important;
     margin-top: 1rem;
   }
 
-  .products-page .pagination button,
-  .products-page .pagination select {
+  .orders-page .pagination button,
+  .orders-page .pagination select {
     padding: 0.3rem 0.6rem !important;
     font-size: 0.8rem !important;
   }
