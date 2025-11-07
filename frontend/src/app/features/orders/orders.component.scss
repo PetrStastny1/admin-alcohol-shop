@@ -18,11 +18,11 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 1rem;
 
     button {
       border-radius: 10px;
-      padding: 0.6rem 1.2rem;
+      padding: 0.8rem 1.4rem;
       font-weight: 500;
       font-size: 0.95rem;
       cursor: pointer;
@@ -30,7 +30,7 @@
       background: #fff;
       border: 1px solid #cbd5e1;
       color: #1e293b;
-      width: 200px;
+      width: 220px;
       text-align: left;
 
       &:hover:not(:disabled) {
@@ -51,7 +51,7 @@
 
     .add-btn {
       border-radius: 10px;
-      padding: 0.6rem 1.2rem;
+      padding: 0.8rem 1.4rem;
       font-weight: 500;
       font-size: 0.95rem;
       cursor: pointer;
@@ -59,7 +59,7 @@
       background: #e0f2fe;
       border: 1px solid #bae6fd;
       color: #1e3a8a;
-      width: 200px;
+      width: 220px;
 
       &:hover:not(:disabled) {
         background: #bfdbfe;
@@ -79,19 +79,19 @@
     background: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
 
     .inner-form {
       display: flex;
-      flex-wrap: nowrap;
-      gap: 0.8rem;
+      flex-wrap: wrap;
+      gap: 1rem;
       align-items: center;
 
       select,
       input {
         flex: 1;
-        min-width: 100px;
+        min-width: 150px;
         padding: 0.75rem;
         border-radius: 8px;
         border: 1px solid #cbd5e1;
@@ -114,13 +114,13 @@
       .save-btn,
       .cancel-btn {
         border-radius: 10px;
-        padding: 0.6rem 1.2rem;
+        padding: 0.8rem 1.4rem;
         font-weight: 500;
-        font-size: 0.9rem;
+        font-size: 1rem;
         cursor: pointer;
         transition: all 0.2s ease;
-        width: 110px;
-        height: 40px;
+        width: 120px;
+        height: 45px;
         justify-self: end;
       }
 
@@ -160,93 +160,6 @@
         }
       }
     }
-
-    .order-items {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-
-      .order-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        flex-wrap: nowrap;
-
-        .category-select {
-          width: 200px;
-          flex: 0 0 auto;
-        }
-
-        .product-select {
-          width: 200px;
-          flex: 0 0 auto;
-        }
-
-        input {
-          width: 80px;
-          flex: 0 0 auto;
-        }
-
-        .price {
-          width: 100px;
-          text-align: right;
-          flex: 0 0 auto;
-        }
-
-        .item-actions {
-          display: flex;
-          gap: 0.5rem;
-
-          .add-btn {
-            border-radius: 10px;
-            padding: 0.3rem 0.8rem;
-            font-weight: 500;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            background: #e0f2fe;
-            border: 1px solid #bae6fd;
-            color: #1e3a8a;
-
-            &:hover:not(:disabled) {
-              background: #bfdbfe;
-              border-color: #93c5fd;
-              color: #1e40af;
-            }
-
-            &:active {
-              background: #93c5fd;
-              border-color: #60a5fa;
-              color: #1e3a8a;
-            }
-          }
-
-          .delete-btn {
-            border-radius: 10px;
-            padding: 0.3rem 0.8rem;
-            font-weight: 500;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: #fff;
-            border: none;
-            box-shadow: 0 2px 5px rgba(220, 38, 38, 0.25);
-
-            &:hover:not(:disabled) {
-              background: linear-gradient(135deg, #dc2626, #b91c1c);
-              box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
-              transform: translateY(-1px);
-            }
-
-            &:active {
-              transform: translateY(1px);
-              box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);
-            }
-          }
-        }
-      }
-    }
   }
 
   .orders-table {
@@ -257,7 +170,7 @@
 
     th,
     td {
-      padding: 0.9rem;
+      padding: 1rem;
       border-bottom: 1px solid #e2e8f0;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -297,9 +210,9 @@
 
       button {
         border-radius: 10px;
-        padding: 0.6rem 1.2rem;
+        padding: 0.8rem 1.4rem;
         font-weight: 500;
-        font-size: 0.9rem;
+        font-size: 1rem;
         cursor: pointer;
         transition: all 0.2s ease;
         margin: 0 0.3rem;
@@ -353,7 +266,7 @@
 
     button {
       border-radius: 10px;
-      padding: 0.4rem 0.9rem;
+      padding: 0.6rem 1.2rem;
       font-weight: 500;
       font-size: 0.9rem;
       cursor: pointer;
@@ -427,5 +340,4 @@
     }
   }
 }
-
 
