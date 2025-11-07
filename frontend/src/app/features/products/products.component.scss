@@ -186,8 +186,6 @@
   }
 
   @media (max-width: 768px) {
-    padding: 1.2rem;
-
     .page-header {
       flex-direction: column;
       align-items: stretch;
@@ -221,6 +219,63 @@
       flex-wrap: wrap;
       gap: 0.3rem;
     }
+  }
+}
+
+@media only screen and (max-height: 500px) and (orientation: landscape) {
+  .products-page h2 {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+  }
+
+  .products-page .page-header {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .products-page .back-buttons button,
+  .products-page .new-product button {
+    width: auto;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .products-page .form-box .inner-form {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.4rem;
+    padding: 0.5rem;
+  }
+
+  .products-page .products-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    margin-top: 0.5rem;
+  }
+
+  .products-page .products-table th,
+  .products-page .products-table td {
+    padding: 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .products-page .pagination {
+    justify-content: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .products-page .pagination button,
+  .products-page .pagination select {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .products-page .btn {
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.8rem !important;
   }
 }
 
