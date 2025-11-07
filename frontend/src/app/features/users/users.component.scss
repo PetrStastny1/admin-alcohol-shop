@@ -64,7 +64,6 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
-    table-layout: fixed;
 
     th,
     td {
@@ -89,6 +88,7 @@
 
     .actions-col {
       width: 260px;
+      text-align: center;
 
       button {
         border-radius: 10px;
@@ -143,21 +143,8 @@
       background: #fff !important;
       color: #000 !important;
       font-size: 0.9rem;
+      appearance: none;
     }
-  }
-}
-
-@media (max-width: 1200px) {
-  .users-page .users-table th,
-  .users-page .users-table td {
-    padding: 0.75rem;
-  }
-}
-
-@media (max-width: 992px) {
-  .users-page .users-table th,
-  .users-page .users-table td {
-    padding: 0.65rem;
   }
 }
 
@@ -180,12 +167,16 @@
   }
 
   .users-page .users-table .actions-col {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    width: 100% !important;
+    white-space: normal !important;
   }
 
   .users-page .users-table .actions-col button {
-    width: 100%;
-    margin: 0.2rem 0;
+    width: 100% !important;
+    margin: 0;
   }
 
   .users-page .pagination {
@@ -201,17 +192,18 @@
   }
 
   .users-page h2 {
-    margin-bottom: 1rem;
     font-size: 1.4rem;
+    margin-bottom: 1rem;
   }
 
   .users-page .users-table th,
   .users-page .users-table td {
-    padding: 0.45rem;
-    font-size: 0.82rem;
+    padding: 0.5rem;
+    font-size: 0.78rem;
   }
 
   .users-page .users-table .actions-col button {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
+    padding: 0.45rem 0.6rem;
   }
 }
