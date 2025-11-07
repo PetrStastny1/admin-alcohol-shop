@@ -14,65 +14,35 @@
     letter-spacing: -0.3px;
   }
 
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    width: 100%;
+  }
+
   .back-buttons {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.6rem;
 
     button {
-      border-radius: 10px;
-      padding: 0.6rem 1.2rem;
-      font-weight: 500;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      background: #fff;
-      border: 1px solid #cbd5e1;
-      color: #1e293b;
+      @extend .btn;
+      @extend .btn-secondary;
       width: 200px;
       text-align: left;
-
-      &:hover:not(:disabled) {
-        background: #f9fafb;
-        border-color: #94a3b8;
-      }
-
-      &:active {
-        background: #e2e8f0;
-      }
+      font-size: 0.95rem;
+      padding: 0.6rem 1.2rem;
     }
   }
 
-  .new-order {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 1rem;
-
-    .add-btn {
-      border-radius: 10px;
-      padding: 0.6rem 1.2rem;
-      font-weight: 500;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      background: #e0f2fe;
-      border: 1px solid #bae6fd;
-      color: #1e3a8a;
-      width: 200px;
-
-      &:hover:not(:disabled) {
-        background: #bfdbfe;
-        border-color: #93c5fd;
-        color: #1e40af;
-      }
-
-      &:active {
-        background: #93c5fd;
-        border-color: #60a5fa;
-        color: #1e3a8a;
-      }
-    }
+  .new-order button {
+    @extend .btn;
+    @extend .btn-primary;
+    width: 200px;
+    font-size: 0.95rem;
   }
 
   .form-box {
@@ -83,77 +53,36 @@
     margin-bottom: 1rem;
 
     .inner-form {
-      display: flex;
-      flex-wrap: nowrap;
+      display: grid;
+      grid-template-columns: 1fr 1fr 2fr 1fr 1fr auto auto;
       gap: 0.8rem;
       align-items: center;
 
       select,
       input {
-        flex: 1;
-        min-width: 100px;
         padding: 0.75rem;
         border-radius: 8px;
         border: 1px solid #cbd5e1;
         background: #fff;
         color: #1e293b;
         font-size: 0.95rem;
-        transition: border 0.2s, box-shadow 0.2s;
-
-        &:focus {
-          outline: none;
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-        }
       }
 
       .save-btn,
       .cancel-btn {
-        border-radius: 10px;
-        padding: 0.6rem 1.2rem;
-        font-weight: 500;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
+        @extend .btn;
         width: 110px;
         height: 40px;
+        font-size: 0.9rem;
         justify-self: end;
       }
 
       .save-btn {
-        background: #e0f2fe;
-        border: 1px solid #bae6fd;
-        color: #1e3a8a;
-
-        &:hover:not(:disabled) {
-          background: #bfdbfe;
-          border-color: #93c5fd;
-          color: #1e40af;
-        }
-
-        &:active {
-          background: #93c5fd;
-          border-color: #60a5fa;
-          color: #1e3a8a;
-        }
+        @extend .btn-primary;
       }
 
       .cancel-btn {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        color: #fff;
-        border: none;
-        box-shadow: 0 2px 5px rgba(220, 38, 38, 0.25);
-
-        &:hover:not(:disabled) {
-          background: linear-gradient(135deg, #dc2626, #b91c1c);
-          box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
-          transform: translateY(-1px);
-        }
-
-        &:active {
-          transform: translateY(1px);
-          box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);
-        }
+        @extend .btn-danger;
       }
     }
   }
@@ -162,16 +91,13 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
-    table-layout: fixed;
 
     th,
     td {
       padding: 0.9rem;
       border-bottom: 1px solid #e2e8f0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
       text-align: center;
+      font-size: 0.95rem;
     }
 
     th {
@@ -184,70 +110,22 @@
       background: #f1f5f9;
     }
 
-    .id-col {
-      width: 6%;
-    }
-
-    .customer-col {
-      width: 28%;
-    }
-
-    .date-col {
-      width: 20%;
-    }
-
-    .price-col {
-      width: 16%;
-    }
-
     .actions-col {
-      width: 10%;
+      width: 260px;
       text-align: center;
 
       button {
-        border-radius: 10px;
-        padding: 0.6rem 1.2rem;
-        font-weight: 500;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
+        @extend .btn;
         margin: 0 0.3rem;
+        font-size: 0.9rem;
       }
 
       .edit-btn {
-        background: #e0f2fe;
-        border: 1px solid #bae6fd;
-        color: #1e3a8a;
-
-        &:hover:not(:disabled) {
-          background: #bfdbfe;
-          border-color: #93c5fd;
-          color: #1e40af;
-        }
-
-        &:active {
-          background: #93c5fd;
-          border-color: #60a5fa;
-          color: #1e3a8a;
-        }
+        @extend .btn-primary;
       }
 
       .delete-btn {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        color: #fff;
-        border: none;
-        box-shadow: 0 2px 5px rgba(220, 38, 38, 0.25);
-
-        &:hover:not(:disabled) {
-          background: linear-gradient(135deg, #dc2626, #b91c1c);
-          box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
-          transform: translateY(-1px);
-        }
-
-        &:active {
-          transform: translateY(1px);
-          box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);
-        }
+        @extend .btn-danger;
       }
     }
   }
@@ -261,24 +139,9 @@
     font-size: 0.95rem;
 
     button {
-      border-radius: 10px;
-      padding: 0.6rem 1.2rem;
-      font-weight: 500;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      background: #fff;
-      border: 1px solid #cbd5e1;
-      color: #1e293b;
-
-      &:hover:not(:disabled) {
-        background: #f9fafb;
-        border-color: #94a3b8;
-      }
-
-      &:active {
-        background: #e2e8f0;
-      }
+      @extend .btn;
+      @extend .btn-secondary;
+      padding: 0.4rem 0.9rem;
 
       &:disabled {
         opacity: 0.5;
@@ -300,38 +163,139 @@
       }
     }
   }
+}
 
-  @media (max-width: 768px) {
-    .form-box .inner-form {
-      flex-wrap: wrap;
-    }
-
-    .form-box .order-items .order-item {
-      flex-wrap: wrap;
-    }
-
-    .orders-table {
-      display: block;
-      overflow-x: auto;
-      white-space: nowrap;
-    }
-
-    .orders-table td.actions-col {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-      text-align: center;
-    }
-
-    .orders-table td.actions-col button {
-      width: 100%;
-      margin: 0;
-    }
-
-    .pagination {
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
+@media (max-width: 1200px) {
+  .orders-page .form-box .inner-form {
+    grid-template-columns: 1fr 1fr 1fr auto auto;
   }
+}
+
+@media (max-width: 992px) {
+  .orders-page .form-box .inner-form {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .orders-page .form-box .inner-form .save-btn,
+  .orders-page .form-box .inner-form .cancel-btn {
+    justify-self: stretch;
+  }
+}
+
+@media (max-width: 768px) {
+  .orders-page .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .orders-page .new-order button,
+  .orders-page .back-buttons button {
+    width: 100%;
+  }
+
+  .orders-page .orders-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .orders-page .orders-table td.actions-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .orders-page .orders-table td.actions-col button {
+    width: 100%;
+  }
+
+  .orders-page .pagination {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+}
+
+@media only screen and (max-height: 500px) and (orientation: landscape) {
+  .orders-page h2 {
+    margin-top: 0.3rem;
+    margin-bottom: 0.8rem;
+    font-size: 1.4rem;
+  }
+
+  .orders-page .orders-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .orders-page .orders-table th,
+  .orders-page .orders-table td {
+    padding: 0.55rem 0.6rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .orders-page .orders-table .actions-col button {
+    font-size: 0.75rem !important;
+    padding: 0.3rem 0.6rem !important;
+  }
+
+  .orders-page .form-box .inner-form {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 0.45rem !important;
+  }
+
+  .orders-page .form-box .inner-form input,
+  .orders-page .form-box .inner-form select {
+    padding: 0.55rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  .orders-page .form-box .save-btn,
+  .orders-page .form-box .cancel-btn {
+    width: auto !important;
+    padding: 0.45rem 0.8rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .orders-page .pagination {
+    justify-content: center;
+    gap: 0.4rem !important;
+    margin-top: 1rem;
+  }
+
+  .orders-page .pagination button,
+  .orders-page .pagination select {
+    padding: 0.3rem 0.6rem !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+.btn {
+  border-radius: 10px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+}
+
+.btn-primary {
+  background: #e0f2fe;
+  border: 1px solid #bae6fd;
+  color: #1e3a8a;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  border: none;
 }
