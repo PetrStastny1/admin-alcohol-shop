@@ -164,6 +164,20 @@
     }
   }
 
+  @media (max-width: 1200px) {
+    .customers-table th,
+    .customers-table td {
+      padding: 0.7rem;
+    }
+  }
+
+  @media (max-width: 992px) {
+    .customers-table th,
+    .customers-table td {
+      padding: 0.65rem;
+    }
+  }
+
   @media (max-width: 768px) {
     .page-header {
       flex-direction: column;
@@ -171,8 +185,8 @@
       gap: 1rem;
     }
 
-    .new-customer button,
-    .back-buttons button {
+    .back-buttons button,
+    .new-customer button {
       width: 100%;
     }
 
@@ -197,6 +211,25 @@
       justify-content: center;
       flex-wrap: wrap;
       gap: 0.3rem;
+    }
+  }
+
+  @media (max-width: 768px) and (orientation: landscape) {
+    padding: 1rem;
+
+    h2 {
+      margin-bottom: 1rem;
+      font-size: 1.4rem;
+    }
+
+    .customers-table th,
+    .customers-table td {
+      padding: 0.45rem;
+      font-size: 0.82rem;
+    }
+
+    .actions-col button {
+      font-size: 0.75rem;
     }
   }
 }
