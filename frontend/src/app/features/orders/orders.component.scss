@@ -95,10 +95,10 @@
 
     th,
     td {
-      padding: 0.9rem;
+      padding: 1rem;
       border-bottom: 1px solid #e2e8f0;
       text-align: center;
-      font-size: 0.95rem;
+      font-size: 1rem;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -115,13 +115,13 @@
     }
 
     .actions-col {
-      width: 260px;
+      width: 300px;
       text-align: center;
 
       button {
         @extend .btn;
         margin: 0 0.3rem;
-        font-size: 0.9rem;
+        font-size: 1rem;
       }
 
       .edit-btn {
@@ -237,43 +237,43 @@
 
   .orders-page .orders-table th,
   .orders-page .orders-table td {
-    padding: 0.55rem 0.6rem !important;
-    font-size: 0.78rem !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.85rem !important;
   }
 
   .orders-page .orders-table .actions-col button {
-    font-size: 0.75rem !important;
-    padding: 0.3rem 0.6rem !important;
+    font-size: 0.8rem !important;
+    padding: 0.4rem 0.7rem !important;
   }
 
   .orders-page .form-box .inner-form {
-    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-    gap: 0.45rem !important;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem !important;
   }
 
   .orders-page .form-box .inner-form input,
   .orders-page .form-box .inner-form select {
-    padding: 0.55rem !important;
-    font-size: 0.8rem !important;
+    padding: 0.6rem !important;
+    font-size: 0.9rem !important;
   }
 
   .orders-page .form-box .save-btn,
   .orders-page .form-box .cancel-btn {
     width: auto !important;
-    padding: 0.45rem 0.8rem !important;
-    font-size: 0.78rem !important;
+    padding: 0.55rem 0.9rem !important;
+    font-size: 0.85rem !important;
   }
 
   .orders-page .pagination {
     justify-content: center;
-    gap: 0.4rem !important;
+    gap: 0.5rem !important;
     margin-top: 1rem;
   }
 
   .orders-page .pagination button,
   .orders-page .pagination select {
-    padding: 0.3rem 0.6rem !important;
-    font-size: 0.8rem !important;
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.9rem !important;
   }
 }
 
