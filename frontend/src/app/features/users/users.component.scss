@@ -18,26 +18,27 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
     margin-bottom: 2rem;
+    width: 100%;
   }
 
   .back-buttons {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    align-items: flex-start;
+    gap: 0.6rem;
 
     button {
-      border-radius: 10px;
-      padding: 0.6rem 1.2rem;
+      border-radius: 14px;
+      padding: 0.8rem 1.4rem;
       font-weight: 500;
-      font-size: 0.95rem;
+      font-size: 1rem;
       cursor: pointer;
       transition: all 0.2s ease;
       background: #fff;
-      border: 1px solid #cbd5e1;
+      border: 2px solid #e2e8f0;
       color: #1e293b;
-      width: 220px;
+      width: 260px;
       text-align: left;
     }
   }
@@ -47,16 +48,16 @@
     justify-content: flex-end;
 
     .add-btn {
-      border-radius: 10px;
-      padding: 0.6rem 1.2rem;
+      border-radius: 14px;
+      padding: 0.9rem 1.4rem;
       font-weight: 500;
-      font-size: 0.95rem;
+      font-size: 1rem;
       cursor: pointer;
       transition: all 0.2s ease;
       background: #e0f2fe;
-      border: 1px solid #bae6fd;
+      border: 2px solid #bae6fd;
       color: #1e3a8a;
-      width: 220px;
+      width: 260px;
     }
   }
 
@@ -82,6 +83,7 @@
         background: #fff;
         color: #1e293b;
         font-size: 0.95rem;
+        transition: border 0.2s, box-shadow 0.2s;
       }
 
       .save-btn,
@@ -106,7 +108,6 @@
         background: linear-gradient(135deg, #ef4444, #dc2626);
         color: #fff;
         border: none;
-        box-shadow: 0 2px 5px rgba(220, 38, 38, 0.25);
       }
     }
   }
@@ -115,16 +116,17 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
+    table-layout: fixed;
 
     th,
     td {
-      padding: 0.9rem;
+      padding: 1rem;
       border-bottom: 1px solid #e2e8f0;
-      text-align: center;
-      font-size: 0.95rem;
-      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: center;
+      font-size: 1rem;
     }
 
     th {
@@ -137,21 +139,39 @@
       background: #f1f5f9;
     }
 
+    .email-col {
+      width: 25%;
+    }
+
+    .username-col {
+      width: 25%;
+    }
+
+    .role-col {
+      width: 15%;
+    }
+
+    .created-col {
+      width: 20%;
+    }
+
     .actions-col {
-      width: 260px;
+      width: 15%;
       text-align: center;
 
       button {
-        border-radius: 10px;
-        padding: 0.6rem 1.2rem;
+        border-radius: 14px;
+        padding: 0.7rem 1.4rem;
         font-weight: 500;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
         margin: 0 0.3rem;
-        font-size: 0.9rem;
       }
 
       .edit-btn {
         background: #e0f2fe;
-        border: 1px solid #bae6fd;
+        border: 2px solid #bae6fd;
         color: #1e3a8a;
       }
 
@@ -159,7 +179,6 @@
         background: linear-gradient(135deg, #ef4444, #dc2626);
         color: #fff;
         border: none;
-        box-shadow: 0 2px 5px rgba(220, 38, 38, 0.25);
       }
     }
   }
@@ -188,8 +207,8 @@
       padding: 0.35rem 0.6rem;
       border-radius: 8px;
       border: 1px solid #e2e8f0;
-      background: #fff !important;
-      color: #000 !important;
+      background-color: #fff;
+      color: #000;
       font-size: 0.9rem;
       appearance: none;
     }
@@ -202,9 +221,13 @@
       gap: 1rem;
     }
 
-    .back-buttons button,
-    .new-user button {
+    .back-buttons button {
       width: 100%;
+    }
+
+    .new-user .add-btn {
+      width: 260px;
+      align-self: center;
     }
 
     .users-table {
@@ -228,25 +251,6 @@
       justify-content: center;
       flex-wrap: wrap;
       gap: 0.3rem;
-    }
-  }
-
-  @media only screen and (max-height: 500px) and (orientation: landscape) {
-    h2 {
-      margin-top: 0.3rem;
-      margin-bottom: 1rem;
-      font-size: 1.4rem;
-    }
-
-    .users-table th,
-    .users-table td {
-      padding: 0.55rem 0.6rem;
-      font-size: 0.8rem;
-    }
-
-    .actions-col button {
-      font-size: 0.75rem;
-      padding: 0.3rem 0.6rem;
     }
   }
 }
