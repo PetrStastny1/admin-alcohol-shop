@@ -64,6 +64,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
+    table-layout: fixed;
 
     th,
     td {
@@ -88,7 +89,6 @@
 
     .actions-col {
       width: 260px;
-      text-align: center;
 
       button {
         border-radius: 10px;
@@ -143,36 +143,75 @@
       background: #fff !important;
       color: #000 !important;
       font-size: 0.9rem;
-      appearance: none;
     }
   }
+}
 
-  @media (max-width: 768px) {
-    .page-header {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 1rem;
-    }
+@media (max-width: 1200px) {
+  .users-page .users-table th,
+  .users-page .users-table td {
+    padding: 0.75rem;
+  }
+}
 
-    .back-buttons button,
-    .new-user button {
-      width: 100%;
-    }
+@media (max-width: 992px) {
+  .users-page .users-table th,
+  .users-page .users-table td {
+    padding: 0.65rem;
+  }
+}
 
-    .users-table {
-      display: block;
-      overflow-x: auto;
-      white-space: nowrap;
-    }
+@media (max-width: 768px) {
+  .users-page .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
 
-    .users-table .actions-col button {
-      width: 100%;
-      margin: 0.2rem 0;
-    }
+  .users-page .back-buttons button,
+  .users-page .new-user button {
+    width: 100%;
+  }
 
-    .pagination {
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+  .users-page .users-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .users-page .users-table .actions-col {
+    width: 100%;
+  }
+
+  .users-page .users-table .actions-col button {
+    width: 100%;
+    margin: 0.2rem 0;
+  }
+
+  .users-page .pagination {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  .users-page {
+    padding: 1rem;
+  }
+
+  .users-page h2 {
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+  }
+
+  .users-page .users-table th,
+  .users-page .users-table td {
+    padding: 0.45rem;
+    font-size: 0.82rem;
+  }
+
+  .users-page .users-table .actions-col button {
+    font-size: 0.75rem;
   }
 }
