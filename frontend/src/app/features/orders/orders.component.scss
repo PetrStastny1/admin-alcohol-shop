@@ -18,11 +18,11 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 0.5rem;
 
     button {
       border-radius: 10px;
-      padding: 0.8rem 1.4rem;
+      padding: 0.6rem 1.2rem;
       font-weight: 500;
       font-size: 0.95rem;
       cursor: pointer;
@@ -30,7 +30,7 @@
       background: #fff;
       border: 1px solid #cbd5e1;
       color: #1e293b;
-      width: 220px;
+      width: 200px;
       text-align: left;
 
       &:hover:not(:disabled) {
@@ -51,7 +51,7 @@
 
     .add-btn {
       border-radius: 10px;
-      padding: 0.8rem 1.4rem;
+      padding: 0.6rem 1.2rem;
       font-weight: 500;
       font-size: 0.95rem;
       cursor: pointer;
@@ -59,7 +59,7 @@
       background: #e0f2fe;
       border: 1px solid #bae6fd;
       color: #1e3a8a;
-      width: 220px;
+      width: 200px;
 
       &:hover:not(:disabled) {
         background: #bfdbfe;
@@ -79,19 +79,19 @@
     background: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
 
     .inner-form {
       display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
+      flex-wrap: nowrap;
+      gap: 0.8rem;
       align-items: center;
 
       select,
       input {
         flex: 1;
-        min-width: 150px;
+        min-width: 100px;
         padding: 0.75rem;
         border-radius: 8px;
         border: 1px solid #cbd5e1;
@@ -105,22 +105,18 @@
           border-color: #3b82f6;
           box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
         }
-
-        option {
-          color: #000;
-        }
       }
 
       .save-btn,
       .cancel-btn {
         border-radius: 10px;
-        padding: 0.8rem 1.4rem;
+        padding: 0.6rem 1.2rem;
         font-weight: 500;
-        font-size: 1rem;
+        font-size: 0.9rem;
         cursor: pointer;
         transition: all 0.2s ease;
-        width: 120px;
-        height: 45px;
+        width: 110px;
+        height: 40px;
         justify-self: end;
       }
 
@@ -170,7 +166,7 @@
 
     th,
     td {
-      padding: 1rem;
+      padding: 0.9rem;
       border-bottom: 1px solid #e2e8f0;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -210,9 +206,9 @@
 
       button {
         border-radius: 10px;
-        padding: 0.8rem 1.4rem;
+        padding: 0.6rem 1.2rem;
         font-weight: 500;
-        font-size: 1rem;
+        font-size: 0.9rem;
         cursor: pointer;
         transition: all 0.2s ease;
         margin: 0 0.3rem;
@@ -297,7 +293,6 @@
       background-color: #fff !important;
       color: #000 !important;
       font-size: 0.9rem;
-      appearance: none;
 
       option {
         background-color: #fff !important;
@@ -340,4 +335,3 @@
     }
   }
 }
-
