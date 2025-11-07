@@ -91,6 +91,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
+    table-layout: fixed;
 
     th,
     td {
@@ -98,6 +99,9 @@
       border-bottom: 1px solid #e2e8f0;
       text-align: center;
       font-size: 0.95rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     th {
